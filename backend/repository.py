@@ -16,8 +16,8 @@ def get_publications_by_username(db: Session,user_name:str,skip: int = 0, limit:
 def get_publications_by_name(db: Session,name:str,skip: int = 0, limit: int = 100):
     db_publi = db.query(models.Publication).filter(models.Publication.name== name).offset(skip).limit(limit).all()
     return db_publi
-def delete_publication(db: Session, name: str ):
-    db_acc = db.query(models.Publication).filter(models.Publication.name == name).first()
+def delete_publication(db: Session, id: int ):
+    db_acc = db.query(models.Publication).filter(models.Publication.id== id).first()
     if not db_acc:
         return None
     db.delete(db_acc)
@@ -50,12 +50,12 @@ def update_account(db: Session, username: str, account: schemas.Account):
     return db_acc
 
 def delete_account(db: Session, username: str):
-    images = get_publications_by_username(db,username)
+    publications = get_publications_by_username(db,username)
     db_acc = db.query(models.Account).filter(models.Account.username == username).first()
     if not db_acc:
         return None
-    for order in images:
-        db.delete(order)
+    for image in publications:
+        db.delete(image)
     db.delete(db_acc)
     db.commit()
     return db_acc
