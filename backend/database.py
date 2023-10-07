@@ -1,11 +1,12 @@
 import os
-from utils import  production
+#from utils import  production
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-if production:
+
+if False: #Aqui iria la variable production
     SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 else:
     SQLALCHEMY_DATABASE_URL = "sqlite:///./data.db"

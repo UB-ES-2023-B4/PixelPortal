@@ -3,6 +3,7 @@ uvicorn
 httpx
 requests
 pydantic
+pydantic-settings
 pytest
 sqlalchemy
 bcrypt
@@ -12,3 +13,6 @@ python-jose
 python-dotenv
 psycopg2-binary
 Jinja2
+pytest 
+httpx
+sqlite

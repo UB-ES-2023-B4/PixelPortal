@@ -1,42 +1,81 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from typing import List, Optional
 from datetime import datetime
+from pydantic import BaseModel
+
+class UsuarioBase(BaseModel):
+    nombre: str
+    email: str
+    contrasena: str
+    descripcion: Optional[str] = None
+
+class UsuarioCreate(UsuarioBase):
+    nombre: str
+    email: str
+    contrasena: str
+    descripcion: str = None
 
 
-############################################ Publication ###############################################################
+class Usuario(UsuarioBase):
+    id: int
+    fecha_creacion: datetime
+    
+    class Config:
+        orm_mode = True
 
-class PublicationBase(BaseModel):
-    name: str
-    data: bytes
-    account_id: int
-class PublicationCreate(PublicationBase):
+class SeguidorBase(BaseModel):
+    seguidor_id: int
+    seguido_id: int
+
+class SeguidorCreate(SeguidorBase):
     pass
 
-class Publication(PublicationBase):
+class Seguidor(SeguidorBase):
+    fecha_creacion: datetime
+    
+    class Config:
+        orm_mode = True
+
+class PublicacionBase(BaseModel):
+    usuario_id: int
+    titulo: str
+    descripcion: str
+    imagen_url: Optional[str] = None
+
+class PublicacionCreate(PublicacionBase):
+    pass
+
+class Publicacion(PublicacionBase):
     id: int
+    fecha_creacion: datetime
+    
     class Config:
         orm_mode = True
 
+class ComentarioBase(BaseModel):
+    usuario_id: int
+    publicacion_id: int
+    contenido: str
 
-############################################ ACCOUNT ###############################################################
-class AccountBase(BaseModel):
-    username: Optional[str]
-    is_admin: int = 0
-class AccountCreate(AccountBase):
-    username: str = Field(..., description="username")
-    password: str = Field(..., min_length=8, max_length=24 ,description="user password")
-class Account(AccountBase):
-    publications : list[Publication] = []
+class ComentarioCreate(ComentarioBase):
+    pass
+
+class Comentario(ComentarioBase):
+    id: int
+    fecha_creacion: datetime
+    
     class Config:
         orm_mode = True
-class SystemAccount(Account):
-    password: str
 
-############################################ TOKEN ###############################################################
-class TokenSchema(BaseModel):
-    access_token: str
-    refresh_token: str
+class LikeBase(BaseModel):
+    usuario_id: int
+    publicacion_id: int
 
-class TokenPayload(BaseModel):
-    sub: str = None
-    exp: int = None
+class LikeCreate(LikeBase):
+    pass
+
+class Like(LikeBase):
+    fecha_creacion: datetime
+    
+    class Config:
+        orm_mode = True
