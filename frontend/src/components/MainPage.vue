@@ -69,7 +69,7 @@ export default {
           return img.username.toLowerCase().includes(searchTerm);
         });
       } else if (this.search.length > 0 && this.search.charAt(0) === "#") {
-        // Remove the "@" symbol from the search string
+        // Remove the "#" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
         // Filter and return images based on the modified search term
