@@ -3,21 +3,21 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 import models, schemas
 
-############################################ IMAGE ###############################################################
-def create_image(db: Session,user_name:str, image: schemas.ImageCreate):
-    db_account = models.Account(name =image.name, data = image.data, account = user_name)
-    db.add(db_account)
+############################################ PUBLICATION ###############################################################
+def create_publication(db: Session,user_name:str, publi: schemas.PublicationCreate):
+    db_publi = models.Account(name =publi.name, data = publi.data, account = user_name)
+    db.add(db_publi)
     db.commit()
-    db.refresh(db_account)
-    return db_account
-def get_images_by_username(db: Session,user_name:str,skip: int = 0, limit: int = 100):
-    db_images = db.query(models.Image).filter(models.Image.username == user_name).offset(skip).limit(limit).all()
-    return db_images
-def get_images_by_name(db: Session,name:str,skip: int = 0, limit: int = 100):
-    db_images = db.query(models.Image).filter(models.Image.name== name).offset(skip).limit(limit).all()
-    return db_images
-def delete_image(db: Session, name: str ):
-    db_acc = db.query(models.Image).filter(models.Image.name == name).first()
+    db.refresh(db_publi)
+    return db_publi
+def get_publications_by_username(db: Session,user_name:str,skip: int = 0, limit: int = 100):
+    db_publi = db.query(models.Publication).filter(models.Publication.username == user_name).offset(skip).limit(limit).all()
+    return db_publi
+def get_publications_by_name(db: Session,name:str,skip: int = 0, limit: int = 100):
+    db_publi = db.query(models.Publication).filter(models.Publication.name== name).offset(skip).limit(limit).all()
+    return db_publi
+def delete_publication(db: Session, name: str ):
+    db_acc = db.query(models.Publication).filter(models.Publication.name == name).first()
     if not db_acc:
         return None
     db.delete(db_acc)
@@ -50,7 +50,7 @@ def update_account(db: Session, username: str, account: schemas.Account):
     return db_acc
 
 def delete_account(db: Session, username: str):
-    images = get_images_by_username(db,username)
+    images = get_publications_by_username(db,username)
     db_acc = db.query(models.Account).filter(models.Account.username == username).first()
     if not db_acc:
         return None

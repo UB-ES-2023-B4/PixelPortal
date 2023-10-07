@@ -3,16 +3,16 @@ from typing import Optional
 from datetime import datetime
 
 
-############################################ IMAGE ###############################################################
+############################################ Publication ###############################################################
 
-class ImageBase(BaseModel):
+class PublicationBase(BaseModel):
     name: str
     data: bytes
     account_id: int
-class ImageCreate(ImageBase):
+class PublicationCreate(PublicationBase):
     pass
 
-class Image(ImageBase):
+class Publication(PublicationBase):
     id: int
     class Config:
         orm_mode = True
@@ -26,7 +26,7 @@ class AccountCreate(AccountBase):
     username: str = Field(..., description="username")
     password: str = Field(..., min_length=8, max_length=24 ,description="user password")
 class Account(AccountBase):
-    images : list[Image] = []
+    publications : list[Publication] = []
     class Config:
         orm_mode = True
 class SystemAccount(Account):

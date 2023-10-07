@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+httpx
+requests
+pydantic
+pytest
+sqlalchemy
+bcrypt
+passlib
+python-multipart
+python-jose
+python-dotenv
+psycopg2-binary
+Jinja2
