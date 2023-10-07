@@ -1,14 +1,14 @@
 <template>
-  <MainPage msg="Welcome to PixelPortal"/>
+  <LoginRegister msg="Welcome to PixelPortal"/>
 </template>
 
 <script>
-import MainPage from './components/MainPage.vue'
+import LoginRegister from './components/LoginRegister.vue'
 
 export default {
   name: 'App',
   components: {
-    MainPage
+    LoginRegister
   }
 }
 </script>
