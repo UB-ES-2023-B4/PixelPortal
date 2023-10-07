@@ -77,7 +77,6 @@ export default {
           return img.title.toLowerCase().includes(searchTerm);
         });
       } else {
-        // If the search input doesn't start with "@", return an empty array
         return this.imageList;
       }
     },
