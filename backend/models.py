@@ -10,8 +10,8 @@ class Publication(Base):
     name = Column(String(255), nullable=False)
     data = Column(LargeBinary, nullable=False)
     username = Column(String(30), ForeignKey('accounts.username'), nullable=False)
-    description = Column(String(500), ForeignKey('accounts.username'), nullable=False)
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    description = Column(String(500), nullable=True)
+    fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
     account = relationship('Account', back_populates='images')
     def __init__(self, name, data, account,description):
         self.name = name
@@ -22,7 +22,8 @@ class Account(Base):
     __tablename__ = 'accounts'
     username = Column(String(30), primary_key=True, unique=True, nullable=False)
     password = Column(String(), nullable=False)
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    email = Column(String(100), nullable=True)
+    fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
     # 0 not admin/ 1 is admin
     is_admin = Column(Integer, nullable=False)
 
