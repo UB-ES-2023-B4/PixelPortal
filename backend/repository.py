@@ -11,7 +11,7 @@ def create_image(db: Session,user_name:str, image: schemas.ImageCreate):
     db.refresh(db_account)
     return db_account
 def get_images_by_username(db: Session,user_name:str,skip: int = 0, limit: int = 100):
-    db_images = db.query(models.Image).filter(models.Image.account_id == user_name).offset(skip).limit(limit).all()
+    db_images = db.query(models.Image).filter(models.Image.username == user_name).offset(skip).limit(limit).all()
     return db_images
 def get_images_by_name(db: Session,name:str,skip: int = 0, limit: int = 100):
     db_images = db.query(models.Image).filter(models.Image.name== name).offset(skip).limit(limit).all()
