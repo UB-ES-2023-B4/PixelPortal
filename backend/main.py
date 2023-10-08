@@ -54,17 +54,44 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+#Registro
 @app.post("/usuario/", response_model=schemas.Usuario)
 def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     db_user = repository.create_user(db, user)
-    return db_user
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": db_user.email}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer", "user": db_user}
 
+
+#Login
+@app.post("/login")
+async def login(usuario: schemas.UsuarioBase, db: Session = Depends(get_db)):
+    db_user = db.query(DBUsuario).filter(DBUsuario.email == usuario.email).first()
+    if db_user is None or not verify_password(usuario.contrasena, db_user.contrasena):
+        return {"detail": "Usuario no registrado o credenciales inválidas"}
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": usuario.email}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+#Obtener usuario por ID
 @app.get("/usuario/{user_id}", response_model=schemas.Usuario)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = repository.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_user
+
+
 
 @app.get("/users/me/", response_model=schemas.Usuario)
 async def read_users_me(current_user: models.Usuario = Depends(get_current_user)):
