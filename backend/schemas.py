@@ -2,6 +2,15 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from typing import Optional
+import models, schemas
+from database import SessionLocal
 
 class UsuarioBase(BaseModel):
     nombre: str
@@ -79,3 +88,11 @@ class Like(LikeBase):
     
     class Config:
         orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: EmailStr
+

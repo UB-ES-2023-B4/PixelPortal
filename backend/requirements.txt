@@ -15,4 +15,5 @@ psycopg2-binary
 Jinja2
 pytest 
 httpx
-sqlite
+pydantic[email]
+
