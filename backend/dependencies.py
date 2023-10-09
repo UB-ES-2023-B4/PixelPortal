@@ -1,23 +1,27 @@
-import utils
-from schemas import TokenPayload, SystemAccount
-from typing import Annotated
-from functools import lru_cache
-from sqlalchemy.orm import Session
-from datetime import datetime
+from passlib.context import CryptContext
+from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
-from pydantic import ValidationError
-import repository
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from typing import Optional
+import models, schemas
 from database import SessionLocal
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from fastapi import Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+from typing import Optional
+import models, schemas
+from fastapi.security import OAuth2PasswordBearer
+from database import SessionLocal
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# Para verificar y encriptar la contraseña
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@lru_cache()
-def get_settings():
-    return utils.Settings()
-reuseable_oauth = OAuth2PasswordBearer(
-    tokenUrl="/login",
-    scheme_name="JWT"
-)
+
+
+# Dependencia para obtener DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -25,41 +29,45 @@ def get_db():
     finally:
         db.close()
 
-async def get_current_user(settings: Annotated[utils.Settings, Depends(get_settings)],
-                           token: str = Depends(reuseable_oauth),db: Session = Depends(get_db)) -> SystemAccount:
+SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        payload = jwt.decode(
-            token, settings.jwt_secret_key, algorithms=[settings.algorithm]
-        )
-        token_data = TokenPayload(**payload)
-        if datetime.fromtimestamp(token_data.exp) < datetime.now():
-
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-    except(jwt.JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    username: str = token_data.sub
-
-    # get user from database
-    user = repository.get_account_by_name(db,username)
-    # if user does not exist, raise an exception
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise credentials_exception
+        token_data = schemas.TokenData(email=email)
+    except JWTError:
+        raise credentials_exception
+    user = get_user_by_email(db, email=token_data.email)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found",
-        )
-    user_dict = user.__dict__
+        raise credentials_exception
+    return user
 
-    # Elimina el atributo '_sa_instance_state' si está presente
-    user_dict.pop('_sa_instance_state', None)
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.Usuario).filter(models.Usuario.email == email).first()
 
-    # Transforma el diccionario en una instancia de SystemAccount
-    system_user = SystemAccount(**user_dict)
-    return system_user

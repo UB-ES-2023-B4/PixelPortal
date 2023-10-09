@@ -1,13 +1,12 @@
 
 from passlib.context import CryptContext
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from datetime import datetime, timedelta
 from typing import Union, Any
 from jose import jwt
 import os
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-production= bool(os.getenv("PRODUCTION", False))
 
 def get_hashed_password(password: str) -> str:
     return password_context.hash(password)
@@ -18,11 +17,12 @@ def verify_password(password: str, hashed_pass: str) -> bool:
 
 
 class Settings(BaseSettings):
-    access_token_expire_minutes: int = 30  # 30 minutes
-    refresh_token_expire_minutes: int = 60 * 24 * 7  # 7 days
+    access_token_expire_minutes: int = 30  
+    refresh_token_expire_minutes: int = 60 * 24 * 7  
     algorithm: str = "HS256"
-    jwt_secret_key: str  # should be kept secret
-    jwt_refresh_secret_key: str  # should be kept secret
+    jwt_secret_key: str  
+    jwt_refresh_secret_key: str 
+    production: bool = False
 
     class Config:
         env_file = ".env"

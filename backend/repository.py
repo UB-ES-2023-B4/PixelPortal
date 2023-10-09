@@ -1,61 +1,45 @@
-from sqlalchemy import DateTime, or_
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
 import models, schemas
+from sqlalchemy.exc import IntegrityError
 
-############################################ PUBLICATION ###############################################################
-def create_publication(db: Session,user_name:str, publi: schemas.PublicationCreate):
-    db_publi = models.Account(name =publi.name, data = publi.data, account = user_name)
-    db.add(db_publi)
-    db.commit()
-    db.refresh(db_publi)
-    return db_publi
-def get_publications_by_username(db: Session,user_name:str,skip: int = 0, limit: int = 100):
-    db_publi = db.query(models.Publication).filter(models.Publication.username == user_name).offset(skip).limit(limit).all()
-    return db_publi
-def get_publications_by_name(db: Session,name:str,skip: int = 0, limit: int = 100):
-    db_publi = db.query(models.Publication).filter(models.Publication.name== name).offset(skip).limit(limit).all()
-    return db_publi
-def delete_publication(db: Session, id: int ):
-    db_acc = db.query(models.Publication).filter(models.Publication.id== id).first()
-    if not db_acc:
-        return None
-    db.delete(db_acc)
-    db.commit()
-    return db_acc
-############################################ ACCOUNT ###############################################################
-def create_account(db: Session, account: schemas.AccountCreate):
-    db_account = models.Account(username=account.username, password=account.password, is_admin=account.is_admin)
-    db.add(db_account)
-    db.commit()
-    db.refresh(db_account)
-    return db_account
-def get_account_by_name(db: Session, name: str):
-    user = db.query(models.Account).filter(models.Account.username == name).first()
-    return user
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from schemas import UsuarioCreate
+from models import Usuario
 
-def get_accounts(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Account).offset(skip).limit(limit).all()
+from sqlalchemy.orm import Session
+from models import Usuario as DBUsuario
+from schemas import UsuarioCreate, Usuario
 
-def update_account(db: Session, username: str, account: schemas.Account):
-    db_acc = db.query(models.Account).filter(models.Account.username == username).first()
-    if not db_acc:
-        return None
-    for var, value in vars(account).items():
-        if value is not None:
-            setattr(db_acc, var, value)
-    db.add(db_acc)
-    db.commit()
-    db.refresh(db_acc)
-    return db_acc
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Depends
 
-def delete_account(db: Session, username: str):
-    publications = get_publications_by_username(db,username)
-    db_acc = db.query(models.Account).filter(models.Account.username == username).first()
-    if not db_acc:
-        return None
-    for image in publications:
-        db.delete(image)
-    db.delete(db_acc)
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from datetime import datetime, timedelta
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+
+from dependencies import get_password_hash
+
+def create_user(db: Session, user: schemas.UsuarioCreate):
+    hashed_password = get_password_hash(user.contrasena)
+    db_user = models.Usuario(
+        nombre=user.nombre,
+        email=user.email,
+        contrasena=hashed_password,  # Guarda la contraseña hasheada
+        descripcion=user.descripcion
+    )
+    db.add(db_user)
     db.commit()
-    return db_acc
+    db.refresh(db_user)
+    return db_user
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.Usuario).filter(models.Usuario.id == user_id).first()
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.Usuario).filter(models.Usuario.email == email).first()
+
+
