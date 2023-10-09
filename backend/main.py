@@ -68,6 +68,21 @@ def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer", "user": db_user}
 
 
+#Login
+@app.post("/login")
+async def login(usuario: schemas.UsuarioBase, db: Session = Depends(get_db)):
+    db_user = db.query(DBUsuario).filter(DBUsuario.email == usuario.email).first()
+    if db_user is None or not verify_password(usuario.contrasena, db_user.contrasena):
+        return {"detail": "Usuario no registrado o credenciales inválidas"}
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": usuario.email}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 #Obtener usuario por ID
 @app.get("/usuario/{user_id}", response_model=schemas.Usuario)
 def read_user(user_id: int, db: Session = Depends(get_db)):
