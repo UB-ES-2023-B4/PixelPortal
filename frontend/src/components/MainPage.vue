@@ -1,9 +1,36 @@
 <template>
-  <div>
+  <div class="container">
     <link
       href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
       rel="stylesheet"
     />
+    <div class="side-bar">
+      <div class="user-info-wrapper">
+        <div class="user-info">
+          <div class="username-and-picture">
+            <img
+              src="../assets/default_PFP.png"
+              alt="Profile Picture"
+              class="profile-picture"
+            />
+            <h6 class="username">Your Username</h6>
+          </div>
+          <div class="dropdown">
+            <button class="options-button" @click="toggleDropdown">
+              <i class="bx bx-dots-vertical-rounded"></i>
+            </button>
+            <div
+              id="dropdown-content"
+              class="dropdown-content"
+              v-if="showDropdown"
+            >
+              <a href="#">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button class="post-button"><i class="bx bx-plus"></i> Post</button>
+      </div>
+    </div>
     <div class="image-container">
       <div class="search-box">
         <i class="bx bx-search"></i>
@@ -55,6 +82,7 @@ export default {
           username: "Sergio",
         },
       ],
+      showDropdown: false,
     };
   },
   computed: {
@@ -80,6 +108,27 @@ export default {
         return this.imageList;
       }
     },
+  },
+  methods: {
+    toggleDropdown(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      this.showDropdown = !this.showDropdown;
+      console.log(this.showDropdown);
+    },
+    closeDropdown(event) {
+      if (!event.target.classList.contains("options-button")) {
+        this.showDropdown = false;
+        console.log(this.showDropdown);
+      }
+    },
+  },
+  mounted() {
+    window.addEventListener("click", this.closeDropdown);
+  },
+  beforeUnmount() {
+    window.removeEventListener("click", this.closeDropdown);
   },
 };
 </script>
@@ -183,5 +232,111 @@ export default {
   text-transform: capitalize;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 3px;
+}
+
+.container {
+  display: flex;
+}
+
+.side-bar {
+  background-color: rgba(20, 117, 236, 0.9);
+  width: 200px; /* Adjust the width as needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align user info to the top */
+  padding-top: 20px; /* Adjust the padding as needed */
+  padding-bottom: 20px; /* Adjust the padding as needed */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.user-info-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: transparent;
+  padding: 10px; /* Adjust padding as needed */
+  z-index: 3;
+  box-shadow: none;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.username-and-picture {
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.username {
+  color: white; /* Set your desired text color */
+  margin: 0;
+}
+
+.options-button {
+  background: none;
+  border: none;
+  color: white; /* Set your desired text color */
+  font-size: 24px;
+  cursor: pointer;
+}
+/* Style the dropdown button and content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: white;
+  min-width: 100px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.show {
+  display: block;
+}
+.post-button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 6px;
+}
+
+.post-button i {
+  margin-right: 5px;
+}
+
+.post-button:hover {
+  color: rgba(20, 117, 236, 0.9);
+  background-color: white;
+  transition: background-color 0.2s linear;
 }
 </style>
