@@ -240,13 +240,13 @@ export default {
 
 .side-bar {
   background-color: rgba(20, 117, 236, 0.9);
-  width: 200px; /* Adjust the width as needed */
+  width: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Align user info to the top */
-  padding-top: 20px; /* Adjust the padding as needed */
-  padding-bottom: 20px; /* Adjust the padding as needed */
+  justify-content: flex-start;
+  padding-top: 20px;
+  padding-bottom: 20px;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -255,7 +255,7 @@ export default {
   position: sticky;
   top: 0;
   background-color: transparent;
-  padding: 10px; /* Adjust padding as needed */
+  padding: 10px;
   z-index: 3;
   box-shadow: none;
 }
@@ -277,17 +277,18 @@ export default {
 }
 
 .username {
-  color: white; /* Set your desired text color */
+  color: white;
   margin: 0;
 }
 
 .options-button {
   background: none;
   border: none;
-  color: white; /* Set your desired text color */
+  color: white;
   font-size: 24px;
   cursor: pointer;
 }
+
 /* Style the dropdown button and content */
 .dropdown {
   position: relative;
