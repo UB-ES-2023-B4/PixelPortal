@@ -10,21 +10,26 @@ class UsuarioBase(BaseModel):
     email: str
     contrasena: str
     descripcion: Optional[str] = None
+    imagen_perfil_url: Optional[str] = None
 
 class UsuarioCreate(UsuarioBase):
     nombre: str
     email: str
     contrasena: str
     descripcion: str = None
-
+    imagen_perfil_url: Optional[str] = None
 
 class Usuario(UsuarioBase):
     id: int
     fecha_creacion: datetime
-    
+
     class Config:
         orm_mode = True
 
+class UsuarioLogin(UsuarioBase):
+    nombre: str = None
+    email: str
+    contrasena: str
 class SeguidorBase(BaseModel):
     seguidor_id: int
     seguido_id: int

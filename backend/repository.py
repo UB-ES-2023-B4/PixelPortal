@@ -29,7 +29,8 @@ def create_user(db: Session, user: schemas.UsuarioCreate):
         nombre=user.nombre,
         email=user.email,
         contrasena=hashed_password,  # Guarda la contraseña hasheada
-        descripcion=user.descripcion
+        descripcion=user.descripcion,
+        imagen_perfil_url = user.imagen_perfil_url # Puede ser None
     )
     db.add(db_user)
     db.commit()

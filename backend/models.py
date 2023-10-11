@@ -18,6 +18,7 @@ class Usuario(Base):
     contrasena = Column(String(100), nullable=False)
     descripcion = Column(String(100), nullable=True)
     fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
+    imagen_perfil_url = Column(String(255), nullable=True)
 
 class Publicacion(Base):
     __tablename__ = 'Publicaciones'

@@ -56,21 +56,19 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 #Registro
-@app.post("/usuario/", response_model=schemas.Usuario)
+@app.post("/usuario/")
 def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     db_user = repository.create_user(db, user)
-    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
     access_token = create_access_token(
         data={"sub": db_user.email}, expires_delta=access_token_expires
     )
-    
-    return {"access_token": access_token, "token_type": "bearer", "user": db_user}
-
+    return {"access_token": schemas.Token(access_token=access_token, token_type="bearer"), "user": db_user}
 
 #Login
 @app.post("/login")
-async def login(usuario: schemas.UsuarioBase, db: Session = Depends(get_db)):
+async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
     db_user = db.query(DBUsuario).filter(DBUsuario.email == usuario.email).first()
     if db_user is None or not verify_password(usuario.contrasena, db_user.contrasena):
         return {"detail": "Usuario no registrado o credenciales inválidas"}
