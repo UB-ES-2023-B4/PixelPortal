@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <h1 style="font-size: 50px; font-weight: bolder">PixelPortal</h1>
+      <h1 style="font-size: 50px; font-weight: bolder; text-align: center; margin-top: 3%;">PixelPortal</h1>
     </div>
     <div class="row" style="margin-top: 300px">
       <div class="login-reg-panel">
@@ -39,7 +39,7 @@
             <h2 style="font-weight: bold">LOGIN</h2>
             <input type="text" placeholder="Username" />
             <input type="password" placeholder="Password" />
-            <input type="button" value="Login" />
+            <input type="button" value="Login" @click="redirectToMainPage" />
             <a href="">Forgot password?</a>
           </div>
           <div class="register-show">
@@ -48,7 +48,7 @@
             <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <input type="password" placeholder="Confirm Password" />
-            <input type="button" value="Register" />
+            <input type="button" value="Register" @click="redirectToMainPage"/>
           </div>
         </div>
       </div>
@@ -60,6 +60,7 @@
 import $ from "jquery"; // Importa jQuery
 
 export default {
+  name: "LoginRegister",
   data() {
     return {
       isLoginChecked: true,
@@ -90,6 +91,11 @@ export default {
       }
     });
   },
+  methods: {
+    redirectToMainPage() {
+      this.$router.push('/home')
+    }
+  }
 };
 </script>
 

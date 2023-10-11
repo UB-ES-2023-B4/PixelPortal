@@ -1,30 +1,19 @@
 <template>
   <div class="container">
-    <link
-      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
           <div class="username-and-picture">
-            <img
-              src="../assets/default_PFP.png"
-              alt="Profile Picture"
-              class="profile-picture"
-            />
+            <img src="../assets/default_PFP.png" alt="Profile Picture" class="profile-picture" />
             <h6 class="username">Your Username</h6>
           </div>
           <div class="dropdown">
             <button class="options-button" @click="toggleDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
-            <div
-              id="dropdown-content"
-              class="dropdown-content"
-              v-if="showDropdown"
-            >
-              <a href="#">Log out</a>
+            <div id="dropdown-content" class="dropdown-content" v-if="showDropdown">
+              <a href="/">Log out</a>
             </div>
           </div>
         </div>
@@ -48,12 +37,7 @@
         @close="showUploadImageForm = false"
       ></UploadImagePopup>
       <div class="images">
-        <div
-          class="image-card"
-          v-for="img in filteredList"
-          :key="img.id"
-          :data-name="img.username"
-        >
+        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
           <img :src="require(`@/assets/${img.image}`)" />
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
@@ -228,6 +212,7 @@ export default {
 .image-card:hover img {
   transform: scale(1.15);
 }
+
 .image-container .images .image-title {
   position: absolute;
   bottom: 30px;
@@ -239,6 +224,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 3px;
 }
+
 .image-container .images .image-username {
   position: absolute;
   bottom: 7.1px;
@@ -268,6 +254,7 @@ export default {
   top: 0;
   z-index: 2;
 }
+
 .user-info-wrapper {
   position: sticky;
   top: 0;
@@ -276,6 +263,7 @@ export default {
   z-index: 3;
   box-shadow: none;
 }
+
 .user-info {
   display: flex;
   align-items: center;
@@ -334,6 +322,7 @@ export default {
 .show {
   display: block;
 }
+
 .post-button {
   background-color: transparent;
   border: none;
