@@ -83,6 +83,8 @@ export default {
         },
       ],
       showDropdown: false,
+      username: "notLoggedIn",
+      token: null,
     };
   },
   computed: {
