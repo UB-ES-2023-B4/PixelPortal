@@ -17,18 +17,25 @@
             </div>
           </div>
         </div>
-        <button class="post-button"><i class="bx bx-plus"></i> Post</button>
-        <nav> |
-          <router-link to="/about">About</router-link>
-        </nav>
+        <button class="post-button" @click="showUploadImageForm = true">
+          <i class="bx bx-plus"></i> Post
+        </button>
       </div>
     </div>
+
+    <!-- Image container --->
     <div class="image-container">
       <div class="search-box">
         <i class="bx bx-search"></i>
         <input type="text" v-model="search" placeholder="Search" />
       </div>
-
+      <!-- Popup to upload images component -->
+      <UploadImagePopup
+        :open="showUploadImageForm"
+        :username="username"
+        :token="token"
+        @close="showUploadImageForm = false"
+      ></UploadImagePopup>
       <div class="images">
         <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
           <img :src="require(`@/assets/${img.image}`)" />
@@ -41,8 +48,15 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import UploadImagePopup from "./UploadImagePopup.vue";
 export default {
   name: "MainPage",
+  components: { UploadImagePopup },
+  setup() {
+    const showUploadImageForm = ref(false);
+    return { showUploadImageForm };
+  },
   data() {
     return {
       search: "",
@@ -70,6 +84,8 @@ export default {
         },
       ],
       showDropdown: false,
+      username: "notLoggedIn",
+      token: "",
     };
   },
   computed: {
@@ -102,12 +118,10 @@ export default {
         event.stopPropagation();
       }
       this.showDropdown = !this.showDropdown;
-      console.log(this.showDropdown);
     },
     closeDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
         this.showDropdown = false;
-        console.log(this.showDropdown);
       }
     },
   },
