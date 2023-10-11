@@ -43,6 +43,8 @@
       <!-- Popup to upload images component -->
       <UploadImagePopup
         :open="showUploadImageForm"
+        :username="username"
+        :token="token"
         @close="showUploadImageForm = false"
       ></UploadImagePopup>
       <div class="images">
@@ -99,7 +101,7 @@ export default {
       ],
       showDropdown: false,
       username: "notLoggedIn",
-      token: null,
+      token: "",
     };
   },
   computed: {

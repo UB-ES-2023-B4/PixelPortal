@@ -5,7 +5,15 @@
         <div class="popup-inner" v-show="open">
           <div class="popup-content">
             <p>Upload Image Form</p>
-            <button type="button" @click="$emit('close')">close</button>
+            <div class="form-input">
+              <input type="text" placeholder="Title" />
+            </div>
+            <div class="form-input">
+              <input type="text" placeholder="Description" />
+            </div>
+            <div class="form-button">
+              <button type="button" @click="$emit('close')">Close</button>
+            </div>
           </div>
         </div>
       </transition>
@@ -21,12 +29,17 @@ export default {
       type: Boolean,
       required: true,
     },
+    username: {
+      type: String,
+      required: true,
+    },
+    token: {
+      type: String,
+      required: true,
+    },
   },
   data() {
-    return {
-      username: "notLoggedIn",
-      token: null,
-    };
+    return {};
   },
 };
 </script>
@@ -64,6 +77,14 @@ export default {
   background-clip: padding-box;
   border-radius: 0.3rem;
   padding: 1rem;
+}
+
+.form-input {
+  margin-bottom: 10px; /* Adjust the margin as needed to separate the elements */
+}
+
+.form-button {
+  margin-top: 10px; /* Adjust the margin as needed to separate the elements */
 }
 
 .fade-enter-active,
