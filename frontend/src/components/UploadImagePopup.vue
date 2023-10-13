@@ -32,7 +32,7 @@
               />
             </div>
             <div class="form-input">
-              <input
+              <textarea
                 type="text"
                 placeholder="Description"
                 class="image-description-input"
@@ -145,6 +145,8 @@ export default {
 .image-description-input {
   height: 100px;
   resize: vertical;
+  overflow-y: auto;
+  padding: 5px;
   width: 100%;
 }
 .form-button {
