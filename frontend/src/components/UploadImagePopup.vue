@@ -4,15 +4,43 @@
       <transition name="drop-in">
         <div class="popup-inner" v-show="open">
           <div class="popup-content">
-            <p>Upload Image Form</p>
+            <h1>Post Image</h1>
+            <h3>Preview:</h3>
             <div class="form-input">
-              <input type="text" placeholder="Title" />
+              <img
+                :src="postImagePath"
+                alt=""
+                class="image-preview-display"
+                ref="imagePreviewDisplay"
+              />
             </div>
             <div class="form-input">
-              <input type="text" placeholder="Description" />
+              <input
+                type="file"
+                class="image-upload-input"
+                ref="imageInput"
+                accept="image/png,image/jpeg"
+                @change="imageInputChanged"
+              />
+            </div>
+            <div class="form-input">
+              <input
+                type="text"
+                placeholder="Title"
+                class="image-title-input"
+                v-model="imageTitle"
+              />
+            </div>
+            <div class="form-input">
+              <input
+                type="text"
+                placeholder="Description"
+                class="image-description-input"
+                v-model="imageDescription"
+              />
             </div>
             <div class="form-button">
-              <button type="button" @click="$emit('close')">Close</button>
+              <button type="button" @click="closeComponent">Close</button>
             </div>
           </div>
         </div>
@@ -39,7 +67,27 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      defaultImagePath: require("@/assets/default_PFP.png"),
+      postImagePath: require(`@/assets/default_PFP.png`),
+      imageTitle: "",
+      imageDescription: "",
+    };
+  },
+  methods: {
+    imageInputChanged() {
+      const imageInput = this.$refs.imageInput;
+
+      this.postImagePath = URL.createObjectURL(imageInput.files[0]);
+    },
+    closeComponent() {
+      const imageInput = this.$refs.imageInput;
+      this.postImagePath = this.defaultImagePath;
+      imageInput.value = "";
+      this.imageTitle = "";
+      this.imageDescription = "";
+      this.$emit("close");
+    },
   },
 };
 </script>
@@ -83,6 +131,22 @@ export default {
   margin-bottom: 10px; /* Adjust the margin as needed to separate the elements */
 }
 
+.image-preview-display {
+  height: 300px;
+  width: 300px;
+  border-radius: 10%;
+  object-fit: cover;
+  background: #dfdfdf;
+}
+
+.image-title-input {
+  width: 100%;
+}
+.image-description-input {
+  height: 100px;
+  resize: vertical;
+  width: 100%;
+}
 .form-button {
   margin-top: 10px; /* Adjust the margin as needed to separate the elements */
 }
