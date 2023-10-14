@@ -100,6 +100,13 @@ export default {
     },
     imageInputChanged() {
       const imageInput = this.$refs.imageInput;
+
+      // Check if the user canceled the file selection
+      if (!imageInput.files.length) {
+        this.postImagePath = this.defaultImagePath;
+        return;
+      }
+
       this.postImageExtension = imageInput.files[0].name.split(".").pop();
       this.postImagePath = URL.createObjectURL(imageInput.files[0]);
       this.isPublishButtonEnabled();
@@ -113,7 +120,7 @@ export default {
         this.imageTitle.trim() !== "" &&
         this.imageDescription.trim() !== "";
     },
-    closeComponent() {
+    resetValues() {
       const imageInput = this.$refs.imageInput;
       this.postImagePath = this.defaultImagePath;
       imageInput.value = "";
@@ -122,24 +129,30 @@ export default {
       this.postImageExtension = "";
       this.imageID = "";
       this.publishButtonEnabled = false;
+    },
+    closeComponent() {
+      this.resetValues();
 
       this.$emit("close", { hasPosted: false });
     },
     postImage() {
+      const imageInput = this.$refs.imageInput;
+      var imageToUpload = imageInput.files[0];
       this.imageID = this.uuidv4();
       const imagePostedRef = ref(
         storage,
         "postedImages/" + this.imageID + "." + this.postImageExtension
       );
       console.log("Posting...");
-      uploadBytes(imagePostedRef, this.postImagePath).then(() => {
-        console.log("UPLOADED BLOB OR FILE!");
+      uploadBytes(imagePostedRef, imageToUpload).then(() => {
         this.$emit("close", {
           hasPosted: true,
           imageID: this.imageID + "." + this.postImageExtension,
           imageTitle: this.imageTitle,
           imageDescription: this.imageDescription,
+          username: this.username,
         });
+        this.resetValues();
       });
     },
   },

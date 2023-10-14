@@ -54,7 +54,7 @@
           :key="img.id"
           :data-name="img.username"
         >
-          <img :src="require(`@/assets/${img.image}`)" />
+          <img :src="img.image" />
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
         </div>
@@ -65,6 +65,8 @@
 
 <script>
 import { ref } from "vue";
+import { storage } from "@/firebase";
+import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
 export default {
   name: "MainPage",
@@ -76,29 +78,7 @@ export default {
   data() {
     return {
       search: "",
-      imageList: [
-        {
-          id: 1,
-          image: "placeholder.jpg",
-          title: "Landscape",
-          description: "cool Landscape",
-          username: "Marti",
-        },
-        {
-          id: 2,
-          image: "placeholder.jpg",
-          title: "Landscape2",
-          description: "cool Landscape2",
-          username: "Christian",
-        },
-        {
-          id: 3,
-          image: "placeholder.jpg",
-          title: "Landscape3",
-          description: "cool Landscape3",
-          username: "Sergio",
-        },
-      ],
+      imageList: [],
       showDropdown: false,
       username: "notLoggedIn",
       token: "",
@@ -149,6 +129,24 @@ export default {
         console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
         console.log(data);
         //post image with all the data + the image ID to the backend DATABASE here
+        //This code is temporary while there is no database:
+        const postedImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.postedImageID
+        );
+        getDownloadURL(postedImageRef).then((url) => {
+          let image = {
+            id: 0,
+            image: url,
+            description: data.imageDescription,
+            title: data.imageTitle,
+            username: data.username,
+          };
+          console.log("IMAGE: ");
+          console.log(image);
+          this.imageList.push(image);
+          console.log(this.imageList);
+        });
       }
     },
   },
@@ -232,6 +230,8 @@ export default {
 .images .image-card img {
   height: 100%;
   width: 100%;
+  max-height: 100%;
+  max-width: 100%;
   border-radius: 6px;
   transition: transform 0.2s linear;
 }
