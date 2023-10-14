@@ -29,6 +29,7 @@
                 placeholder="Title"
                 class="image-title-input"
                 v-model="imageTitle"
+                @keyup="isPublishButtonEnabled"
               />
             </div>
             <div class="form-input">
@@ -37,10 +38,18 @@
                 placeholder="Description"
                 class="image-description-input"
                 v-model="imageDescription"
+                @keyup="isPublishButtonEnabled"
               />
             </div>
             <div class="form-button">
               <button type="button" @click="closeComponent">Close</button>
+              <button
+                type="button"
+                @click="postImage"
+                :disabled="!publishButtonEnabled"
+              >
+                Publish
+              </button>
             </div>
           </div>
         </div>
@@ -50,6 +59,8 @@
 </template>
 
 <script>
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "@/firebase";
 export default {
   name: "UploadImagePopup",
   props: {
@@ -70,15 +81,37 @@ export default {
     return {
       defaultImagePath: require("@/assets/default_PFP.png"),
       postImagePath: require(`@/assets/default_PFP.png`),
+      postImageExtension: "",
       imageTitle: "",
       imageDescription: "",
+      imageID: "",
+      publishButtonEnabled: false,
     };
   },
   methods: {
+    //Creates a randomly generated UUID to uploade image to firebase
+    uuidv4() {
+      return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+        (
+          c ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+        ).toString(16)
+      );
+    },
     imageInputChanged() {
       const imageInput = this.$refs.imageInput;
-
+      this.postImageExtension = imageInput.files[0].name.split(".").pop();
       this.postImagePath = URL.createObjectURL(imageInput.files[0]);
+      this.isPublishButtonEnabled();
+    },
+    isPublishButtonEnabled() {
+      const imageInput = this.$refs.imageInput;
+      this.publishButtonEnabled =
+        imageInput &&
+        imageInput.files &&
+        imageInput.files.length > 0 &&
+        this.imageTitle.trim() !== "" &&
+        this.imageDescription.trim() !== "";
     },
     closeComponent() {
       const imageInput = this.$refs.imageInput;
@@ -86,7 +119,28 @@ export default {
       imageInput.value = "";
       this.imageTitle = "";
       this.imageDescription = "";
-      this.$emit("close");
+      this.postImageExtension = "";
+      this.imageID = "";
+      this.publishButtonEnabled = false;
+
+      this.$emit("close", { hasPosted: false });
+    },
+    postImage() {
+      this.imageID = this.uuidv4();
+      const imagePostedRef = ref(
+        storage,
+        "postedImages/" + this.imageID + "." + this.postImageExtension
+      );
+      console.log("Posting...");
+      uploadBytes(imagePostedRef, this.postImagePath).then(() => {
+        console.log("UPLOADED BLOB OR FILE!");
+        this.$emit("close", {
+          hasPosted: true,
+          imageID: this.imageID + "." + this.postImageExtension,
+          imageTitle: this.imageTitle,
+          imageDescription: this.imageDescription,
+        });
+      });
     },
   },
 };

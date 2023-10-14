@@ -1,18 +1,29 @@
 <template>
   <div class="container">
-    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
+      rel="stylesheet"
+    />
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
           <div class="username-and-picture">
-            <img src="../assets/default_PFP.png" alt="Profile Picture" class="profile-picture" />
+            <img
+              src="../assets/default_PFP.png"
+              alt="Profile Picture"
+              class="profile-picture"
+            />
             <h6 class="username">Your Username</h6>
           </div>
           <div class="dropdown">
             <button class="options-button" @click="toggleDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
-            <div id="dropdown-content" class="dropdown-content" v-if="showDropdown">
+            <div
+              id="dropdown-content"
+              class="dropdown-content"
+              v-if="showDropdown"
+            >
               <a href="/">Log out</a>
             </div>
           </div>
@@ -34,10 +45,15 @@
         :open="showUploadImageForm"
         :username="username"
         :token="token"
-        @close="showUploadImageForm = false"
+        @close="closeUploadImageForm"
       ></UploadImagePopup>
       <div class="images">
-        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
+        <div
+          class="image-card"
+          v-for="img in filteredList"
+          :key="img.id"
+          :data-name="img.username"
+        >
           <img :src="require(`@/assets/${img.image}`)" />
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
@@ -86,6 +102,7 @@ export default {
       showDropdown: false,
       username: "notLoggedIn",
       token: "",
+      postedImageID: "",
     };
   },
   computed: {
@@ -122,6 +139,16 @@ export default {
     closeDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
         this.showDropdown = false;
+      }
+    },
+    closeUploadImageForm(data) {
+      this.showUploadImageForm = false;
+      this.postedImageID = data.imageID;
+      //Check if image has been posted
+      if (data.hasPosted) {
+        console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
+        console.log(data);
+        //post image with all the data + the image ID to the backend DATABASE here
       }
     },
   },
