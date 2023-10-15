@@ -49,8 +49,10 @@ class PublicacionBase(BaseModel):
     descripcion: str
     imagen_url: Optional[str] = None
 
-class PublicacionCreate(PublicacionBase):
-    pass
+class PublicacionCreate(BaseModel):
+    titulo: str
+    descripcion: str
+    imagen_url: Optional[str] = None
 
 class Publicacion(PublicacionBase):
     id: int

@@ -23,13 +23,12 @@ class Usuario(Base):
 class Publicacion(Base):
     __tablename__ = 'Publicaciones'
     
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    usuario_id = Column(BigInteger, ForeignKey('Usuarios.id'), nullable=False)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    usuario_id = Column(Integer, ForeignKey('Usuarios.id'), nullable=False)
     titulo = Column(String(100), nullable=False)
     descripcion = Column(String(500), nullable=False)
     imagen_url = Column(String(255), nullable=True)
     fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
-    
     usuario = relationship("Usuario", back_populates="publicaciones")
     
 Usuario.publicaciones = relationship("Publicacion", order_by=Publicacion.id, back_populates="usuario")

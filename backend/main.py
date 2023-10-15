@@ -94,3 +94,11 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 @app.get("/users/me/", response_model=schemas.Usuario)
 async def read_users_me(current_user: models.Usuario = Depends(get_current_user)):
     return current_user
+
+@app.post("/publicaciones/", response_model=schemas.Publicacion)
+async def crear_publicacion(
+    publicacion: schemas.PublicacionCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.Usuario = Depends(get_current_user) 
+):
+    return repository.crear_publicacion(db=db, publicacion=publicacion, usuario_id=current_user.id)
