@@ -50,4 +50,5 @@ def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuar
     db.refresh(db_publicacion)
     return db_publicacion
 
-
+def obtener_publicaciones(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Publicacion).offset(skip).limit(limit).all()

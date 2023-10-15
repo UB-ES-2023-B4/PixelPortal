@@ -27,6 +27,7 @@ import models, schemas, repository
 from dependencies import get_db, verify_password, create_access_token, get_current_user
 from datetime import timedelta
 from repository import get_user_by_email
+from typing import List
 
 # Dependency to get a DB session
 def get_db():
@@ -102,3 +103,8 @@ async def crear_publicacion(
     current_user: models.Usuario = Depends(get_current_user) 
 ):
     return repository.crear_publicacion(db=db, publicacion=publicacion, usuario_id=current_user.id)
+
+@app.get("/publicaciones/", response_model=List[schemas.Publicacion])
+def obtener_publicaciones(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    publicaciones = repository.obtener_publicaciones(db, skip=skip, limit=limit)
+    return publicaciones
