@@ -1,18 +1,29 @@
 <template>
   <div class="container">
-    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
+      rel="stylesheet"
+    />
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
           <div class="username-and-picture">
-            <img src="../assets/default_PFP.png" alt="Profile Picture" class="profile-picture" />
-            <h6 class="username">Your Username</h6>
+            <img
+              src="../assets/default_PFP.png"
+              alt="Profile Picture"
+              class="profile-picture"
+            />
+            <h6 class="username">{{ username }}</h6>
           </div>
           <div class="dropdown">
             <button class="options-button" @click="toggleDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
-            <div id="dropdown-content" class="dropdown-content" v-if="showDropdown">
+            <div
+              id="dropdown-content"
+              class="dropdown-content"
+              v-if="showDropdown"
+            >
               <a href="/">Log out</a>
             </div>
           </div>
@@ -34,11 +45,16 @@
         :open="showUploadImageForm"
         :username="username"
         :token="token"
-        @close="showUploadImageForm = false"
+        @close="closeUploadImageForm"
       ></UploadImagePopup>
       <div class="images">
-        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
-          <img :src="require(`@/assets/${img.image}`)" />
+        <div
+          class="image-card"
+          v-for="img in filteredList"
+          :key="img.id"
+          :data-name="img.username"
+        >
+          <img :src="img.image" />
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
         </div>
@@ -49,6 +65,8 @@
 
 <script>
 import { ref } from "vue";
+import { storage } from "@/firebase";
+import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
 export default {
   name: "MainPage",
@@ -60,32 +78,11 @@ export default {
   data() {
     return {
       search: "",
-      imageList: [
-        {
-          id: 1,
-          image: "placeholder.jpg",
-          title: "Landscape",
-          description: "cool Landscape",
-          username: "Marti",
-        },
-        {
-          id: 2,
-          image: "placeholder.jpg",
-          title: "Landscape2",
-          description: "cool Landscape2",
-          username: "Christian",
-        },
-        {
-          id: 3,
-          image: "placeholder.jpg",
-          title: "Landscape3",
-          description: "cool Landscape3",
-          username: "Sergio",
-        },
-      ],
+      imageList: [],
       showDropdown: false,
       username: "notLoggedIn",
       token: "",
+      postedImageID: "",
     };
   },
   computed: {
@@ -122,6 +119,34 @@ export default {
     closeDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
         this.showDropdown = false;
+      }
+    },
+    closeUploadImageForm(data) {
+      this.showUploadImageForm = false;
+      this.postedImageID = data.imageID;
+      //Check if image has been posted
+      if (data.hasPosted) {
+        console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
+        console.log(data);
+        //post image with all the data + the image ID to the backend DATABASE here
+        //This code is temporary while there is no database:
+        const postedImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.postedImageID
+        );
+        getDownloadURL(postedImageRef).then((url) => {
+          let image = {
+            id: 0,
+            image: url,
+            description: data.imageDescription,
+            title: data.imageTitle,
+            username: data.username,
+          };
+          console.log("IMAGE: ");
+          console.log(image);
+          this.imageList.push(image);
+          console.log(this.imageList);
+        });
       }
     },
   },
@@ -205,6 +230,8 @@ export default {
 .images .image-card img {
   height: 100%;
   width: 100%;
+  max-height: 100%;
+  max-width: 100%;
   border-radius: 6px;
   transition: transform 0.2s linear;
 }
