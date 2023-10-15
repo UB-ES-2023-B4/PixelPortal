@@ -115,3 +115,9 @@ def obtener_publicaciones(skip: int = 0, limit: int = 10, db: Session = Depends(
     publicaciones = repository.obtener_publicaciones(db, skip=skip, limit=limit)
     return publicaciones
 
+@app.delete("/publicacion/{publication_id}", response_model=schemas.Publicacion)
+def delete_team(publication_id: int, db: Session = Depends(get_db),user: schemas.SystemAccount = Depends(get_current_user)):
+        db_publication = repository.delete_publication(db, publication_id)
+        if db_publication is None:
+            raise HTTPException(status_code=404, detail="Match not found")
+        return db_publication
