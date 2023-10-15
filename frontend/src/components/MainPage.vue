@@ -68,6 +68,7 @@ import { ref } from "vue";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
+import axios from "axios";
 export default {
   name: "MainPage",
   components: { UploadImagePopup },
@@ -149,13 +150,32 @@ export default {
         });
       }
     },
+    getPublication () {
+      const pathPublications = 'http://localhost:8000/publicaciones'
+
+      axios.get(pathPublications)
+        .then((res) => {
+          var publications = res.data.filter((publi) => {
+            return publi.id != null
+          })
+          for (let i = 0; i < publications.length; i++) {
+            this.imageList.push(publications[i])
+          }
+          console.log("aqui "+this.imageList[0].usuario_id)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
   },
   mounted() {
     window.addEventListener("click", this.closeDropdown);
+    this.getPublication();
   },
   beforeUnmount() {
     window.removeEventListener("click", this.closeDropdown);
   },
+
 };
 </script>
 

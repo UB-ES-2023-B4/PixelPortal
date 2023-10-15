@@ -45,12 +45,12 @@ class Seguidor(SeguidorBase):
 
 class PublicacionBase(BaseModel):
     usuario_id: int
-    titulo: str
+    title: str
     descripcion: str
     imagen_url: Optional[str] = None
 
 class PublicacionCreate(BaseModel):
-    titulo: str
+    title: str
     descripcion: str
     imagen_url: Optional[str] = None
 

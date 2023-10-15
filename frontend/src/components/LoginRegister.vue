@@ -57,7 +57,7 @@
             <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <input type="password" placeholder="Confirm Password" />
-            <input type="button" value="Register" @click="redirectToMainPage" />
+            <input type="button" value="Register" @click="checkLogin" />
           </div>
         </div>
       </div>
