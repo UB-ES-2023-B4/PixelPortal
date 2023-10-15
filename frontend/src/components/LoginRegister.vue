@@ -1,7 +1,16 @@
 <template>
   <div>
     <div class="row">
-      <h1 style="font-size: 50px; font-weight: bolder; text-align: center; margin-top: 3%;">PixelPortal</h1>
+      <h1
+        style="
+          font-size: 50px;
+          font-weight: bolder;
+          text-align: center;
+          margin-top: 3%;
+        "
+      >
+        PixelPortal
+      </h1>
     </div>
     <div class="row" style="margin-top: 300px">
       <div class="login-reg-panel">
@@ -37,9 +46,9 @@
         <div class="white-panel">
           <div class="login-show">
             <h2 style="font-weight: bold">LOGIN</h2>
-            <input type="text" placeholder="Username" />
-            <input type="password" placeholder="Password" />
-            <input type="button" value="Login" @click="redirectToMainPage" />
+            <input type="text" placeholder="Username" v-model="email" />
+            <input type="password" placeholder="Password" v-model="password" />
+            <input type="button" value="Login" @click="checkLogin" />
             <a href="">Forgot password?</a>
           </div>
           <div class="register-show">
@@ -48,7 +57,7 @@
             <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <input type="password" placeholder="Confirm Password" />
-            <input type="button" value="Register" @click="redirectToMainPage"/>
+            <input type="button" value="Register" @click="redirectToMainPage" />
           </div>
         </div>
       </div>
@@ -58,12 +67,15 @@
 
 <script>
 import $ from "jquery"; // Importa jQuery
+import axios from "axios";
 
 export default {
   name: "LoginRegister",
   data() {
     return {
       isLoginChecked: true,
+      email: "",
+      password: "",
     };
   },
   mounted() {
@@ -92,10 +104,29 @@ export default {
     });
   },
   methods: {
+    checkLogin() {
+      const path = "http://localhost:8000/login";
+
+      axios
+        .post(path, { email: this.email, contrasena: this.password })
+        .then((response) => {
+          this.$router.push({
+            path: "/home",
+            query: {
+              username: response.data.username,
+              token: response.data.access_token,
+            },
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Username or password is incorrect");
+        });
+    },
     redirectToMainPage() {
-      this.$router.push('/home')
-    }
-  }
+      this.$router.push("/home");
+    },
+  },
 };
 </script>
 

@@ -14,6 +14,14 @@ from sqlalchemy.exc import IntegrityError
 from database import SessionLocal, engine  # Asegúrate de que tu módulo de base de datos está importado correctamente
 import models, schemas, repository  # Asegúrate de que tu
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 models.Base.metadata.create_all(bind=engine) # Creem la base de dades amb els models que hem definit a SQLAlchemy
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
@@ -79,7 +87,7 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         data={"sub": usuario.email}, expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre}
 
 
 #Obtener usuario por ID
