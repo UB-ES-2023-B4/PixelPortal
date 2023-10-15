@@ -43,4 +43,12 @@ def get_user(db: Session, user_id: int):
 def get_user_by_email(db: Session, email: str):
     return db.query(models.Usuario).filter(models.Usuario.email == email).first()
 
+def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuario_id: int):
+    db_publicacion = models.Publicacion(**publicacion.dict(), usuario_id=usuario_id)
+    db.add(db_publicacion)
+    db.commit()
+    db.refresh(db_publicacion)
+    return db_publicacion
 
+def obtener_publicaciones(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Publicacion).offset(skip).limit(limit).all()
