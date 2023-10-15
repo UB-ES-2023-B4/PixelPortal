@@ -119,12 +119,8 @@ export default {
           });
         })
         .catch((error) => {
-          console.error(error);
-          alert("Username or password is incorrect");
+          alert("Error: " + error.response.data.detail);
         });
-    },
-    redirectToMainPage() {
-      this.$router.push("/home");
     },
   },
 };

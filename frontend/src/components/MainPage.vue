@@ -156,6 +156,10 @@ export default {
   beforeUnmount() {
     window.removeEventListener("click", this.closeDropdown);
   },
+  created() {
+    this.username = this.$route.query.username;
+    this.token = this.$route.query.token;
+  },
 };
 </script>
 
