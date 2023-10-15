@@ -13,7 +13,7 @@
               alt="Profile Picture"
               class="profile-picture"
             />
-            <h6 class="username">Your Username</h6>
+            <h6 class="username">{{ username }}</h6>
           </div>
           <div class="dropdown">
             <button class="options-button" @click="toggleDropdown">
