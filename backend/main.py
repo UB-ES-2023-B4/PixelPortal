@@ -79,9 +79,11 @@ def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
 @app.post("/login")
 async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
     db_user = db.query(DBUsuario).filter(DBUsuario.email == usuario.email).first()
-    if db_user is None or not verify_password(usuario.contrasena, db_user.contrasena):
-        return {"detail": "Usuario no registrado o credenciales inválidas"}
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not in Database")
     
+    if not verify_password(usuario.contrasena, db_user.contrasena):
+        raise HTTPException(status_code=404, detail="Incorrect password")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": usuario.email}, expires_delta=access_token_expires
