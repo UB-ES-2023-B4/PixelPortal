@@ -42,11 +42,18 @@
               />
             </div>
             <div class="form-button">
-              <button type="button" @click="closeComponent">Close</button>
+              <button
+                type="button"
+                class="popup-button"
+                @click="closeComponent"
+              >
+                Close
+              </button>
               <button
                 type="button"
                 @click="postImage"
                 :disabled="!publishButtonEnabled"
+                class="popup-button"
               >
                 Publish
               </button>
@@ -79,8 +86,8 @@ export default {
   },
   data() {
     return {
-      defaultImagePath: require("@/assets/default_PFP.png"),
-      postImagePath: require(`@/assets/default_PFP.png`),
+      defaultImagePath: require("@/assets/image_preview.png"),
+      postImagePath: require(`@/assets/image_preview.png`),
       postImageExtension: "",
       imageTitle: "",
       imageDescription: "",
@@ -198,6 +205,13 @@ export default {
   margin-bottom: 10px; /* Adjust the margin as needed to separate the elements */
 }
 
+.image-upload-input {
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .image-preview-display {
   height: 300px;
   width: 300px;
@@ -208,16 +222,33 @@ export default {
 
 .image-title-input {
   width: 100%;
+  height: 35px;
+  border-radius: 6px;
 }
 .image-description-input {
   height: 100px;
   resize: vertical;
   overflow-y: auto;
   padding: 5px;
+  border-radius: 6px;
   width: 100%;
 }
 .form-button {
-  margin-top: 10px; /* Adjust the margin as needed to separate the elements */
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+.popup-button {
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  height: 45px;
+  width: 90px;
+  margin: 10px;
+  border-radius: 6px;
+}
+.popup-button:hover {
+  background-color: rgba(20, 117, 236, 1);
 }
 
 .fade-enter-active,
