@@ -46,8 +46,12 @@
         <div class="white-panel">
           <div class="login-show">
             <h2 style="font-weight: bold">LOGIN</h2>
-            <input type="text" placeholder="Username" v-model="email" />
-            <input type="password" placeholder="Password" v-model="password" />
+            <input type="text" placeholder="Username" v-model="loginEmail" />
+            <input
+              type="password"
+              placeholder="Password"
+              v-model="loginPassword"
+            />
             <input type="button" value="Login" @click="checkLogin" />
             <a href="">Forgot password?</a>
           </div>
@@ -57,7 +61,7 @@
             <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <input type="password" placeholder="Confirm Password" />
-            <input type="button" value="Register" @click="redirectToMainPage" />
+            <input type="button" value="Register" />
           </div>
         </div>
       </div>
@@ -74,8 +78,8 @@ export default {
   data() {
     return {
       isLoginChecked: true,
-      email: "",
-      password: "",
+      loginEmail: "",
+      loginPassword: "",
     };
   },
   mounted() {
@@ -107,9 +111,12 @@ export default {
     checkLogin() {
       const path = "http://localhost:8000/login";
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-      if (emailRegex.test(this.email)) {
+      if (emailRegex.test(this.loginEmail)) {
         axios
-          .post(path, { email: this.email, contrasena: this.password })
+          .post(path, {
+            email: this.loginEmail,
+            contrasena: this.loginPassword,
+          })
           .then((response) => {
             this.$router.push({
               path: "/home",

@@ -136,6 +136,7 @@ export default {
           titulo: data.imageTitle,
           descripcion: data.imageDescription,
           imagen_url: data.imageID,
+          usuario_nombre: data.username,
         };
         console.log("POSTING THIS:");
         console.log(dbData);
@@ -169,9 +170,44 @@ export default {
         });
       }
     },
+    getPublication() {
+      this.imageList = [];
+      const pathPublications = "http://localhost:8000/publicaciones";
+
+      axios
+        .get(pathPublications)
+        .then((res) => {
+          var publications = res.data.filter((publi) => {
+            return publi.id != null;
+          });
+          for (let i = 0; i < publications.length; i++) {
+            //Use publication data to recover image from Firebase and create the card
+            const postedImageRef = firebaseRef(
+              storage,
+              "postedImages/" + publications[i].imagen_url
+            );
+            console.log(publications[i]);
+            getDownloadURL(postedImageRef).then((url) => {
+              let image = {
+                id: publications[i].id,
+                image: url,
+                description: publications[i].descripcion,
+                title: publications[i].titulo,
+                username: publications[i].usuario_nombre,
+                postDate: publications[i].fecha_publicacion,
+              };
+              this.imageList.push(image);
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   },
   mounted() {
     window.addEventListener("click", this.closeDropdown);
+    this.getPublication();
   },
   beforeUnmount() {
     window.removeEventListener("click", this.closeDropdown);
