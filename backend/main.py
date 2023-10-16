@@ -100,8 +100,6 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_user
 
-
-
 @app.get("/users/me/", response_model=schemas.Usuario)
 async def read_users_me(current_user: models.Usuario = Depends(get_current_user)):
     return current_user
@@ -118,3 +116,10 @@ async def crear_publicacion(
 def obtener_publicaciones(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     publicaciones = repository.obtener_publicaciones(db, skip=skip, limit=limit)
     return publicaciones
+
+@app.delete("/publicacion/{publication_id}", response_model=schemas.Publicacion)
+def delete_team(publication_id: int, db: Session = Depends(get_db),user: schemas.SystemAccount = Depends(get_current_user)):
+        db_publication = repository.delete_publication(db, publication_id)
+        if db_publication is None:
+            raise HTTPException(status_code=404, detail="Match not found")
+        return db_publication

@@ -52,3 +52,11 @@ def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuar
 
 def obtener_publicaciones(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Publicacion).offset(skip).limit(limit).all()
+
+def delete_publication(db: Session, publication_id : int):
+    db_publication = db.query(models.Publicacion).filter(models.Publicacion.id == publication_id).first()
+    if not db_publication:
+        return None
+    db.delete(db_publication)
+    db.commit()
+    return db_publication
