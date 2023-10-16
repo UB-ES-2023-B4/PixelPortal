@@ -169,23 +169,39 @@ export default {
         });
       }
     },
-    getPublication () {
-      const pathPublications = 'http://localhost:8000/publicaciones'
+    getPublication() {
+      this.imageList = [];
+      const pathPublications = "http://localhost:8000/publicaciones";
 
-      axios.get(pathPublications)
+      axios
+        .get(pathPublications)
         .then((res) => {
           var publications = res.data.filter((publi) => {
-            return publi.id != null
-          })
+            return publi.id != null;
+          });
           for (let i = 0; i < publications.length; i++) {
-            this.imageList.push(publications[i])
+            //Use publication data to recover image from Firebase and create the card
+            const postedImageRef = firebaseRef(
+              storage,
+              "postedImages/" + publications[i].imagen_url
+            );
+            getDownloadURL(postedImageRef).then((url) => {
+              let image = {
+                id: publications[i].id,
+                image: url,
+                description: publications[i].descripcion,
+                title: publications[i].titulo,
+                username: publications[i].usuario_id.toString(),
+                postDate: publications[i].fecha_publicacion,
+              };
+              this.imageList.push(image);
+            });
           }
-          console.log("aqui "+this.imageList[0].usuario_id)
         })
         .catch((error) => {
-          console.error(error)
-        })
-    }
+          console.error(error);
+        });
+    },
   },
   mounted() {
     window.addEventListener("click", this.closeDropdown);
