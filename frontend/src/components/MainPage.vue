@@ -68,6 +68,7 @@ import { ref } from "vue";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
+import axios from "axios";
 export default {
   name: "MainPage",
   components: { UploadImagePopup },
@@ -129,6 +130,25 @@ export default {
         console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
         console.log(data);
         //post image with all the data + the image ID to the backend DATABASE here
+        const path = "http://localhost:8000/publicaciones";
+        const headers = { Authorization: "Bearer " + this.token };
+        const dbData = {
+          titulo: data.imageTitle,
+          descripcion: data.imageDescription,
+          imagen_url: data.imageID,
+        };
+        console.log("POSTING THIS:");
+        console.log(dbData);
+        axios
+          .post(path, dbData, { headers })
+          .then((response) => {
+            if (response.status === 200) {
+              alert("Image uploaded successfully!");
+            }
+          })
+          .catch((error) => {
+            alert("Error: " + error.response.data.message);
+          });
         //This code is temporary while there is no database:
         const postedImageRef = firebaseRef(
           storage,

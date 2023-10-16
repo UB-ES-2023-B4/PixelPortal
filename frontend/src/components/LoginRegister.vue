@@ -106,21 +106,25 @@ export default {
   methods: {
     checkLogin() {
       const path = "http://localhost:8000/login";
-
-      axios
-        .post(path, { email: this.email, contrasena: this.password })
-        .then((response) => {
-          this.$router.push({
-            path: "/home",
-            query: {
-              username: response.data.username,
-              token: response.data.access_token,
-            },
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (emailRegex.test(this.email)) {
+        axios
+          .post(path, { email: this.email, contrasena: this.password })
+          .then((response) => {
+            this.$router.push({
+              path: "/home",
+              query: {
+                username: response.data.username,
+                token: response.data.access_token,
+              },
+            });
+          })
+          .catch((error) => {
+            alert("Error: " + error.response.data.detail);
           });
-        })
-        .catch((error) => {
-          alert("Error: " + error.response.data.detail);
-        });
+      } else {
+        alert("Email is not valid");
+      }
     },
   },
 };
