@@ -25,6 +25,7 @@ class Publicacion(Base):
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     usuario_id = Column(Integer, ForeignKey('Usuarios.id'), nullable=False)
+    usuario_nombre = Column(String(100), nullable=False)
     titulo = Column(String(100), nullable=False)
     descripcion = Column(String(500), nullable=False)
     imagen_url = Column(String(255), nullable=True)

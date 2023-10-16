@@ -136,6 +136,7 @@ export default {
           titulo: data.imageTitle,
           descripcion: data.imageDescription,
           imagen_url: data.imageID,
+          usuario_nombre: data.username,
         };
         console.log("POSTING THIS:");
         console.log(dbData);
@@ -185,13 +186,14 @@ export default {
               storage,
               "postedImages/" + publications[i].imagen_url
             );
+            console.log(publications[i]);
             getDownloadURL(postedImageRef).then((url) => {
               let image = {
                 id: publications[i].id,
                 image: url,
                 description: publications[i].descripcion,
                 title: publications[i].titulo,
-                username: publications[i].usuario_id.toString(),
+                username: publications[i].usuario_nombre,
                 postDate: publications[i].fecha_publicacion,
               };
               this.imageList.push(image);
