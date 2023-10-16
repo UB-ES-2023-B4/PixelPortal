@@ -38,7 +38,7 @@
             id="label-login"
             for="log-login-show"
             style="border-color: white"
-            >Register</label
+            >Sign Up</label
           >
           <input type="radio" name="active-log-panel" id="log-login-show" />
         </div>
@@ -56,12 +56,24 @@
             <a href="">Forgot password?</a>
           </div>
           <div class="register-show">
-            <h2 style="font-weight: bold">REGISTER</h2>
-            <input type="text" placeholder="Username" />
-            <input type="text" placeholder="Email" />
-            <input type="password" placeholder="Password" />
-            <input type="password" placeholder="Confirm Password" />
-            <input type="button" value="Register" />
+            <h2 style="font-weight: bold">SIGN UP</h2>
+            <input
+              type="text"
+              placeholder="Username"
+              v-model="signUpUsername"
+            />
+            <input type="text" placeholder="Email" v-model="signUpEmail" />
+            <input
+              type="password"
+              placeholder="Password"
+              v-model="signUpPassword"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              v-model="signUpConfirmPassword"
+            />
+            <input type="button" value="Sign Up" @click="checkSignup" />
           </div>
         </div>
       </div>
@@ -80,6 +92,10 @@ export default {
       isLoginChecked: true,
       loginEmail: "",
       loginPassword: "",
+      signUpUsername: "",
+      signUpEmail: "",
+      signUpPassword: "",
+      signUpConfirmPassword: "",
     };
   },
   mounted() {
@@ -131,6 +147,40 @@ export default {
           });
       } else {
         alert("Email is not valid");
+      }
+    },
+    checkSignup() {
+      if (this.signUpPassword != this.signUpConfirmPassword) {
+        alert("Passwords do not match");
+      } else {
+        const path = "http://localhost:8000/usuario";
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (emailRegex.test(this.signUpEmail)) {
+          axios
+            .post(path, {
+              nombre: this.signUpUsername,
+              email: this.signUpEmail,
+              contrasena: this.signUpPassword,
+              descripcion: "",
+              imagen_perfil_url: "",
+            })
+            .then((response) => {
+              if (response.status == 200) {
+                this.$router.push({
+                  path: "/home",
+                  query: {
+                    username: response.data.user.nombre,
+                    token: response.data.access_token.access_token,
+                  },
+                });
+              }
+            })
+            .catch((error) => {
+              alert("Error: " + error.response.data.detail);
+            });
+        } else {
+          alert("Email is not valid");
+        }
       }
     },
   },
