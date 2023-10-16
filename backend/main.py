@@ -67,6 +67,15 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 #Registro
 @app.post("/usuario/")
 def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
+
+    db_email = repository.get_user_by_email(db, user.email)
+    if db_email:
+        raise HTTPException(status_code=404, detail="Email already registered")
+
+    db_user = repository.get_user_by_username(db, user.nombre)
+    if db_user:
+        raise HTTPException(status_code=404, detail="User already registered")
+
     db_user = repository.create_user(db, user)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
@@ -91,8 +100,21 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
     
     return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre}
 
+#Modificar perfil de usuario
+@app.put('/usuario/{username}', summary="Put user", response_model=schemas.Usuario)
+def update_account(username: str, account: schemas.Usuario, db: Session = Depends(get_db)):
+    db_account = repository.update_account(db, username, account)
+    if db_account is None:
+        raise HTTPException(status_code=404, detail="User does not exist")
+    return db_account
 
 #Obtener usuario por ID
+@app.get("/usuarios/", response_model=List[schemas.Usuario])
+def read_user( db: Session = Depends(get_db)):
+    db_user = repository.get_all_user(db)
+    return db_user
+
+
 @app.get("/usuario/{user_id}", response_model=schemas.Usuario)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = repository.get_user(db, user_id=user_id)
