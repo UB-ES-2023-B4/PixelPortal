@@ -149,7 +149,7 @@ async def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session 
     return repository.crear_publicacion(db=db, publicacion=publicacion, usuario_id=current_user.id)
 
 @app.get("/publicaciones/", response_model=List[schemas.Publicacion])
-def obtener_publicaciones(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def obtener_publicaciones(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     publicaciones = repository.obtener_publicaciones(db, skip=skip, limit=limit)
     return publicaciones
 

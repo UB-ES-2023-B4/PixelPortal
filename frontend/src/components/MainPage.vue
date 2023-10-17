@@ -152,7 +152,7 @@ export default {
           .then((response) => {
             if (response.status === 200) {
               alert("Image uploaded successfully!");
-              window.location.reload();
+              this.getPublication();
             }
           })
           .catch((error) => {
