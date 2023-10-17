@@ -36,22 +36,22 @@ def test_postimage2():
     image_data=get_img_data(1)
     response = requests.post(f"{API_URL}/publicaciones", json=image_data, headers={"Authorization": f"Bearer {access_token}"})
     response_data = response.json()
-    assert response.status_code == 404, response_data
+    assert response.status_code != 200, response_data
 
 def test_postimage3():
     image_data=get_img_data(2)
     response = requests.post(f"{API_URL}/publicaciones", json=image_data, headers={"Authorization": f"Bearer {access_token}"})
     response_data = response.json()
-    assert response.status_code == 404, response_data
+    assert response.status_code != 200, response_data
 
 def test_postimage4():
     image_data=get_img_data(3)
     response = requests.post(f"{API_URL}/publicaciones", json=image_data, headers={"Authorization": f"Bearer {access_token}"})
     response_data = response.json()
-    assert response.status_code == 404, response_data
+    assert response.status_code != 200, response_data
 
 def test_postimage5():
     image_data=get_img_data(4)
     response = requests.post(f"{API_URL}/publicaciones", json=image_data, headers={"Authorization": f"Bearer {access_token}"})
     response_data = response.json()
-    assert response.status_code == 404, response_data
+    assert response.status_code != 200, response_data

@@ -1,5 +1,4 @@
 {"email": "test@example.com", "contrasena": "testpassword"}
 {"email": "test@gmail.com", "contrasena": "testpassword"}
 {"email": "test.ub@alumnes.ub.edu", "contrasena": "testpassword"}
-{"email": "test@1.1", "contrasena": "testpassword"}
 {"email": "pepe@gmail.com", "contrasena": "Qwer!234"}

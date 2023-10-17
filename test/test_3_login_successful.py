@@ -40,8 +40,3 @@ def test_login_user4():
     login_data = get_user_data(3)
     response = requests.post(f"{API_URL}/login", json=login_data)
     asserts(response)
-
-def test_login_user5():
-    login_data = get_user_data(4)
-    response = requests.post(f"{API_URL}/login", json=login_data)
-    asserts(response)

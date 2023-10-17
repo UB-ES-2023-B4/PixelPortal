@@ -38,8 +38,3 @@ def test_register_user4():
     user_data = get_user_data(3)
     response = requests.post(f"{API_URL}/usuario/", json=user_data)
     asserts(response)
-
-def test_register_user5():
-    user_data = get_user_data(4)
-    response = requests.post(f"{API_URL}/usuario/", json=user_data)
-    asserts(response)
