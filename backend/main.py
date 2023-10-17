@@ -14,14 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from database import SessionLocal, engine  # Asegúrate de que tu módulo de base de datos está importado correctamente
 import models, schemas, repository  # Asegúrate de que tu
 app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+import re
 models.Base.metadata.create_all(bind=engine) # Creem la base de dades amb els models que hem definit a SQLAlchemy
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
@@ -37,6 +30,16 @@ from datetime import timedelta
 from repository import get_user_by_email
 from typing import List
 
+#email pattern
+email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Dependency to get a DB session
 def get_db():
     db = SessionLocal()
@@ -67,7 +70,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 #Registro
 @app.post("/usuario/")
 def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
-
     db_email = repository.get_user_by_email(db, user.email)
     if db_email:
         raise HTTPException(status_code=404, detail="Email already registered")
@@ -75,6 +77,14 @@ def create_user(user: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     db_user = repository.get_user_by_username(db, user.nombre)
     if db_user:
         raise HTTPException(status_code=404, detail="User already registered")
+    if not user.email:
+        raise HTTPException(status_code=400, detail="The 'email' field is required")
+    if not user.nombre:
+        raise HTTPException(status_code=400, detail="The 'name' field is required")
+    if not user.contrasena:
+        raise HTTPException(status_code=400, detail="The 'password' field is required")
+    if not re.match(email_pattern, user.email):
+        raise HTTPException(status_code=400, detail="the format of the field 'email' is not valid.")
 
     db_user = repository.create_user(db, user)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -127,11 +137,15 @@ async def read_users_me(current_user: models.Usuario = Depends(get_current_user)
     return current_user
 
 @app.post("/publicaciones/", response_model=schemas.Publicacion)
-async def crear_publicacion(
-    publicacion: schemas.PublicacionCreate, 
-    db: Session = Depends(get_db),
-    current_user: models.Usuario = Depends(get_current_user) 
-):
+async def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session = Depends(get_db),current_user: models.Usuario = Depends(get_current_user) ):
+    if not publicacion.titulo:
+        raise HTTPException(status_code=400, detail="The 'titulo' field is required")
+    if not publicacion.descripcion:
+        raise HTTPException(status_code=400, detail="The 'descripcion' field is required")
+    if not publicacion.usuario_nombre:
+        raise HTTPException(status_code=400, detail="The 'usuario_nombre' field is required")
+    if not publicacion.imagen_url:
+        raise HTTPException(status_code=400, detail="The 'imagen_url' field is required")
     return repository.crear_publicacion(db=db, publicacion=publicacion, usuario_id=current_user.id)
 
 @app.get("/publicaciones/", response_model=List[schemas.Publicacion])
