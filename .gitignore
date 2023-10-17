@@ -1,3 +1,4 @@
-/_pycache_
-data.db
+test/_pycache_
+backend/_pycache_
+backend/data.db
 /pytest_cache
