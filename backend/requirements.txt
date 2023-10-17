@@ -1,3 +1,4 @@
+pip
 fastapi
 uvicorn
 httpx
