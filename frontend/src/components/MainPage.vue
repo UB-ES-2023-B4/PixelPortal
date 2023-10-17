@@ -156,29 +156,12 @@ export default {
           .then((response) => {
             if (response.status === 200) {
               alert("Image uploaded successfully!");
+              window.location.reload();
             }
           })
           .catch((error) => {
             alert("Error: " + error.response.data.message);
           });
-        //This code is temporary while there is no database:
-        const postedImageRef = firebaseRef(
-          storage,
-          "postedImages/" + this.postedImageID
-        );
-        getDownloadURL(postedImageRef).then((url) => {
-          let image = {
-            id: 0,
-            image: url,
-            description: data.imageDescription,
-            title: data.imageTitle,
-            username: data.username,
-          };
-          console.log("IMAGE: ");
-          console.log(image);
-          this.imageList.push(image);
-          console.log(this.imageList);
-        });
       }
     },
     logImageData(img) {
