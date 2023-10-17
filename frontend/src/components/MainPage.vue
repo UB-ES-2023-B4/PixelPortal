@@ -64,7 +64,7 @@
               },
             }"
           >
-            <img @click="logImageData(img)" :src="img.image" />
+            <img :src="img.image" />
           </router-link>
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
@@ -138,8 +138,6 @@ export default {
       this.postedImageID = data.imageID;
       //Check if image has been posted
       if (data.hasPosted) {
-        console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
-        console.log(data);
         //post image with all the data + the image ID to the backend DATABASE here
         const path = "http://localhost:8000/publicaciones";
         const headers = { Authorization: "Bearer " + this.token };
@@ -149,8 +147,6 @@ export default {
           imagen_url: data.imageID,
           usuario_nombre: data.username,
         };
-        console.log("POSTING THIS:");
-        console.log(dbData);
         axios
           .post(path, dbData, { headers })
           .then((response) => {
@@ -163,16 +159,6 @@ export default {
             alert("Error: " + error.response.data.message);
           });
       }
-    },
-    logImageData(img) {
-      console.log(
-        "Data in MainPage:",
-        img.id,
-        img.image,
-        img.title,
-        img.username,
-        img.description
-      );
     },
     getPublication() {
       this.imageList = [];
@@ -190,7 +176,6 @@ export default {
               storage,
               "postedImages/" + publications[i].imagen_url
             );
-            console.log(publications[i]);
             getDownloadURL(postedImageRef).then((url) => {
               let image = {
                 id: publications[i].id,
