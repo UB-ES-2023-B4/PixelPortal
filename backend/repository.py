@@ -67,6 +67,9 @@ def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuar
     db.refresh(db_publicacion)
     return db_publicacion
 
+def get_post(db: Session, post_id: int):
+    return db.query(models.Publicacion).filter(models.Publicacion.id == post_id).first()
+
 def obtener_publicaciones(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Publicacion).offset(skip).limit(limit).all()
 

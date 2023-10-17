@@ -46,7 +46,8 @@
         :username="username"
         :token="token"
         @close="closeUploadImageForm"
-      ></UploadImagePopup>
+      >
+      </UploadImagePopup>
       <div class="images">
         <div
           class="image-card"
@@ -54,7 +55,17 @@
           :key="img.id"
           :data-name="img.username"
         >
-          <img :src="img.image" />
+          <router-link
+            :to="{
+              name: 'postZoom',
+              params: { id: img.id },
+              query: {
+                token: this.token,
+              },
+            }"
+          >
+            <img :src="img.image" />
+          </router-link>
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
         </div>
@@ -127,8 +138,6 @@ export default {
       this.postedImageID = data.imageID;
       //Check if image has been posted
       if (data.hasPosted) {
-        console.log("UPLOADED IMAGE UUID: ", this.postedImageID);
-        console.log(data);
         //post image with all the data + the image ID to the backend DATABASE here
         const path = "http://localhost:8000/publicaciones";
         const headers = { Authorization: "Bearer " + this.token };
@@ -138,36 +147,17 @@ export default {
           imagen_url: data.imageID,
           usuario_nombre: data.username,
         };
-        console.log("POSTING THIS:");
-        console.log(dbData);
         axios
           .post(path, dbData, { headers })
           .then((response) => {
             if (response.status === 200) {
               alert("Image uploaded successfully!");
+              this.getPublication();
             }
           })
           .catch((error) => {
             alert("Error: " + error.response.data.message);
           });
-        //This code is temporary while there is no database:
-        const postedImageRef = firebaseRef(
-          storage,
-          "postedImages/" + this.postedImageID
-        );
-        getDownloadURL(postedImageRef).then((url) => {
-          let image = {
-            id: 0,
-            image: url,
-            description: data.imageDescription,
-            title: data.imageTitle,
-            username: data.username,
-          };
-          console.log("IMAGE: ");
-          console.log(image);
-          this.imageList.push(image);
-          console.log(this.imageList);
-        });
       }
     },
     getPublication() {
@@ -186,7 +176,6 @@ export default {
               storage,
               "postedImages/" + publications[i].imagen_url
             );
-            console.log(publications[i]);
             getDownloadURL(postedImageRef).then((url) => {
               let image = {
                 id: publications[i].id,
