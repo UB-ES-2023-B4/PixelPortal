@@ -1,29 +1,18 @@
 <template>
   <div class="container">
-    <link
-      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
-      rel="stylesheet"
-    />
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
           <div class="username-and-picture">
-            <img
-              src="../assets/default_PFP.png"
-              alt="Profile Picture"
-              class="profile-picture"
-            />
+            <img src="../assets/default_PFP.png" alt="Profile Picture" class="profile-picture" />
             <h6 class="username">{{ username }}</h6>
           </div>
           <div class="dropdown">
             <button class="options-button" @click="toggleDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
-            <div
-              id="dropdown-content"
-              class="dropdown-content"
-              v-if="showDropdown"
-            >
+            <div id="dropdown-content" class="dropdown-content" v-if="showDropdown">
               <a href="/">Log out</a>
             </div>
           </div>
@@ -41,20 +30,14 @@
         <input type="text" v-model="search" placeholder="Search" />
       </div>
       <!-- Popup to upload images component -->
-      <UploadImagePopup
-        :open="showUploadImageForm"
-        :username="username"
-        :token="token"
-        @close="closeUploadImageForm"
-      ></UploadImagePopup>
+      <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token" @close="closeUploadImageForm">
+      </UploadImagePopup>
       <div class="images">
-        <div
-          class="image-card"
-          v-for="img in filteredList"
-          :key="img.id"
-          :data-name="img.username"
-        >
-          <img :src="img.image" />
+        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
+          <router-link
+            :to="{ name: 'postZoom', params: { id: img.id }, query: { image: img.image, title: img.title, username: img.username, description: img.description } }">
+            <img @click="logImageData(img)" :src="img.image" />
+          </router-link>
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
         </div>
@@ -169,6 +152,9 @@ export default {
           console.log(this.imageList);
         });
       }
+    },
+    logImageData(img) {
+      console.log("Data in MainPage:", img.id, img.image, img.title, img.username, img.description);
     },
     getPublication() {
       this.imageList = [];
