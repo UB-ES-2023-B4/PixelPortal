@@ -60,10 +60,6 @@
               name: 'postZoom',
               params: { id: img.id },
               query: {
-                image: img.image,
-                title: img.title,
-                username: img.username,
-                description: img.description,
                 token: this.token,
               },
             }"

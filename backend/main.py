@@ -139,6 +139,13 @@ def obtener_publicaciones(skip: int = 0, limit: int = 10, db: Session = Depends(
     publicaciones = repository.obtener_publicaciones(db, skip=skip, limit=limit)
     return publicaciones
 
+@app.get("/publicaciones/{publication_id}", response_model=schemas.Publicacion)
+def read_post(publication_id: int, db: Session = Depends(get_db)):
+    db_post = repository.get_post(db, publication_id)
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return db_post
+
 @app.delete("/publicacion/{publication_id}", response_model=schemas.Publicacion)
 def delete_team(publication_id: int, db: Session = Depends(get_db),current_user: models.Usuario = Depends(get_current_user) ):
         db_publication = repository.delete_publication(db, publication_id)
