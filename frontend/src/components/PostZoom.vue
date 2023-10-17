@@ -94,22 +94,41 @@
 </template>
 
 <script>
+import axios from "axios";
+import { storage } from "@/firebase";
+import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
+
 export default {
+  name: "PostZoom",
   data() {
     return {
       id: this.$route.params.id,
-      image: this.$route.query.image,
-      title: this.$route.query.title,
-      username: this.$route.query.username,
-      description: this.$route.query.description,
-      token: this.$route.query.token,
+      image: "",
+      title: "",
+      username: "",
+      description: "",
+      token: "",
     };
   },
   methods: {
     redirectToMainPage() {
-      //this.$router.push("/home");
       history.back();
     },
+  },
+  created() {
+    const pathPost = "http://localhost:8000/publicaciones/" + this.id;
+    axios.get(pathPost).then((response) => {
+      this.title = response.data.titulo;
+      this.username = response.data.usuario_nombre;
+      this.description = response.data.descripcion;
+      const postImageRef = firebaseRef(
+        storage,
+        "postedImages/" + response.data.imagen_url
+      );
+      getDownloadURL(postImageRef).then((url) => {
+        this.image = url;
+      });
+    });
   },
 };
 </script>
