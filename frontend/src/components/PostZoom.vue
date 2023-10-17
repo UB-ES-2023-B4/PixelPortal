@@ -143,7 +143,11 @@ body {
   border: none;
   position: relative;
 }
-
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 .box {
   position: relative;
   border-radius: 3px;
