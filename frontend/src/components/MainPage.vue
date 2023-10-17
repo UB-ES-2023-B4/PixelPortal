@@ -46,7 +46,8 @@
         :username="username"
         :token="token"
         @close="closeUploadImageForm"
-      ></UploadImagePopup>
+      >
+      </UploadImagePopup>
       <div class="images">
         <div
           class="image-card"
@@ -54,7 +55,21 @@
           :key="img.id"
           :data-name="img.username"
         >
-          <img :src="img.image" />
+          <router-link
+            :to="{
+              name: 'postZoom',
+              params: { id: img.id },
+              query: {
+                image: img.image,
+                title: img.title,
+                username: img.username,
+                description: img.description,
+                token: this.token,
+              },
+            }"
+          >
+            <img @click="logImageData(img)" :src="img.image" />
+          </router-link>
           <h6 class="image-title">{{ img.title }}</h6>
           <h6 class="image-username">{{ img.username }}</h6>
         </div>
@@ -169,6 +184,16 @@ export default {
           console.log(this.imageList);
         });
       }
+    },
+    logImageData(img) {
+      console.log(
+        "Data in MainPage:",
+        img.id,
+        img.image,
+        img.title,
+        img.username,
+        img.description
+      );
     },
     getPublication() {
       this.imageList = [];
