@@ -48,12 +48,14 @@ class PublicacionBase(BaseModel):
     usuario_nombre: str
     titulo: str
     descripcion: str
+    tags: Optional[str] = None
     imagen_url: Optional[str] = None
 
 class PublicacionCreate(BaseModel):
     titulo: str
     descripcion: str
     usuario_nombre: str
+    tags: Optional[str] = None
     imagen_url: Optional[str] = None
 
 class Publicacion(PublicacionBase):
