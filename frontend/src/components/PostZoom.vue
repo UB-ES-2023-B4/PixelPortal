@@ -11,7 +11,7 @@
                 alt="User Image"
               />
               <span class="username"
-                ><a href="#">{{ username }}</a></span
+                ><a href="#">{{ postAuthorUsername }}</a></span
               >
               <span class="description">Shared publicly - 7:30 PM Today</span>
             </div>
@@ -83,6 +83,7 @@
                   type="text"
                   class="form-control input-sm"
                   placeholder="Press enter to post comment"
+                  :value="loggedInUsername"
                 />
               </div>
             </form>
@@ -104,11 +105,12 @@ export default {
     return {
       backendPath: "https://pixelportal-backend-api.onrender.com",
       id: this.$route.params.id,
+      loggedInUsername: this.$route.query.loggedUsername,
       image: "",
       title: "",
-      username: "",
+      postAuthorUsername: "",
       description: "",
-      token: "",
+      token: this.$route.query.token,
     };
   },
   methods: {
@@ -120,7 +122,7 @@ export default {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
     axios.get(pathPost).then((response) => {
       this.title = response.data.titulo;
-      this.username = response.data.usuario_nombre;
+      this.postAuthorUsername = response.data.usuario_nombre;
       this.description = response.data.descripcion;
       const postImageRef = firebaseRef(
         storage,
