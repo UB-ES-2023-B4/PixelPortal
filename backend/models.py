@@ -28,6 +28,7 @@ class Publicacion(Base):
     usuario_nombre = Column(String(100), nullable=False)
     titulo = Column(String(100), nullable=False)
     descripcion = Column(String(500), nullable=False)
+    tags = Column(String(255), nullable=True)
     imagen_url = Column(String(255), nullable=True)
     fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
     usuario = relationship("Usuario", back_populates="publicaciones")

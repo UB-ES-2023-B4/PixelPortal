@@ -89,6 +89,7 @@ export default {
   name: "LoginRegister",
   data() {
     return {
+      backendPath: "https://pixelportal-backend-api.onrender.com",
       isLoginChecked: true,
       loginEmail: "",
       loginPassword: "",
@@ -125,7 +126,7 @@ export default {
   },
   methods: {
     checkLogin() {
-      const path = "http://localhost:8000/login";
+      const path = this.backendPath + "/login";
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
       if (emailRegex.test(this.loginEmail)) {
         axios
@@ -153,7 +154,7 @@ export default {
       if (this.signUpPassword != this.signUpConfirmPassword) {
         alert("Passwords do not match");
       } else {
-        const path = "http://localhost:8000/usuario";
+        const path = this.backendPath + "/usuario";
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (emailRegex.test(this.signUpEmail)) {
           axios

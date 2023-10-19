@@ -89,6 +89,7 @@ export default {
   },
   data() {
     return {
+      backendPath: "https://pixelportal-backend-api.onrender.com",
       search: "",
       imageList: [],
       showDropdown: false,
@@ -139,7 +140,7 @@ export default {
       //Check if image has been posted
       if (data.hasPosted) {
         //post image with all the data + the image ID to the backend DATABASE here
-        const path = "http://localhost:8000/publicaciones";
+        const path = this.backendPath + "/publicaciones";
         const headers = { Authorization: "Bearer " + this.token };
         const dbData = {
           titulo: data.imageTitle,
@@ -162,7 +163,7 @@ export default {
     },
     getPublication() {
       this.imageList = [];
-      const pathPublications = "http://localhost:8000/publicaciones";
+      const pathPublications = this.backendPath + "/publicaciones";
 
       axios
         .get(pathPublications)

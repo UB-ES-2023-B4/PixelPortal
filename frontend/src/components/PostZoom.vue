@@ -102,6 +102,7 @@ export default {
   name: "PostZoom",
   data() {
     return {
+      backendPath: "https://pixelportal-backend-api.onrender.com",
       id: this.$route.params.id,
       image: "",
       title: "",
@@ -116,7 +117,7 @@ export default {
     },
   },
   created() {
-    const pathPost = "http://localhost:8000/publicaciones/" + this.id;
+    const pathPost = this.backendPath + "/publicaciones/" + this.id;
     axios.get(pathPost).then((response) => {
       this.title = response.data.titulo;
       this.username = response.data.usuario_nombre;
