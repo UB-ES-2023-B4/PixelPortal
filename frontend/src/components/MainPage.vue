@@ -218,7 +218,6 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      console.log(pathUser);
     },
   },
   mounted() {
@@ -230,7 +229,11 @@ export default {
   },
   created() {
     this.token = this.$route.query.token;
-    this.getUserInfo();
+    if (typeof this.token === "undefined") {
+      this.$router.push({ path: "/" });
+    } else {
+      this.getUserInfo();
+    }
   },
 };
 </script>
