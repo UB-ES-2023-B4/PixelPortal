@@ -116,9 +116,10 @@ export default {
         // Remove the "#" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
-        // Filter and return images based on the modified search term
         return this.imageList.filter((img) => {
-          return img.title.toLowerCase().includes(searchTerm);
+          return img.postTags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm)
+          );
         });
       } else {
         return this.imageList;
@@ -189,6 +190,7 @@ export default {
                 title: publications[i].titulo,
                 username: publications[i].usuario_nombre,
                 postDate: publications[i].fecha_publicacion,
+                postTags: JSON.parse(publications[i].tags),
               };
               this.imageList.push(image);
             });
