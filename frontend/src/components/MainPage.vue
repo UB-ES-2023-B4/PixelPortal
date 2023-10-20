@@ -24,6 +24,7 @@
               class="dropdown-content"
               v-if="showDropdown"
             >
+              <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
           </div>
