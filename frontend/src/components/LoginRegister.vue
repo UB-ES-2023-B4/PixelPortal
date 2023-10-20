@@ -139,7 +139,7 @@ export default {
             this.$router.push({
               path: "/home",
               query: {
-                username: response.data.username,
+                user_id: response.data.user_id,
                 token: response.data.access_token,
               },
             });
@@ -164,7 +164,7 @@ export default {
               email: this.signUpEmail,
               contrasena: this.signUpPassword,
               descripcion: "",
-              imagen_perfil_url: "",
+              imagen_perfil_url: "profilePictures/default_PFP.png",
             })
             .then((response) => {
               if (response.status == 200) {
