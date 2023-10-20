@@ -91,8 +91,6 @@ export default {
   },
   data() {
     return {
-      backendPath: "http://localhost:8000",
-      //backendPath: "https://pixelportal-backend-api.onrender.com",
       search: "",
       profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
@@ -218,7 +216,6 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      console.log(pathUser);
     },
   },
   mounted() {
@@ -230,7 +227,11 @@ export default {
   },
   created() {
     this.token = this.$route.query.token;
-    this.getUserInfo();
+    if (typeof this.token === "undefined") {
+      this.$router.push({ path: "/" });
+    } else {
+      this.getUserInfo();
+    }
   },
 };
 </script>
