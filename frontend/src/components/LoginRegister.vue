@@ -89,7 +89,8 @@ export default {
   name: "LoginRegister",
   data() {
     return {
-      backendPath: "https://pixelportal-backend-api.onrender.com",
+      backendPath: "http://localhost:8000",
+      // backendPath: "https://pixelportal-backend-api.onrender.com",
       isLoginChecked: true,
       loginEmail: "",
       loginPassword: "",

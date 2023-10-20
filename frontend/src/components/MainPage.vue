@@ -90,7 +90,8 @@ export default {
   },
   data() {
     return {
-      backendPath: "https://pixelportal-backend-api.onrender.com",
+      backendPath: "http://localhost:8000",
+      //backendPath: "https://pixelportal-backend-api.onrender.com",
       search: "",
       imageList: [],
       showDropdown: false,
@@ -148,6 +149,7 @@ export default {
           descripcion: data.imageDescription,
           imagen_url: data.imageID,
           usuario_nombre: data.username,
+          tags: JSON.stringify(data.imageTags),
         };
         axios
           .post(path, dbData, { headers })
