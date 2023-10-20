@@ -171,7 +171,7 @@ export default {
                 this.$router.push({
                   path: "/home",
                   query: {
-                    username: response.data.user.nombre,
+                    user_id: response.data.user.id,
                     token: response.data.access_token.access_token,
                   },
                 });
