@@ -6,6 +6,8 @@ from sqlalchemy.sql import func
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func, Table, BigInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.mutable import MutableDict
 
 Base = declarative_base()
 
@@ -28,7 +30,7 @@ class Publicacion(Base):
     usuario_nombre = Column(String(100), nullable=False)
     titulo = Column(String(100), nullable=False)
     descripcion = Column(String(500), nullable=False)
-    tags = Column(String(255), nullable=True)
+    tags = Column(String(500), nullable=True)
     imagen_url = Column(String(255), nullable=True)
     fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
     usuario = relationship("Usuario", back_populates="publicaciones")

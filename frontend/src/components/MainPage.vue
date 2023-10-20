@@ -9,7 +9,7 @@
         <div class="user-info">
           <div class="username-and-picture">
             <img
-              src="../assets/default_PFP.png"
+              :src="profilePicture"
               alt="Profile Picture"
               class="profile-picture"
             />
@@ -24,6 +24,7 @@
               class="dropdown-content"
               v-if="showDropdown"
             >
+              <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
           </div>
@@ -90,11 +91,14 @@ export default {
   },
   data() {
     return {
-      backendPath: "https://pixelportal-backend-api.onrender.com",
+      backendPath: "http://localhost:8000",
+      //backendPath: "https://pixelportal-backend-api.onrender.com",
       search: "",
+      profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
       showDropdown: false,
       username: "notLoggedIn",
+      userID: "",
       token: "",
       postedImageID: "",
     };
@@ -148,6 +152,7 @@ export default {
           descripcion: data.imageDescription,
           imagen_url: data.imageID,
           usuario_nombre: data.username,
+          tags: JSON.stringify(data.imageTags),
         };
         axios
           .post(path, dbData, { headers })
@@ -195,6 +200,26 @@ export default {
           console.error(error);
         });
     },
+    getUserInfo() {
+      this.userID = this.$route.query.user_id;
+      const pathUser = this.backendPath + "/usuario/" + this.userID;
+      axios
+        .get(pathUser)
+        .then((response) => {
+          this.username = response.data.nombre;
+          const profilePictureRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
+          getDownloadURL(profilePictureRef).then((url) => {
+            this.profilePicture = url;
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      console.log(pathUser);
+    },
   },
   mounted() {
     window.addEventListener("click", this.closeDropdown);
@@ -204,8 +229,8 @@ export default {
     window.removeEventListener("click", this.closeDropdown);
   },
   created() {
-    this.username = this.$route.query.username;
     this.token = this.$route.query.token;
+    this.getUserInfo();
   },
 };
 </script>

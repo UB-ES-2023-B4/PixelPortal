@@ -103,7 +103,8 @@ export default {
   name: "PostZoom",
   data() {
     return {
-      backendPath: "https://pixelportal-backend-api.onrender.com",
+      backendPath: "http://localhost:8000",
+      // backendPath: "https://pixelportal-backend-api.onrender.com",
       id: this.$route.params.id,
       loggedInUsername: this.$route.query.loggedUsername,
       image: "",

@@ -108,7 +108,7 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         data={"sub": usuario.email}, expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre}
+    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre, "user_id": db_user.id}
 
 #Modificar perfil de usuario
 @app.put('/usuario/{username}', summary="Put user", response_model=schemas.Usuario)
