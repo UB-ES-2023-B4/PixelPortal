@@ -47,7 +47,12 @@
             <img class="sort-icon" src="../assets/filter.svg" alt="" />
           </button>
           <div class="dropdown-content" v-if="showSortDropdown">
-            <a @click="sortImagesByUploadDate">Sort by upload Date</a>
+            <a @click="sortImagesByUploadDate(true)"
+              >Sort by upload Date (ascending)</a
+            >
+            <a @click="sortImagesByUploadDate(false)"
+              >Sort by upload Date (descending)</a
+            >
             <a>Sort by likes</a>
           </div>
         </div>
@@ -156,9 +161,16 @@ export default {
       }
       this.showSortDropdown = !this.showSortDropdown;
     },
-    sortImagesByUploadDate() {
+    sortImagesByUploadDate(ascending) {
       this.imageList.sort((a, b) => {
-        return new Date(a.postDate) - new Date(b.postDate);
+        const dateA = new Date(a.postDate);
+        const dateB = new Date(b.postDate);
+
+        if (ascending) {
+          return dateA - dateB;
+        } else {
+          return dateB - dateA;
+        }
       });
     },
     closeSortDropdown(event) {
