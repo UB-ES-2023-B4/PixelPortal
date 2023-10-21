@@ -290,7 +290,7 @@ export default {
 .image-container {
   position: relative;
   min-height: 100vh;
-  max-width: 1000px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
@@ -400,6 +400,7 @@ export default {
 
 .container {
   display: flex;
+  max-width: 100%;
 }
 
 .side-bar {
