@@ -16,13 +16,13 @@
             <h6 class="username">{{ username }}</h6>
           </div>
           <div class="dropdown">
-            <button class="options-button" @click="toggleDropdown">
+            <button class="options-button" @click="toggleUserDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
             <div
               id="dropdown-content"
               class="dropdown-content"
-              v-if="showDropdown"
+              v-if="showUserDropdown"
             >
               <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
@@ -37,9 +37,20 @@
 
     <!-- Image container --->
     <div class="image-container">
-      <div class="search-box">
-        <i class="bx bx-search"></i>
-        <input type="text" v-model="search" placeholder="Search" />
+      <div class="search-container">
+        <div class="search-box">
+          <i class="bx bx-search"></i>
+          <input type="text" v-model="search" placeholder="Search" />
+        </div>
+        <div class="dropdown">
+          <button class="sort-button" @click="toggleSortDropdown">
+            <img class="sort-icon" src="../assets/filter.svg" alt="" />
+          </button>
+          <div class="dropdown-content" v-if="showSortDropdown">
+            <a @click="sortImagesByUploadDate">Sort by upload Date</a>
+            <a>Sort by likes</a>
+          </div>
+        </div>
       </div>
       <!-- Popup to upload images component -->
       <UploadImagePopup
@@ -94,7 +105,8 @@ export default {
       search: "",
       profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
-      showDropdown: false,
+      showUserDropdown: false,
+      showSortDropdown: false,
       username: "notLoggedIn",
       userID: "",
       token: "",
@@ -127,15 +139,31 @@ export default {
     },
   },
   methods: {
-    toggleDropdown(event) {
+    toggleUserDropdown(event) {
       if (event) {
         event.stopPropagation();
       }
-      this.showDropdown = !this.showDropdown;
+      this.showUserDropdown = !this.showUserDropdown;
     },
-    closeDropdown(event) {
+    closeUserDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
-        this.showDropdown = false;
+        this.showUserDropdown = false;
+      }
+    },
+    toggleSortDropdown(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      this.showSortDropdown = !this.showSortDropdown;
+    },
+    sortImagesByUploadDate() {
+      this.imageList.sort((a, b) => {
+        return new Date(a.postDate) - new Date(b.postDate);
+      });
+    },
+    closeSortDropdown(event) {
+      if (!event.target.classList.contains("sort-button")) {
+        this.showSortDropdown = false;
       }
     },
     closeUploadImageForm(data) {
@@ -189,7 +217,7 @@ export default {
                 description: publications[i].descripcion,
                 title: publications[i].titulo,
                 username: publications[i].usuario_nombre,
-                postDate: publications[i].fecha_publicacion,
+                postDate: publications[i].fecha_creacion,
                 postTags: JSON.parse(publications[i].tags),
               };
               this.imageList.push(image);
@@ -221,11 +249,12 @@ export default {
     },
   },
   mounted() {
-    window.addEventListener("click", this.closeDropdown);
+    window.addEventListener("click", this.closeUserDropdown);
+    window.addEventListener("click", this.closeSortDropdown);
     this.getPublication();
   },
   beforeUnmount() {
-    window.removeEventListener("click", this.closeDropdown);
+    window.removeEventListener("click", this.closeUserDropdown);
   },
   created() {
     this.token = this.$route.query.token;
@@ -285,6 +314,20 @@ export default {
   left: 15px;
   font-size: 20px;
   transform: translateY(-50%);
+}
+
+.sort-button {
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  display: flex;
+  background-color: rgba(20, 117, 236, 0.9);
+  padding: 0px 5px;
+}
+
+.sort-icon {
+  height: 2rem;
 }
 
 .image-container .images .image-card {
