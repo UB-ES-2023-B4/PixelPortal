@@ -517,4 +517,8 @@ export default {
   height: 1.1rem;
   filter: invert(1) grayscale(100%);
 }
+
+.post-button:hover .sidebar-icon {
+  filter: none;
+}
 </style>
