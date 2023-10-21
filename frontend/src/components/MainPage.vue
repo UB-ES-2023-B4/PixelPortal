@@ -32,6 +32,10 @@
         <button class="post-button" @click="showUploadImageForm = true">
           <i class="bx bx-plus"></i> Post
         </button>
+        <button class="post-button">
+          <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+          My Images
+        </button>
       </div>
     </div>
 
@@ -507,5 +511,10 @@ export default {
   color: rgba(20, 117, 236, 0.9);
   background-color: white;
   transition: background-color 0.2s linear;
+}
+.sidebar-icon {
+  margin-right: 5px;
+  height: 1.1rem;
+  filter: invert(1) grayscale(100%);
 }
 </style>
