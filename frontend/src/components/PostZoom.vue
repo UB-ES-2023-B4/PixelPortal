@@ -65,6 +65,66 @@
                           eiusmod tempor incididunt ut labore et dolore magna aliqua.
                       </div>
                   </div>
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
+                <span class="username">
+                  Carlos
+                  <span class="text-muted pull-right">8:03 PM Today</span>
+                </span>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
+                <span class="username">
+                  Carlos
+                  <span class="text-muted pull-right">8:03 PM Today</span>
+                </span>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
+                <span class="username">
+                  Carlos
+                  <span class="text-muted pull-right">8:03 PM Today</span>
+                </span>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm "
+                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
+                <span class="username">
+                  Carlos
+                  <span class="text-muted pull-right">8:03 PM Today</span>
+                </span>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
               </div>
               <button type="button" class="btn btn-default btn-xs">
                   <span class="material-icons full-width">favorite</span>
@@ -260,7 +320,9 @@ body {
   border-bottom: 1px solid #eee;
 }
 .box-comments{
-  height: 512px;
+  height: 70vh;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .img-sm,
@@ -319,11 +381,19 @@ body {
 
 @media (max-width: 900px) {
     .box {
-        grid-template-columns: 1fr; /* Una sola columna en dispositivos estrechos */
+        grid-template-columns: 1fr;
     }
 
     .box-info {
-        grid-row: 2; /* Mueve la derecha debajo de la izquierda */
+        grid-row: 2;
     }
+    .box-comments{
+        height: auto;
+        max-height: 70vh;
+    }
+}
+
+.img-circle{
+    border-radius: 50%
 }
 </style>
