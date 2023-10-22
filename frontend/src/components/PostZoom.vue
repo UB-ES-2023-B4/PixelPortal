@@ -1,92 +1,95 @@
 <template>
   <div class="post-zoom">
-    <div class="container bootstrap snippets bootdey">
-      <div class="col-md-8">
+    <div class="container bootstrap snippets bootdey" style="height: 100vh">
+      <div class="col-md-12">
         <div class="box box-widget">
-          <div class="box-header with-border">
-            <div class="user-block">
-              <img
-                class="img-circle"
-                src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                alt="User Image"
-              />
-              <span class="username"
-                ><a href="#">{{ postAuthorUsername }}</a></span
-              >
-              <span class="description">Shared publicly - 7:30 PM Today</span>
-            </div>
-            <div class="box-tools">
-              <button
-                type="button"
-                class="btn btn-default btn-xs"
-                @click="redirectToMainPage()"
-              >
-                <i class="fa fa-share"></i> Go Back
-              </button>
-            </div>
+          <div class="box-image">
+              <div class="box-body" style="display: block">
+                  <p>{{ title }}</p>
+                  <img class="img-responsive pad" :src="image" alt="Photo" />
+                  <p>{{ description }}</p>
+                  <button type="button" class="btn btn-default btn-xs">
+                      <i class="fa fa-share"></i> Share
+                  </button>
+                  <button type="button" class="btn btn-default btn-xs">
+                      <i class="fa fa-thumbs-o-up"></i> Like
+                  </button>
+                  <span class="pull-right text-muted">127 likes - 3 comments</span>
+              </div>
           </div>
-
-          <div class="box-body" style="display: block">
-            <p>{{ title }}</p>
-            <img class="img-responsive pad" :src="image" alt="Photo" />
-            <p>{{ description }}</p>
-            <button type="button" class="btn btn-default btn-xs">
-              <i class="fa fa-share"></i> Share
-            </button>
-            <button type="button" class="btn btn-default btn-xs">
-              <i class="fa fa-thumbs-o-up"></i> Like
-            </button>
-            <span class="pull-right text-muted">127 likes - 3 comments</span>
-          </div>
-          <div class="box-footer box-comments" style="display: block">
-            <div class="box-comment">
-              <img
-                class="img-circle img-sm"
-                src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                alt="User Image"
-              />
-              <div class="comment-text">
+          <div class="box-info">
+              <div class="box-header with-border">
+                  <div class="user-block">
+                      <img
+                              class="img-circle"
+                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                              alt="User Image"
+                      />
+                      <span class="username"
+                      ><a href="#">{{ postAuthorUsername }}</a></span
+                      >
+                      <span class="description">Shared publicly - 7:30 PM Today</span>
+                  </div>
+                  <div class="box-tools">
+                      <button
+                              type="button"
+                              class="btn btn-default btn-xs"
+                              @click="redirectToMainPage()"
+                      >
+                          <i class="fa fa-share"></i> Go Back
+                      </button>
+                  </div>
+              </div>
+              <div class="box-footer box-comments" style="display: block">
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar2.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
                 <span class="username">
                   Christian
                   <span class="text-muted pull-right">8:03 PM Today</span>
                 </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </div>
-            </div>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
 
-            <div class="box-comment">
-              <img
-                class="img-circle img-sm"
-                src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                alt="User Image"
-              />
-              <div class="comment-text">
+                  <div class="box-comment">
+                      <img
+                              class="img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
+                              alt="User Image"
+                      />
+                      <div class="comment-text">
                 <span class="username">
                   Carlos
                   <span class="text-muted pull-right">8:03 PM Today</span>
                 </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                      </div>
+                  </div>
               </div>
-            </div>
-          </div>
-          <div class="box-footer" style="display: block">
-            <form action="#" method="post">
-              <img
-                class="img-responsive img-circle img-sm"
-                src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                alt="Alt Text"
-              />
-              <div class="img-push">
-                <input
-                  type="text"
-                  class="form-control input-sm"
-                  placeholder="Press enter to post comment"
-                  :value="loggedInUsername"
-                />
+              <div class="box-footer" style="display: block">
+                  <form action="#" method="post">
+                      <img
+                              class="img-responsive img-circle img-sm"
+                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                              alt="Alt Text"
+                      />
+                      <div class="img-push">
+                          <input
+                                  type="text"
+                                  class="form-control input-sm"
+                                  placeholder="Press enter to post comment"
+                                  :value="loggedInUsername"
+                          />
+                      </div>
+                  </form>
               </div>
-            </form>
           </div>
         </div>
       </div>
@@ -148,16 +151,20 @@ body {
 .img-responsive {
   display: block;
   max-width: 100%;
-  height: auto;
+  height: 80vh;
 }
 .box {
-  position: relative;
   border-radius: 3px;
+  height: 100vh;
   background: #ffffff;
   border-top: 3px solid #d2d6de;
   margin-bottom: 20px;
   width: 100%;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 60% 40%;
+  grid-template-rows: auto;
+  grid-gap: 0; /* Espacio entre las columnas (opcional) */
 }
 
 .box-header.with-border {
@@ -247,6 +254,9 @@ body {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
+.box-comments{
+  height: 512px;
+}
 
 .img-sm,
 .box-comments .box-comment img,
@@ -287,5 +297,22 @@ body {
   border-radius: 0;
   box-shadow: none;
   border-color: #d2d6de;
+}
+
+.box-info{
+  grid-row: 1;
+}
+.box-image{
+  grid-row: 1;
+}
+
+@media (max-width: 900px) {
+    .box {
+        grid-template-columns: 1fr; /* Una sola columna en dispositivos estrechos */
+    }
+
+    .box-info {
+        grid-row: 2; /* Mueve la derecha debajo de la izquierda */
+    }
 }
 </style>
