@@ -8,13 +8,6 @@
                   <p>{{ title }}</p>
                   <img class="img-responsive pad" :src="image" alt="Photo" />
                   <p>{{ description }}</p>
-                  <button type="button" class="btn btn-default btn-xs">
-                      <i class="fa fa-share"></i> Share
-                  </button>
-                  <button type="button" class="btn btn-default btn-xs">
-                      <i class="fa fa-thumbs-o-up"></i> Like
-                  </button>
-                  <span class="pull-right text-muted">127 likes - 3 comments</span>
               </div>
           </div>
           <div class="box-info">
@@ -73,6 +66,18 @@
                       </div>
                   </div>
               </div>
+              <button type="button" class="btn btn-default btn-xs">
+                  <span class="material-icons full-width">favorite</span>
+              </button>
+              <span class="pull-right text-muted">127</span>
+              <button type="button" class="btn btn-default btn-xs">
+                  <span class="material-icons full-width">mode_comment</span>
+              </button>
+              <span class="pull-right text-muted">127</span>
+              <button type="button" class="btn btn-default btn-xs">
+                  <span class="material-icons full-width">send</span>
+              </button>
+              <span class="pull-right text-muted">127</span>
               <div class="box-footer" style="display: block">
                   <form action="#" method="post">
                       <img
@@ -227,9 +232,9 @@ body {
 }
 
 .box .btn-default {
-  background-color: #f4f4f4;
+  background-color: transparent;
   color: #444;
-  border-color: #ddd;
+  border-color: transparent;
 }
 
 .box-comments {
@@ -305,6 +310,12 @@ body {
 .box-image{
   grid-row: 1;
 }
+.full-width {
+    display: block;
+    width: 100%;
+    font-size: 32px;
+}
+
 
 @media (max-width: 900px) {
     .box {
