@@ -32,7 +32,11 @@
         <button class="post-button" @click="showUploadImageForm = true">
           <i class="bx bx-plus"></i> Post
         </button>
-        <button class="post-button">
+        <button
+          class="post-button"
+          :class="{ 'post-button-my-images-selected': showMyImages }"
+          @click="showMyImages = !showMyImages"
+        >
           <img class="sidebar-icon" src="../assets/images.svg" alt="" />
           My Images
         </button>
@@ -72,7 +76,7 @@
       <div class="images">
         <div
           class="image-card"
-          v-for="img in filteredList"
+          v-for="img in showMyImages ? myImagesList : filteredList"
           :key="img.id"
           :data-name="img.username"
         >
@@ -114,6 +118,7 @@ export default {
       search: "",
       profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
+      showMyImages: false,
       showUserDropdown: false,
       showSortDropdown: false,
       username: "notLoggedIn",
@@ -145,6 +150,9 @@ export default {
       } else {
         return this.imageList;
       }
+    },
+    myImagesList() {
+      return this.imageList.filter((img) => img.username === this.username);
     },
   },
   methods: {
@@ -501,6 +509,24 @@ export default {
   width: 100%;
   margin-top: 20px;
   border-radius: 6px;
+}
+
+.post-button-my-images-selected {
+  background-color: white;
+  border: none;
+  color: rgba(20, 117, 236, 0.9);
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 6px;
+}
+
+.post-button-my-images-selected .sidebar-icon {
+  filter: none;
 }
 
 .post-button i {
