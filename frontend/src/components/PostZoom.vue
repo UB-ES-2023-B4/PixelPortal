@@ -21,7 +21,7 @@
                 <span class="username"
                   ><a href="#">{{ postAuthorUsername }}</a></span
                 >
-                <span class="description">Shared publicly - 7:30 PM Today</span>
+                <span class="description">Shared on {{ this.postDate }}</span>
               </div>
               <div class="box-tools">
                 <button
@@ -109,7 +109,11 @@
 <script>
 import axios from "axios";
 import { storage } from "@/firebase";
-import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
+import {
+  ref as firebaseRef,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 export default {
   name: "PostZoom",
@@ -120,7 +124,9 @@ export default {
       image: "",
       title: "",
       postAuthorUsername: "",
+      postDate: "",
       isLoggedUsersPost: false,
+      imageFirebaseURL: "",
       description: "",
       token: this.$route.query.token,
       comments: [
@@ -179,7 +185,35 @@ export default {
       history.back();
     },
     deletePost() {
-      console.log("DELETING POST");
+      // Ask for confirmation
+      if (confirm("Are you sure you want to delete this post?")) {
+        console.log("DELETING Post...");
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        const pathDelete = this.backendPath + "/publicacion/" + this.id;
+        const headers = { Authorization: "Bearer " + this.token };
+        axios
+          .delete(pathDelete, { headers })
+          .then((response) => {
+            deleteObject(postImageRef)
+              .then(() => {
+                alert(
+                  "Post with Title:" +
+                    response.data.titulo +
+                    " deleted successfully"
+                );
+                this.redirectToMainPage();
+              })
+              .catch((error) => {
+                alert("Firebase Error: " + error.message);
+              });
+          })
+          .catch((error) => {
+            alert("Backend Error: " + error.message);
+          });
+      }
     },
     redirectComment() {
       this.$refs.input_comment.focus();
@@ -187,21 +221,28 @@ export default {
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
-    axios.get(pathPost).then((response) => {
-      this.title = response.data.titulo;
-      this.postAuthorUsername = response.data.usuario_nombre;
-      this.description = response.data.descripcion;
-      if (this.loggedInUsername == this.postAuthorUsername) {
-        this.isLoggedUsersPost = true;
-      }
-      const postImageRef = firebaseRef(
-        storage,
-        "postedImages/" + response.data.imagen_url
-      );
-      getDownloadURL(postImageRef).then((url) => {
-        this.image = url;
+    axios
+      .get(pathPost)
+      .then((response) => {
+        this.title = response.data.titulo;
+        this.postAuthorUsername = response.data.usuario_nombre;
+        this.description = response.data.descripcion;
+        this.imageFirebaseURL = response.data.imagen_url;
+        this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        if (this.loggedInUsername == this.postAuthorUsername) {
+          this.isLoggedUsersPost = true;
+        }
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        getDownloadURL(postImageRef).then((url) => {
+          this.image = url;
+        });
+      })
+      .catch((error) => {
+        alert(error.message);
       });
-    });
   },
 };
 </script>
