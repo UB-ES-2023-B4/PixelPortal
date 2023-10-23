@@ -34,126 +34,51 @@
                   </div>
               </div>
               <div class="box-footer box-comments" style="display: block">
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm"
-                              src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Christian
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  <template  v-for="(comment) in this.comments" :key="comment.username">
+                      <div class="box-comment">
+                          <img
+                                  class="img-circle img-sm"
+                                  :src="comment.image"
+                                  alt="User Image"
+                          />
+                          <div class="comment-text">
+                          <span class="username">{{comment.username}}
+                  <span class="text-muted pull-right">{{comment.date}}</span>
+                </span>{{comment.text}}
+                          </div>
                       </div>
-                  </div>
+                  </template>
 
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm"
-                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </div>
-                  </div>
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm"
-                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </div>
-                  </div>
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm"
-                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </div>
-                  </div>
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm"
-                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </div>
-                  </div>
-                  <div class="box-comment">
-                      <img
-                              class="img-circle img-sm "
-                              src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                              alt="User Image"
-                      />
-                      <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                      </div>
-                  </div>
               </div>
               <button type="button" class="btn btn-default btn-xs">
-                  <span class="material-icons full-width">favorite</span>
+                  <span class="material-icons pixel-color full-width">favorite_border</span>
               </button>
               <span class="pull-right text-muted">127</span>
+              <button type="button" class="btn btn-default btn-xs" @click="this.redirectComment()">
+                  <span class="material-icons pixel-color full-width">chat_bubble_outline</span>
+              </button>
+              <span class="pull-right text-muted">{{this.numComments}}</span>
               <button type="button" class="btn btn-default btn-xs">
-                  <span class="material-icons full-width">mode_comment</span>
+                  <span class="material-icons pixel-color full-width">send</span>
               </button>
               <span class="pull-right text-muted">127</span>
-              <button type="button" class="btn btn-default btn-xs">
-                  <span class="material-icons full-width">send</span>
-              </button>
-              <span class="pull-right text-muted">127</span>
-              <div class="box-footer" style="display: block">
-                  <form action="#" method="post">
-                      <img
-                              class="img-responsive img-circle img-sm"
+              <div class="box-footer">
+                  <img
+                              class="img-responsive img-circle img-sm footer-image"
                               src="https://bootdey.com/img/Content/avatar/avatar1.png"
                               alt="Alt Text"
                       />
-                      <div class="img-push">
+                      <div class="footer-text">
                           <input
+                                  ref = 'input_comment'
                                   type="text"
                                   class="form-control input-sm"
-                                  placeholder="Press enter to post comment"
-                                  :value="loggedInUsername"
+                                  placeholder="Add a comment..."
+                                  value=""
+                                  maxlength="150"
                           />
                       </div>
-                  </form>
+                  <button class="footer-button pixel-color" type="button" >Post</button>
               </div>
           </div>
         </div>
@@ -178,12 +103,62 @@ export default {
       postAuthorUsername: "",
       description: "",
       token: this.$route.query.token,
+      comments: [{
+          username: "Laura",
+          image: 'https://bootdey.com/img/Content/avatar/avatar3.png', //https://bootdey.com/img/Content/avatar/avatar3.png
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sut labore et dolore magna aliqua.",
+      },
+          {
+          username: "Christian",
+          image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      },
+          {
+              username: "Christian",
+              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+              date: "8:03 PM Today",
+              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+              username: "Christian",
+              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+              date: "8:03 PM Today",
+              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+              username: "Christian",
+              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+              date: "8:03 PM Today",
+              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+              username: "Christian",
+              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+              date: "8:03 PM Today",
+              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          },
+          {
+              username: "Christian",
+              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+              date: "8:03 PM Today",
+              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+          }
+      ]
     };
+  },computed: {
+      numComments() {
+          return this.comments.length;
+      },
   },
   methods: {
     redirectToMainPage() {
       history.back();
     },
+    redirectComment(){
+        this.$refs.input_comment.focus();
+    }
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -297,10 +272,6 @@ body {
   border-color: transparent;
 }
 
-.box-comments {
-  background: #f7f7f7 !important;
-}
-
 .box-footer {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -323,6 +294,8 @@ body {
   height: 70vh;
   max-height: 70vh;
   overflow-y: auto;
+  background: transparent;
+  border-bottom: 2px solid #eee;
 }
 
 .img-sm,
@@ -395,5 +368,35 @@ body {
 
 .img-circle{
     border-radius: 50%
+}
+
+.comment-post{
+
+}
+
+.box-footer {
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    grid-template-rows: auto;
+    grid-gap: 0; /* Espacio entre las columnas (opcional) */
+}
+.footer-text {
+    grid-row: 1;
+}
+.footer-image {
+    grid-row: 1;
+}
+.footer-button {
+    grid-row: 1;
+    font-weight: bold;
+    background: transparent;
+    border-color: transparent;
+    transition: color 0.2s;
+}
+.pixel-color:hover{
+    color: rgba(20, 117, 236, 0.6);
+}
+.pixel-color{
+  color: rgba(20, 117, 236, 0.9);
 }
 </style>
