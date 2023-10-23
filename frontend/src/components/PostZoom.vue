@@ -4,82 +4,101 @@
       <div class="col-md-12">
         <div class="box box-widget">
           <div class="box-image">
-              <div class="box-body" style="display: block">
-                  <p>{{ title }}</p>
-                  <img class="img-responsive pad" :src="image" alt="Photo" />
-                  <p>{{ description }}</p>
-              </div>
+            <div class="box-body" style="display: block">
+              <p>{{ title }}</p>
+              <img class="img-responsive pad" :src="image" alt="Photo" />
+              <p>{{ description }}</p>
+            </div>
           </div>
           <div class="box-info">
-              <div class="box-header with-border">
-                  <div class="user-block">
-                      <img
-                              class="img-circle"
-                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                              alt="User Image"
-                      />
-                      <span class="username"
-                      ><a href="#">{{ postAuthorUsername }}</a></span
-                      >
-                      <span class="description">Shared publicly - 7:30 PM Today</span>
-                  </div>
-                  <div class="box-tools">
-                      <button
-                              type="button"
-                              class="btn btn-default btn-xs"
-                              @click="redirectToMainPage()"
-                      >
-                          <i class="fa fa-share"></i> Go Back
-                      </button>
-                  </div>
+            <div class="box-header with-border">
+              <div class="user-block">
+                <img
+                  class="img-circle"
+                  :src="postAuthorProfilePic"
+                  alt="User Image"
+                />
+                <span class="username"
+                  ><a href="#">{{ postAuthorUsername }}</a></span
+                >
+                <span class="description">Shared on {{ this.postDate }}</span>
               </div>
-              <div class="box-footer box-comments" style="display: block">
-                  <template  v-for="(comment) in this.comments" :key="comment.username">
-                      <div class="box-comment">
-                          <img
-                                  class="img-circle img-sm"
-                                  :src="comment.image"
-                                  alt="User Image"
-                          />
-                          <div class="comment-text">
-                          <span class="username">{{comment.username}}
-                  <span class="text-muted pull-right">{{comment.date}}</span>
-                </span>{{comment.text}}
-                          </div>
-                      </div>
-                  </template>
-
+              <div class="box-tools">
+                <button
+                  class="blue-button"
+                  :hidden="!isLoggedUsersPost"
+                  @click="deletePost"
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  class="blue-button"
+                  @click="redirectToMainPage()"
+                >
+                  <i class="fa fa-share"></i> Go Back
+                </button>
               </div>
-              <button type="button" class="btn btn-default btn-xs">
-                  <span class="material-icons pixel-color full-width">favorite_border</span>
-              </button>
-              <span class="pull-right text-muted">127</span>
-              <button type="button" class="btn btn-default btn-xs" @click="this.redirectComment()">
-                  <span class="material-icons pixel-color full-width">chat_bubble_outline</span>
-              </button>
-              <span class="pull-right text-muted">{{this.numComments}}</span>
-              <button type="button" class="btn btn-default btn-xs">
-                  <span class="material-icons pixel-color full-width">send</span>
-              </button>
-              <span class="pull-right text-muted">127</span>
-              <div class="box-footer">
+            </div>
+            <div class="box-footer box-comments" style="display: block">
+              <div v-for="comment in this.comments" :key="comment.username">
+                <div class="box-comment">
                   <img
-                              class="img-responsive img-circle img-sm footer-image"
-                              src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                              alt="Alt Text"
-                      />
-                      <div class="footer-text">
-                          <input
-                                  ref = 'input_comment'
-                                  type="text"
-                                  class="form-control input-sm"
-                                  placeholder="Add a comment..."
-                                  value=""
-                                  maxlength="150"
-                          />
-                      </div>
-                  <button class="footer-button pixel-color" type="button" >Post</button>
+                    class="img-circle img-sm"
+                    :src="comment.image"
+                    alt="User Image"
+                  />
+                  <div class="comment-text">
+                    <span class="username"
+                      >{{ comment.username }}
+                      <span class="text-muted pull-right">{{
+                        comment.date
+                      }}</span> </span
+                    >{{ comment.text }}
+                  </div>
+                </div>
               </div>
+            </div>
+            <button type="button" class="btn btn-default btn-xs">
+              <span class="material-icons pixel-color full-width"
+                >favorite_border</span
+              >
+            </button>
+            <span class="pull-right text-muted">127</span>
+            <button
+              type="button"
+              class="btn btn-default btn-xs"
+              @click="this.redirectComment()"
+            >
+              <span class="material-icons pixel-color full-width"
+                >chat_bubble_outline</span
+              >
+            </button>
+            <span class="pull-right text-muted">{{ this.numComments }}</span>
+            <button type="button" class="btn btn-default btn-xs">
+              <span class="material-icons pixel-color full-width">send</span>
+            </button>
+            <span class="pull-right text-muted">127</span>
+            <div class="box-footer">
+              <img
+                class="img-responsive img-circle img-sm footer-image"
+                src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                alt="Alt Text"
+              />
+              <div class="footer-text">
+                <input
+                  ref="input_comment"
+                  type="text"
+                  class="form-control input-sm"
+                  placeholder="Add a comment..."
+                  value=""
+                  maxlength="150"
+                />
+              </div>
+              <button class="footer-button pixel-color" type="button">
+                Post
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -90,7 +109,11 @@
 <script>
 import axios from "axios";
 import { storage } from "@/firebase";
-import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
+import {
+  ref as firebaseRef,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 export default {
   name: "PostZoom",
@@ -98,82 +121,160 @@ export default {
     return {
       id: this.$route.params.id,
       loggedInUsername: this.$route.query.loggedUsername,
+      postAuthorProfilePic:
+        "https://bootdey.com/img/Content/avatar/avatar1.png",
       image: "",
       title: "",
       postAuthorUsername: "",
+      postDate: "",
+      isLoggedUsersPost: false,
+      imageFirebaseURL: "",
       description: "",
       token: this.$route.query.token,
-      comments: [{
+      comments: [
+        {
           username: "Laura",
-          image: 'https://bootdey.com/img/Content/avatar/avatar3.png', //https://bootdey.com/img/Content/avatar/avatar3.png
+          image: "https://bootdey.com/img/Content/avatar/avatar3.png", //https://bootdey.com/img/Content/avatar/avatar3.png
           date: "8:03 PM Today",
           text: "Lorem ipsum dolor sut labore et dolore magna aliqua.",
-      },
-          {
+        },
+        {
           username: "Christian",
-          image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
           date: "8:03 PM Today",
           text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      },
-          {
-              username: "Christian",
-              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
-              date: "8:03 PM Today",
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          },
-          {
-              username: "Christian",
-              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
-              date: "8:03 PM Today",
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          },
-          {
-              username: "Christian",
-              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
-              date: "8:03 PM Today",
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          },
-          {
-              username: "Christian",
-              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
-              date: "8:03 PM Today",
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          },
-          {
-              username: "Christian",
-              image: 'https://bootdey.com/img/Content/avatar/avatar2.png',
-              date: "8:03 PM Today",
-              text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-          }
-      ]
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+      ],
     };
-  },computed: {
-      numComments() {
-          return this.comments.length;
-      },
+  },
+  computed: {
+    numComments() {
+      return this.comments.length;
+    },
   },
   methods: {
     redirectToMainPage() {
       history.back();
     },
-    redirectComment(){
-        this.$refs.input_comment.focus();
-    }
+    deletePost() {
+      // Ask for confirmation
+      if (confirm("Are you sure you want to delete this post?")) {
+        console.log("DELETING Post...");
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        const pathDelete = this.backendPath + "/publicacion/" + this.id;
+        const headers = { Authorization: "Bearer " + this.token };
+        axios
+          .delete(pathDelete, { headers })
+          .then((response) => {
+            deleteObject(postImageRef)
+              .then(() => {
+                alert(
+                  "Post with Title:" +
+                    response.data.titulo +
+                    " deleted successfully"
+                );
+                this.redirectToMainPage();
+              })
+              .catch((error) => {
+                alert("Firebase Error: " + error.message);
+              });
+          })
+          .catch((error) => {
+            alert("Backend Error: " + error.message);
+          });
+      }
+    },
+    redirectComment() {
+      this.$refs.input_comment.focus();
+    },
+    getPostAuthorInfo(userID) {
+      const postAuthorPath = this.backendPath + "/usuario/" + userID;
+      const headers = { Authorization: "Bearer " + this.token };
+
+      axios
+        .get(postAuthorPath, { headers })
+        .then((response) => {
+          const authorProfilePicRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
+
+          getDownloadURL(authorProfilePicRef)
+            .then((url) => {
+              this.postAuthorProfilePic = url;
+            })
+            .catch((error) => {
+              alert("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error: " + error.message);
+        });
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
-    axios.get(pathPost).then((response) => {
-      this.title = response.data.titulo;
-      this.postAuthorUsername = response.data.usuario_nombre;
-      this.description = response.data.descripcion;
-      const postImageRef = firebaseRef(
-        storage,
-        "postedImages/" + response.data.imagen_url
-      );
-      getDownloadURL(postImageRef).then((url) => {
-        this.image = url;
+    axios
+      .get(pathPost)
+      .then((response) => {
+        this.title = response.data.titulo;
+        this.postAuthorUsername = response.data.usuario_nombre;
+        this.description = response.data.descripcion;
+        this.imageFirebaseURL = response.data.imagen_url;
+        this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        if (this.loggedInUsername == this.postAuthorUsername) {
+          this.isLoggedUsersPost = true;
+        }
+        //GETTING POST IMAGE FROM FIREBASE
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        getDownloadURL(postImageRef)
+          .then((url) => {
+            this.image = url;
+            this.getPostAuthorInfo(response.data.usuario_id);
+          })
+          .catch((error) => {
+            alert("Firebase Error: " + error.message);
+          });
+      })
+      .catch((error) => {
+        alert("Backend Error:" + error.message);
       });
-    });
   },
 };
 </script>
@@ -290,7 +391,7 @@ body {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
-.box-comments{
+.box-comments {
   height: 70vh;
   max-height: 70vh;
   overflow-y: auto;
@@ -339,64 +440,78 @@ body {
   border-color: #d2d6de;
 }
 
-.box-info{
+.box-info {
   grid-row: 1;
 }
-.box-image{
+.box-image {
   grid-row: 1;
 }
 .full-width {
-    display: block;
-    width: 100%;
-    font-size: 32px;
+  display: block;
+  width: 100%;
+  font-size: 32px;
 }
-
 
 @media (max-width: 900px) {
-    .box {
-        grid-template-columns: 1fr;
-    }
+  .box {
+    grid-template-columns: 1fr;
+  }
 
-    .box-info {
-        grid-row: 2;
-    }
-    .box-comments{
-        height: auto;
-        max-height: 70vh;
-    }
+  .box-info {
+    grid-row: 2;
+  }
+  .box-comments {
+    height: auto;
+    max-height: 70vh;
+  }
 }
 
-.img-circle{
-    border-radius: 50%
-}
-
-.comment-post{
-
+.img-circle {
+  border-radius: 50%;
 }
 
 .box-footer {
-    display: grid;
-    grid-template-columns: 10% 80% 10%;
-    grid-template-rows: auto;
-    grid-gap: 0; /* Espacio entre las columnas (opcional) */
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: auto;
+  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+}
+
+.blue-button {
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  height: 30px;
+  width: 5rem;
+  margin: 3px;
+  border-radius: 6px;
+}
+
+.blue-button.disabled-button {
+  background-color: rgba(20, 117, 236, 0.5);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.blue-button:hover {
+  background-color: rgba(20, 117, 236, 1);
 }
 .footer-text {
-    grid-row: 1;
+  grid-row: 1;
 }
 .footer-image {
-    grid-row: 1;
+  grid-row: 1;
 }
 .footer-button {
-    grid-row: 1;
-    font-weight: bold;
-    background: transparent;
-    border-color: transparent;
-    transition: color 0.2s;
+  grid-row: 1;
+  font-weight: bold;
+  background: transparent;
+  border-color: transparent;
+  transition: color 0.2s;
 }
-.pixel-color:hover{
-    color: rgba(20, 117, 236, 0.6);
+.pixel-color:hover {
+  color: rgba(20, 117, 236, 0.6);
 }
-.pixel-color{
+.pixel-color {
   color: rgba(20, 117, 236, 0.9);
 }
 </style>
