@@ -15,7 +15,7 @@
               <div class="user-block">
                 <img
                   class="img-circle"
-                  src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                  :src="postAuthorProfilePic"
                   alt="User Image"
                 />
                 <span class="username"
@@ -121,6 +121,8 @@ export default {
     return {
       id: this.$route.params.id,
       loggedInUsername: this.$route.query.loggedUsername,
+      postAuthorProfilePic:
+        "https://bootdey.com/img/Content/avatar/avatar1.png",
       image: "",
       title: "",
       postAuthorUsername: "",
@@ -218,6 +220,30 @@ export default {
     redirectComment() {
       this.$refs.input_comment.focus();
     },
+    getPostAuthorInfo(userID) {
+      const postAuthorPath = this.backendPath + "/usuario/" + userID;
+      const headers = { Authorization: "Bearer " + this.token };
+
+      axios
+        .get(postAuthorPath, { headers })
+        .then((response) => {
+          const authorProfilePicRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
+
+          getDownloadURL(authorProfilePicRef)
+            .then((url) => {
+              this.postAuthorProfilePic = url;
+            })
+            .catch((error) => {
+              alert("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error: " + error.message);
+        });
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -232,16 +258,22 @@ export default {
         if (this.loggedInUsername == this.postAuthorUsername) {
           this.isLoggedUsersPost = true;
         }
+        //GETTING POST IMAGE FROM FIREBASE
         const postImageRef = firebaseRef(
           storage,
           "postedImages/" + this.imageFirebaseURL
         );
-        getDownloadURL(postImageRef).then((url) => {
-          this.image = url;
-        });
+        getDownloadURL(postImageRef)
+          .then((url) => {
+            this.image = url;
+            this.getPostAuthorInfo(response.data.usuario_id);
+          })
+          .catch((error) => {
+            alert("Firebase Error: " + error.message);
+          });
       })
       .catch((error) => {
-        alert(error.message);
+        alert("Backend Error:" + error.message);
       });
   },
 };
