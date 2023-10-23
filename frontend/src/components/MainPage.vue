@@ -46,7 +46,7 @@
     <!-- Image container --->
     <div class="image-container">
       <div class="search-container">
-        <div class="search-box">
+        <div class="search-box" :hidden="showMyImages">
           <i class="bx bx-search"></i>
           <input type="text" v-model="search" placeholder="Search" />
         </div>
