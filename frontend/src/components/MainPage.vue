@@ -7,6 +7,9 @@
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
+          <h1 class="website-title" @click="reloadPage">PixelPortal</h1>
+        </div>
+        <div class="user-info">
           <div class="username-and-picture">
             <img
               :src="profilePicture"
@@ -156,6 +159,9 @@ export default {
     },
   },
   methods: {
+    reloadPage() {
+      window.location.reload();
+    },
     toggleUserDropdown(event) {
       if (event) {
         event.stopPropagation();
@@ -429,6 +435,14 @@ export default {
   z-index: 2;
 }
 
+.website-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  cursor: pointer;
+  margin: 0 1rem 1rem 1rem;
+}
 .user-info-wrapper {
   position: sticky;
   top: 0;
@@ -466,6 +480,7 @@ export default {
   color: white;
   font-size: 24px;
   cursor: pointer;
+  float: right;
 }
 
 /* Style the dropdown button and content */
