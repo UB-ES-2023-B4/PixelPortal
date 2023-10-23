@@ -423,7 +423,7 @@ export default {
 
 .side-bar {
   background-color: rgba(20, 117, 236, 0.9);
-  width: 200px;
+  width: 20rem;
   display: flex;
   flex-direction: column;
   align-items: center;
