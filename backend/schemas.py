@@ -30,6 +30,11 @@ class UsuarioLogin(UsuarioBase):
     nombre: str = None
     email: str
     contrasena: str
+
+class UsuarioChangePassword(UsuarioBase):
+    current_password: str
+    new_password: str
+    email: str
 class SeguidorBase(BaseModel):
     seguidor_id: int
     seguido_id: int

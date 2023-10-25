@@ -117,6 +117,30 @@ def update_account(username: str, account: schemas.Usuario, db: Session = Depend
     if db_account is None:
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_account
+#Modificar la contraseña del usuario
+@app.post("/usuario/change_pass", response_model=schemas.Token)
+def change_password(user: schemas.UserChangePassword,db: Session = Depends(get_db)):
+    # Verificar si el usuario existe
+    db_user = repository.get_user_by_email(db, user.email)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Autenticar al usuario
+    if not verify_password(user.current_password, db_user.contrasena):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    db_user = repository.change_password(db,db_user,user)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)#Al cambiar la contraseña creamos un nuevo token
+    access_token = create_access_token(
+        data={"sub": db_user.email}, expires_delta=access_token_expires
+    )
+    return access_token
+
 
 #Obtener usuario por ID
 @app.get("/usuarios/", response_model=List[schemas.Usuario])

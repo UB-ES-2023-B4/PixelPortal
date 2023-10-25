@@ -60,6 +60,13 @@ def update_account(db: Session, username: str, account: schemas.Usuario):
     db.refresh(db_user)
     return db_user
 
+def change_password(db:Session, user: models.Usuario, new_password: schemas.UsuarioChangePassword):
+
+    user.contraseña = new_password.new_password
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuario_id: int):
     db_publicacion = models.Publicacion(**publicacion.dict(), usuario_id=usuario_id)
     db.add(db_publicacion)
