@@ -1,91 +1,104 @@
 <template>
   <div class="post-zoom">
-    <div class="container bootstrap snippets bootdey">
-      <div class="col-md-8">
+    <div class="container bootstrap snippets bootdey" style="height: 100vh">
+      <div class="col-md-12">
         <div class="box box-widget">
-          <div class="box-header with-border">
-            <div class="user-block">
-              <img
-                class="img-circle"
-                src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                alt="User Image"
-              />
-              <span class="username"
-                ><a href="#">{{ username }}</a></span
-              >
-              <span class="description">Shared publicly - 7:30 PM Today</span>
-            </div>
-            <div class="box-tools">
-              <button
-                type="button"
-                class="btn btn-default btn-xs"
-                @click="redirectToMainPage()"
-              >
-                <i class="fa fa-share"></i> Go Back
-              </button>
+          <div class="box-image">
+            <div class="box-body" style="display: block">
+              <p>{{ title }}</p>
+              <img class="img-responsive pad" :src="image" alt="Photo" />
+              <p>{{ description }}</p>
             </div>
           </div>
-
-          <div class="box-body" style="display: block">
-            <p>{{ title }}</p>
-            <img class="img-responsive pad" :src="image" alt="Photo" />
-            <p>{{ description }}</p>
-            <button type="button" class="btn btn-default btn-xs">
-              <i class="fa fa-share"></i> Share
-            </button>
-            <button type="button" class="btn btn-default btn-xs">
-              <i class="fa fa-thumbs-o-up"></i> Like
-            </button>
-            <span class="pull-right text-muted">127 likes - 3 comments</span>
-          </div>
-          <div class="box-footer box-comments" style="display: block">
-            <div class="box-comment">
-              <img
-                class="img-circle img-sm"
-                src="https://bootdey.com/img/Content/avatar/avatar2.png"
-                alt="User Image"
-              />
-              <div class="comment-text">
-                <span class="username">
-                  Christian
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <div class="box-info">
+            <div class="box-header with-border">
+              <div class="user-block">
+                <img
+                  class="img-circle"
+                  :src="postAuthorProfilePic"
+                  alt="User Image"
+                />
+                <span class="username"
+                  ><a href="#">{{ postAuthorUsername }}</a></span
+                >
+                <span class="description">Shared on {{ this.postDate }}</span>
+              </div>
+              <div class="box-tools">
+                <button
+                  class="blue-button"
+                  :hidden="!isLoggedUsersPost"
+                  @click="deletePost"
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  class="blue-button"
+                  @click="redirectToMainPage()"
+                >
+                  <i class="fa fa-share"></i> Go Back
+                </button>
               </div>
             </div>
-
-            <div class="box-comment">
-              <img
-                class="img-circle img-sm"
-                src="https://bootdey.com/img/Content/avatar/avatar3.png"
-                alt="User Image"
-              />
-              <div class="comment-text">
-                <span class="username">
-                  Carlos
-                  <span class="text-muted pull-right">8:03 PM Today</span>
-                </span>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <div class="box-footer box-comments" style="display: block">
+              <div v-for="comment in this.comments" :key="comment.username">
+                <div class="box-comment">
+                  <img
+                    class="img-circle img-sm"
+                    :src="comment.image"
+                    alt="User Image"
+                  />
+                  <div class="comment-text">
+                    <span class="username"
+                      >{{ comment.username }}
+                      <span class="text-muted pull-right">{{
+                        comment.date
+                      }}</span> </span
+                    >{{ comment.text }}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="box-footer" style="display: block">
-            <form action="#" method="post">
+            <button type="button" class="btn btn-default btn-xs">
+              <span class="material-icons pixel-color full-width"
+                >favorite_border</span
+              >
+            </button>
+            <span class="pull-right text-muted">127</span>
+            <button
+              type="button"
+              class="btn btn-default btn-xs"
+              @click="this.redirectComment()"
+            >
+              <span class="material-icons pixel-color full-width"
+                >chat_bubble_outline</span
+              >
+            </button>
+            <span class="pull-right text-muted">{{ this.numComments }}</span>
+            <button type="button" class="btn btn-default btn-xs">
+              <span class="material-icons pixel-color full-width">send</span>
+            </button>
+            <span class="pull-right text-muted">127</span>
+            <div class="box-footer">
               <img
-                class="img-responsive img-circle img-sm"
+                class="img-responsive img-circle img-sm footer-image"
                 src="https://bootdey.com/img/Content/avatar/avatar1.png"
                 alt="Alt Text"
               />
-              <div class="img-push">
+              <div class="footer-text">
                 <input
+                  ref="input_comment"
                   type="text"
                   class="form-control input-sm"
-                  placeholder="Press enter to post comment"
+                  placeholder="Add a comment..."
+                  value=""
+                  maxlength="150"
                 />
               </div>
-            </form>
+              <button class="footer-button pixel-color" type="button">
+                Post
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -96,39 +109,172 @@
 <script>
 import axios from "axios";
 import { storage } from "@/firebase";
-import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
+import {
+  ref as firebaseRef,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 export default {
   name: "PostZoom",
   data() {
     return {
       id: this.$route.params.id,
+      loggedInUsername: this.$route.query.loggedUsername,
+      postAuthorProfilePic:
+        "https://bootdey.com/img/Content/avatar/avatar1.png",
       image: "",
       title: "",
-      username: "",
+      postAuthorUsername: "",
+      postDate: "",
+      isLoggedUsersPost: false,
+      imageFirebaseURL: "",
       description: "",
-      token: "",
+      token: this.$route.query.token,
+      comments: [
+        {
+          username: "Laura",
+          image: "https://bootdey.com/img/Content/avatar/avatar3.png", //https://bootdey.com/img/Content/avatar/avatar3.png
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+        {
+          username: "Christian",
+          image: "https://bootdey.com/img/Content/avatar/avatar2.png",
+          date: "8:03 PM Today",
+          text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+      ],
     };
+  },
+  computed: {
+    numComments() {
+      return this.comments.length;
+    },
   },
   methods: {
     redirectToMainPage() {
       history.back();
     },
+    deletePost() {
+      // Ask for confirmation
+      if (confirm("Are you sure you want to delete this post?")) {
+        console.log("DELETING Post...");
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        const pathDelete = this.backendPath + "/publicacion/" + this.id;
+        const headers = { Authorization: "Bearer " + this.token };
+        axios
+          .delete(pathDelete, { headers })
+          .then((response) => {
+            deleteObject(postImageRef)
+              .then(() => {
+                alert(
+                  "Post with Title:" +
+                    response.data.titulo +
+                    " deleted successfully"
+                );
+                this.redirectToMainPage();
+              })
+              .catch((error) => {
+                alert("Firebase Error: " + error.message);
+              });
+          })
+          .catch((error) => {
+            alert("Backend Error: " + error.message);
+          });
+      }
+    },
+    redirectComment() {
+      this.$refs.input_comment.focus();
+    },
+    getPostAuthorInfo(userID) {
+      const postAuthorPath = this.backendPath + "/usuario/" + userID;
+      const headers = { Authorization: "Bearer " + this.token };
+
+      axios
+        .get(postAuthorPath, { headers })
+        .then((response) => {
+          const authorProfilePicRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
+
+          getDownloadURL(authorProfilePicRef)
+            .then((url) => {
+              this.postAuthorProfilePic = url;
+            })
+            .catch((error) => {
+              alert("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error: " + error.message);
+        });
+    },
   },
   created() {
-    const pathPost = "http://localhost:8000/publicaciones/" + this.id;
-    axios.get(pathPost).then((response) => {
-      this.title = response.data.titulo;
-      this.username = response.data.usuario_nombre;
-      this.description = response.data.descripcion;
-      const postImageRef = firebaseRef(
-        storage,
-        "postedImages/" + response.data.imagen_url
-      );
-      getDownloadURL(postImageRef).then((url) => {
-        this.image = url;
+    const pathPost = this.backendPath + "/publicaciones/" + this.id;
+    axios
+      .get(pathPost)
+      .then((response) => {
+        this.title = response.data.titulo;
+        this.postAuthorUsername = response.data.usuario_nombre;
+        this.description = response.data.descripcion;
+        this.imageFirebaseURL = response.data.imagen_url;
+        this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        if (this.loggedInUsername == this.postAuthorUsername) {
+          this.isLoggedUsersPost = true;
+        }
+        //GETTING POST IMAGE FROM FIREBASE
+        const postImageRef = firebaseRef(
+          storage,
+          "postedImages/" + this.imageFirebaseURL
+        );
+        getDownloadURL(postImageRef)
+          .then((url) => {
+            this.image = url;
+            this.getPostAuthorInfo(response.data.usuario_id);
+          })
+          .catch((error) => {
+            alert("Firebase Error: " + error.message);
+          });
+      })
+      .catch((error) => {
+        alert("Backend Error:" + error.message);
       });
-    });
   },
 };
 </script>
@@ -146,16 +292,20 @@ body {
 .img-responsive {
   display: block;
   max-width: 100%;
-  height: auto;
+  height: 80vh;
 }
 .box {
-  position: relative;
   border-radius: 3px;
+  height: 100vh;
   background: #ffffff;
   border-top: 3px solid #d2d6de;
   margin-bottom: 20px;
   width: 100%;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 60% 40%;
+  grid-template-rows: auto;
+  grid-gap: 0; /* Espacio entre las columnas (opcional) */
 }
 
 .box-header.with-border {
@@ -218,13 +368,9 @@ body {
 }
 
 .box .btn-default {
-  background-color: #f4f4f4;
+  background-color: transparent;
   color: #444;
-  border-color: #ddd;
-}
-
-.box-comments {
-  background: #f7f7f7 !important;
+  border-color: transparent;
 }
 
 .box-footer {
@@ -244,6 +390,13 @@ body {
 .box-comments .box-comment {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
+}
+.box-comments {
+  height: 70vh;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: transparent;
+  border-bottom: 2px solid #eee;
 }
 
 .img-sm,
@@ -285,5 +438,80 @@ body {
   border-radius: 0;
   box-shadow: none;
   border-color: #d2d6de;
+}
+
+.box-info {
+  grid-row: 1;
+}
+.box-image {
+  grid-row: 1;
+}
+.full-width {
+  display: block;
+  width: 100%;
+  font-size: 32px;
+}
+
+@media (max-width: 900px) {
+  .box {
+    grid-template-columns: 1fr;
+  }
+
+  .box-info {
+    grid-row: 2;
+  }
+  .box-comments {
+    height: auto;
+    max-height: 70vh;
+  }
+}
+
+.img-circle {
+  border-radius: 50%;
+}
+
+.box-footer {
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: auto;
+  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+}
+
+.blue-button {
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  height: 30px;
+  width: 5rem;
+  margin: 3px;
+  border-radius: 6px;
+}
+
+.blue-button.disabled-button {
+  background-color: rgba(20, 117, 236, 0.5);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.blue-button:hover {
+  background-color: rgba(20, 117, 236, 1);
+}
+.footer-text {
+  grid-row: 1;
+}
+.footer-image {
+  grid-row: 1;
+}
+.footer-button {
+  grid-row: 1;
+  font-weight: bold;
+  background: transparent;
+  border-color: transparent;
+  transition: color 0.2s;
+}
+.pixel-color:hover {
+  color: rgba(20, 117, 236, 0.6);
+}
+.pixel-color {
+  color: rgba(20, 117, 236, 0.9);
 }
 </style>

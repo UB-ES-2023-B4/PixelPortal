@@ -35,7 +35,7 @@ email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8080", "https://jolly-river-0df294303.4.azurestaticapps.net"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -108,7 +108,7 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         data={"sub": usuario.email}, expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre}
+    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre, "user_id": db_user.id}
 
 #Modificar perfil de usuario
 @app.put('/usuario/{username}', summary="Put user", response_model=schemas.Usuario)
