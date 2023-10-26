@@ -3,7 +3,7 @@ name: Pylint
 on:
   push:
     branches:
-      -qa_test
+      - qa_test
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +20,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
-    - name: Analysing the code with pylint
+    - name: Analyzing the code with pylint
       run: |
         pylint 'backend/*.py'
