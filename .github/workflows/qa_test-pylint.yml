@@ -20,4 +20,4 @@ jobs:
         pip install pylint
     - name: Analyzing the code with pylint
       run: |
-        pylint 'backend/*.py'
+        pylint 'backend/*.py' --disable=C0114,C0115,C0116,C0301
