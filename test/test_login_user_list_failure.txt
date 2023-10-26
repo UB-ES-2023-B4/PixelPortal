@@ -1,5 +1,0 @@
-{"email": "notexisting@example.com", "contrasena": "testpassword"}
-{"email": "test@example.com", "contrasena": "wrongpassword"}
-{"email": "test@gmail.com", "contrasena": ""}
-{"email": "", "contrasena": "password"}
-{"email": "", "contrasena": ""}
