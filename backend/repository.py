@@ -23,6 +23,11 @@ from passlib.context import CryptContext
 
 from dependencies import get_password_hash
 
+from sqlalchemy.orm import Session
+import models
+import schemas
+
+
 def create_user(db: Session, user: schemas.UsuarioCreate):
     hashed_password = get_password_hash(user.contrasena)
     db_user = models.Usuario(
@@ -80,3 +85,28 @@ def delete_publication(db: Session, publication_id : int):
     db.delete(db_publication)
     db.commit()
     return db_publication
+
+def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuario_actual: models.Usuario):
+    db_publicacion = models.Publicacion(
+        titulo=publicacion.titulo,
+        descripcion=publicacion.descripcion,
+        usuario_id=usuario_actual.id,
+        usuario_nombre=usuario_actual.nombre,  
+        tags=publicacion.tags,
+        imagen_url=publicacion.imagen_url
+    )
+    db.add(db_publicacion)
+    db.commit()
+    db.refresh(db_publicacion)
+    return db_publicacion
+
+def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_actual: models.Usuario):
+    db_comentario = models.Comentario(
+        usuario_id=usuario_actual.id,
+        publicacion_id=comentario.publicacion_id,
+        contenido=comentario.contenido
+    )
+    db.add(db_comentario)
+    db.commit()
+    db.refresh(db_comentario)
+    return db_comentario

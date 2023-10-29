@@ -1,38 +1,19 @@
-from fastapi import Depends, FastAPI, HTTPException,Request
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-import repository,models, schemas
-from database import SessionLocal, engine
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordRequestForm
-from utils import verify_password, create_access_token, create_refresh_token, get_hashed_password #production
-import models
-from fastapi import FastAPI, HTTPException, Depends, status
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from database import SessionLocal, engine  # Asegúrate de que tu módulo de base de datos está importado correctamente
-import models, schemas, repository  # Asegúrate de que tu
-app = FastAPI()
-import re
-models.Base.metadata.create_all(bind=engine) # Creem la base de dades amb els models que hem definit a SQLAlchemy
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-from repository import create_user
-from models import Usuario as DBUsuario
-from schemas import UsuarioCreate, Usuario
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 import models, schemas, repository
-from dependencies import get_db, verify_password, create_access_token, get_current_user
+from database import SessionLocal, engine
+from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
+from utils import verify_password, create_access_token, get_hashed_password
+from dependencies import get_db, get_current_user
 from datetime import timedelta
-from repository import get_user_by_email
 from typing import List
+import re
+
 
 #email pattern
 email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
-
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", "https://jolly-river-0df294303.4.azurestaticapps.net"],
@@ -166,6 +147,10 @@ def delete_team(publication_id: int, db: Session = Depends(get_db),current_user:
         if db_publication is None:
             raise HTTPException(status_code=404, detail="Match not found")
         return db_publication
+      
+@app.post("/comentarios/", response_model=schemas.Comentario)
+async def crear_comentario(comentario: schemas.ComentarioCreate, db: Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    return repository.crear_comentario(db=db, comentario=comentario, usuario_actual=usuario_actual)
 
 @app.get("/publicaciones/{publicacion_id}/comentarios/", response_model=List[schemas.Comentario])
 def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
