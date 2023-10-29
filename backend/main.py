@@ -4,11 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import models, schemas, repository
 from database import SessionLocal, engine
 from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
-from utils import verify_password, create_access_token, get_hashed_password
-from dependencies import get_db, get_current_user
+from utils import verify_password, get_hashed_password
+from dependencies import get_db, get_current_user, create_access_token
 from datetime import timedelta
 from typing import List
 import re
+from models import Usuario as DBUsuario
 
 
 #email pattern
