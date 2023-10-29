@@ -3,6 +3,7 @@ node_modules
 /dist
 
 /backend/__pycache__/
+.venv
 
 # local env files
 .env.local
