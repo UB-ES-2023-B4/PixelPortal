@@ -166,3 +166,10 @@ def delete_team(publication_id: int, db: Session = Depends(get_db),current_user:
         if db_publication is None:
             raise HTTPException(status_code=404, detail="Match not found")
         return db_publication
+
+@app.get("/publicaciones/{publicacion_id}/comentarios/", response_model=List[schemas.Comentario])
+def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
+    comentarios = db.query(models.Comentario).filter(models.Comentario.publicacion_id == publicacion_id).all()
+    if comentarios is None:
+        raise HTTPException(status_code=404, detail="Comentarios no encontrados")
+    return comentarios
