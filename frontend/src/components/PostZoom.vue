@@ -131,8 +131,7 @@ export default {
       loggedInUsername: this.$route.query.loggedUsername,
       loggedInUserId: this.$route.query.loggedUserId,
       loggedInUserPFP: "",
-      postAuthorProfilePic:
-        "https://bootdey.com/img/Content/avatar/avatar1.png",
+      postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
