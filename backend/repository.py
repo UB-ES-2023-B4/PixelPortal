@@ -1,26 +1,6 @@
+import models
+import schemas
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException, status
-import models, schemas
-from sqlalchemy.exc import IntegrityError
-
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from schemas import UsuarioCreate
-from models import Usuario
-
-from sqlalchemy.orm import Session
-from models import Usuario as DBUsuario
-from schemas import UsuarioCreate, Usuario
-
-from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException, Depends
-
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-
 from dependencies import get_password_hash
 
 def create_user(db: Session, user: schemas.UsuarioCreate):
@@ -60,6 +40,13 @@ def update_account(db: Session, username: str, account: schemas.Usuario):
     db.refresh(db_user)
     return db_user
 
+def change_password(db:Session, user: models.Usuario, new_password: schemas.UsuarioChangePassword):
+
+    user.contraseña = new_password.new_password
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuario_id: int):
     db_publicacion = models.Publicacion(**publicacion.dict(), usuario_id=usuario_id)
     db.add(db_publicacion)
