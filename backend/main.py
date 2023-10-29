@@ -166,3 +166,7 @@ def delete_team(publication_id: int, db: Session = Depends(get_db),current_user:
         if db_publication is None:
             raise HTTPException(status_code=404, detail="Match not found")
         return db_publication
+
+@app.post("/comentarios/", response_model=schemas.Comentario)
+async def crear_comentario(comentario: schemas.ComentarioCreate, db: Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    return repository.crear_comentario(db=db, comentario=comentario, usuario_actual=usuario_actual)
