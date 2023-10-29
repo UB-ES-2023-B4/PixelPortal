@@ -1,7 +1,5 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import  Optional
 from datetime import datetime
-from pydantic import BaseModel
 from pydantic import BaseModel, EmailStr
 
 
@@ -30,6 +28,18 @@ class UsuarioLogin(UsuarioBase):
     nombre: str = None
     email: str
     contrasena: str
+
+class UsuarioChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+    email: str
+class UsuarioChange(BaseModel):
+    nombre: str = None
+    email: str = None
+    descripcion: str = None
+    imagen_perfil_url: Optional[str] = None
+
+
 class SeguidorBase(BaseModel):
     seguidor_id: int
     seguido_id: int
@@ -39,12 +49,12 @@ class SeguidorCreate(SeguidorBase):
 
 class Seguidor(SeguidorBase):
     fecha_creacion: datetime
-    
     class Config:
         orm_mode = True
 
 class PublicacionBase(BaseModel):
     usuario_id: int
+    usuario_nombre: str
     titulo: str
     descripcion: str
     imagen_url: Optional[str] = None
@@ -52,12 +62,12 @@ class PublicacionBase(BaseModel):
 class PublicacionCreate(BaseModel):
     titulo: str
     descripcion: str
+    usuario_nombre: str
     imagen_url: Optional[str] = None
 
 class Publicacion(PublicacionBase):
     id: int
     fecha_creacion: datetime
-    
     class Config:
         orm_mode = True
 
@@ -72,7 +82,6 @@ class ComentarioCreate(ComentarioBase):
 class Comentario(ComentarioBase):
     id: int
     fecha_creacion: datetime
-    
     class Config:
         orm_mode = True
 
@@ -85,7 +94,6 @@ class LikeCreate(LikeBase):
 
 class Like(LikeBase):
     fecha_creacion: datetime
-    
     class Config:
         orm_mode = True
 
@@ -95,4 +103,3 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: EmailStr
-
