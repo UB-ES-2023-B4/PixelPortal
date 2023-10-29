@@ -90,6 +90,7 @@
               query: {
                 token: this.token,
                 loggedUsername: this.username,
+                loggedUserId: this.userID
               },
             }"
           >

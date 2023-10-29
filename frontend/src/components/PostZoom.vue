@@ -8,6 +8,9 @@
               <p>{{ title }}</p>
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
+              <div class="tag pixel-color" v-for="(tag, index) in this.tags" :key="index">
+                  <p>#{{ tag }}</p>
+              </div>
             </div>
           </div>
           <div class="box-info">
@@ -76,13 +79,15 @@
             </button>
             <span class="pull-right text-muted">{{ this.numComments }}</span>
             <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width">send</span>
+              <span class="material-icons pixel-color full-width">ios_share</span>
             </button>
-            <span class="pull-right text-muted">127</span>
+            <button type="button" class="btn btn-default btn-xs bookmark">
+                <span class="material-icons pixel-color full-width">bookmark</span>
+            </button>
             <div class="box-footer">
               <img
                 class="img-responsive img-circle img-sm footer-image"
-                src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                :src="this.loggedInUserPFP"
                 alt="Alt Text"
               />
               <div class="footer-text">
@@ -91,8 +96,9 @@
                   type="text"
                   class="form-control input-sm"
                   placeholder="Add a comment..."
-                  value=""
                   maxlength="150"
+                  v-model="this.comment"
+                  @input="checkCommentSize"
                 />
               </div>
               <button class="footer-button pixel-color" type="button">
@@ -120,7 +126,11 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
+      tags: [],
+      comment: '',
       loggedInUsername: this.$route.query.loggedUsername,
+      loggedInUserId: this.$route.query.loggedUserId,
+      loggedInUserPFP: "",
       postAuthorProfilePic:
         "https://bootdey.com/img/Content/avatar/avatar1.png",
       image: "",
@@ -186,6 +196,11 @@ export default {
     redirectToMainPage() {
       history.back();
     },
+    checkCommentSize() {
+        if (this.comment.length > 149) {
+            alert("You've reached the maximum of 150 characters for your comment.");
+        }
+    },
     deletePost() {
       // Ask for confirmation
       if (confirm("Are you sure you want to delete this post?")) {
@@ -220,7 +235,33 @@ export default {
     redirectComment() {
       this.$refs.input_comment.focus();
     },
-    getPostAuthorInfo(userID) {
+      getUserProfilePic(userID) {
+          return new Promise((resolve, reject) => {
+              const postUserPath = this.backendPath + "/usuario/" + userID;
+              const headers = { Authorization: "Bearer " + this.token };
+
+              axios
+                  .get(postUserPath, { headers })
+                  .then((response) => {
+                      const userProfilePicRef = firebaseRef(
+                          storage,
+                          response.data.imagen_perfil_url
+                      );
+
+                      getDownloadURL(userProfilePicRef)
+                          .then((url) => {
+                              resolve(url); // Resolvemos la promesa con la URL
+                          })
+                          .catch((error) => {
+                              reject("Firebase Error: " + error.message);
+                          });
+                  })
+                  .catch((error) => {
+                      reject("Backend Error: " + error.message);
+                  });
+          });
+      },
+      getPostAuthorInfo(userID) {
       const postAuthorPath = this.backendPath + "/usuario/" + userID;
       const headers = { Authorization: "Bearer " + this.token };
 
@@ -255,6 +296,7 @@ export default {
         this.description = response.data.descripcion;
         this.imageFirebaseURL = response.data.imagen_url;
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        this.tags = JSON.parse(response.data.tags);
         if (this.loggedInUsername == this.postAuthorUsername) {
           this.isLoggedUsersPost = true;
         }
@@ -275,6 +317,15 @@ export default {
       .catch((error) => {
         alert("Backend Error:" + error.message);
       });
+      this.getUserProfilePic(this.loggedInUserId)
+          .then((url) => {
+              this.loggedInUserPFP = url;
+          })
+          .catch((error) => {
+              alert("Error: " + error.message);
+          });
+
+
   },
 };
 </script>
@@ -513,5 +564,13 @@ body {
 }
 .pixel-color {
   color: rgba(20, 117, 236, 0.9);
+}
+
+.tag {
+    display: inline-block;
+    margin-right: 10px;
+}
+.bookmark {
+    float: right;
 }
 </style>
