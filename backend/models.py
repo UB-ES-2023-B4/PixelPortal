@@ -9,8 +9,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 
-Base = declarative_base()
-
 class Usuario(Base):
     __tablename__ = 'Usuarios'
     

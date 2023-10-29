@@ -1,0 +1,10 @@
+{"nombre": "testuser", "email": "test@example.com", "contrasena": "testpassword"}
+{"nombre": "testuser", "email": "nottest@example.com", "contrasena": "testpassword"}
+{"nombre": "", "email": "nottest@example.com", "contrasena": "testpassword"}
+{"nombre": "failtest", "email": "", "contrasena": "testpassword"}
+{"nombre": "failtest2", "email": "nottest2@example.com", "contrasena": ""}
+{"nombre": "failtest4", "email": "bad_format", "contrasena": "testpassword"}
+{"nombre": "failtest5", "email": "bad_format@", "contrasena": "testpassword"}
+{"nombre": "failtest6", "email": "bad_format@asdf", "contrasena": "testpassword"}
+{"nombre": "failtest7", "email": "@bad.com", "contrasena": "testpassword"}
+{"nombre": "failtest8", "email": "bad_format@asdf.a", "contrasena": "testpassword"}
