@@ -4,11 +4,11 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 from utils import verify_password, create_access_token
 from database import  engine  # Asegúrate de que tu módulo de base de datos está importado correctamente
 from database import get_db
 from models import Usuario as DBUsuario
-from sqlalchemy.orm import Session
 import models
 import schemas
 import repository
@@ -140,6 +140,7 @@ async def read_users_me(current_user: models.Usuario = Depends(get_current_user)
 
 @app.post("/publicaciones/", response_model=schemas.Publicacion)
 async def crear_publicacion(publicacion: schemas.PublicacionCreate, db: Session = Depends(get_db),current_user: models.Usuario = Depends(get_current_user) ):
+    print(publicacion.tags)
     if not publicacion.titulo:
         raise HTTPException(status_code=400, detail="The 'titulo' field is required")
     if not publicacion.descripcion:
