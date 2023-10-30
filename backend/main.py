@@ -94,11 +94,37 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
 
 #Modificar perfil de usuario
 @app.put('/usuario/{username}', summary="Put user", response_model=schemas.Usuario)
-def update_account(username: str, account: schemas.Usuario, db: Session = Depends(get_db)):
+def update_account(username: str, account: schemas.UsuarioChange, db: Session = Depends(get_db)):
     db_account = repository.update_account(db, username, account)
     if db_account is None:
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_account
+#Modificar la contraseña del usuario
+@app.post("/usuario/change_pass")
+def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(get_db)):
+    # Verificar si el usuario existe
+    db_user = repository.get_user_by_email(db, user.email)
+    if user.current_password == user.new_password:
+        raise HTTPException(status_code=404, detail="The new password is the same password")
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Autenticar al usuario
+    if not verify_password(user.current_password, db_user.contrasena):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    db_user = repository.change_password(db,db_user,user)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)#Al cambiar la contraseña creamos un nuevo token
+    access_token = create_access_token(
+        subject=db_user.email, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
 
 #Obtener usuario por ID
 @app.get("/usuarios/", response_model=List[schemas.Usuario])
