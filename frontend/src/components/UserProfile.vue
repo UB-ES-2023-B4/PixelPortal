@@ -7,38 +7,36 @@
                     <div class="card-body text-center">
                         <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px;">
                         <h5 class="my-3">{{ username }}</h5>
-                        <p class="text-muted mb-1">{{ description }}</p>
+                        <p class="text-muted mb-1">27 Followers    21 Following</p>
+                        <p class="text-muted mb-1">{{description}}</p>
                         <div>
                             <p class="text-muted mb-1"> </p>
                         </div>
+                        <!--
                         <div class="d-flex justify-content-center mb-2">
-                            <button type="button" class="btn btn-primary">Follow</button>
-                            <button type="button" class="btn btn-outline-primary ms-1" @click="redirectToMainPage">Go Back</button>
+                            <button type="button" class="btn btn-primary">Edit Profile</button>
                         </div>
+                        -->
                     </div>
                 </div>
                 <div class="card mb-4 mb-lg-0">
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush rounded-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fas fa-globe fa-lg text-warning"></i>
-                                <p class="mb-0">https://mdbootstrap.com</p>
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3">
+                                <img src="../assets/editar.png" alt="Icono personalizado" class="custom-icon">
+                                <p class="mb-0" style="text-align: center;">Edit Profile</p>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-github fa-lg" style="color: #333333;"></i>
-                                <p class="mb-0">mdbootstrap</p>
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3">
+                                <img src="../assets/marcador.png" alt="Icono personalizado" class="custom-icon">
+                                <p class="mb-0">Bookmarks</p>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                                <p class="mb-0">@mdbootstrap</p>
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3" @click="showUploadImageForm = true">
+                                <img src="../assets/agregar.png" alt="Icono personalizado" class="custom-icon">
+                                <p class="mb-0">New Post</p>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                                <p class="mb-0">mdbootstrap</p>
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3" @click="redirectToMainPage">
+                                <img src="../assets/casa.png" alt="Icono personalizado" class="custom-icon">
+                                <p class="mb-0">Home</p>
                             </li>
                         </ul>
                     </div>
@@ -46,8 +44,12 @@
             </div>
             <div class="col-lg-8">
                 <div class="image-container">
+                    <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token"
+                        @close="closeUploadImageForm">
+                    </UploadImagePopup>
                     <div class="images">
-                        <div class="image-card" v-for="img in showMyImages ? currentUserImages : filteredList" :key="img.id" :data-name="img.username">
+                        <div class="image-card" v-for="img in showMyImages ? currentUserImages : filteredList" :key="img.id"
+                            :data-name="img.username">
                             <router-link :to="{
                                 name: 'postZoom',
                                 params: { id: img.id },
@@ -69,12 +71,19 @@
 </template>
   
 <script>
-import axios from "axios";
+import { ref } from "vue";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
+import UploadImagePopup from "./UploadImagePopup.vue";
+import axios from "axios";
 
 export default {
     name: "PostZoom",
+    components: { UploadImagePopup },
+    setup() {
+        const showUploadImageForm = ref(false);
+        return { showUploadImageForm };
+    },
     data() {
         return {
             id: this.$route.params.id,
@@ -120,6 +129,34 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
+        },
+        closeUploadImageForm(data) {
+            this.showUploadImageForm = false;
+            this.postedImageID = data.imageID;
+            //Check if image has been posted
+            if (data.hasPosted) {
+                //post image with all the data + the image ID to the backend DATABASE here
+                const path = this.backendPath + "/publicaciones";
+                const headers = { Authorization: "Bearer " + this.token };
+                const dbData = {
+                    titulo: data.imageTitle,
+                    descripcion: data.imageDescription,
+                    imagen_url: data.imageID,
+                    usuario_nombre: data.username,
+                    tags: JSON.stringify(data.imageTags),
+                };
+                axios
+                    .post(path, dbData, { headers })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            alert("Image uploaded successfully!");
+                            this.getPublication();
+                        }
+                    })
+                    .catch((error) => {
+                        alert("Error: " + error.response.data.message);
+                    });
+            }
         },
         getPublication() {
             this.imageList = [];
@@ -194,6 +231,16 @@ export default {
 </script>
   
 <style scoped>
+.custom-list-group-item:hover {
+  background-color: #178fff; /* Color de fondo oscuro */
+  color: #fff; /* Color de texto blanco */
+  /* Otros estilos adicionales, como sombras u otros cambios de diseño */
+}
+
+.custom-icon {
+  height: 2em;
+  width: 2em;
+}
 .image-container {
     position: relative;
     min-height: 100vh;
@@ -241,6 +288,10 @@ export default {
     width: 210px;
     border-radius: 6px;
     overflow: hidden;
+}
+
+.custom-text-center {
+    text-align: center;
 }
 
 .images {
