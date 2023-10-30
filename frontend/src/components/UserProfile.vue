@@ -13,7 +13,7 @@
                         </div>
                         <div class="d-flex justify-content-center mb-2">
                             <button type="button" class="btn btn-primary">Follow</button>
-                            <button type="button" class="btn btn-outline-primary ms-1">Message</button>
+                            <button type="button" class="btn btn-outline-primary ms-1" @click="redirectToMainPage">Go Back</button>
                         </div>
                     </div>
                 </div>
@@ -46,14 +46,8 @@
             </div>
             <div class="col-lg-8">
                 <div class="image-container">
-                    <div class="search-box">
-                        <i class="bx bx-search"></i>
-                        <input type="text" v-model="search" placeholder="Search" />
-                    </div>
-
-                    <!--
                     <div class="images">
-                        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
+                        <div class="image-card" v-for="img in showMyImages ? currentUserImages : filteredList" :key="img.id" :data-name="img.username">
                             <router-link :to="{
                                 name: 'postZoom',
                                 params: { id: img.id },
@@ -68,7 +62,6 @@
                             <h6 class="image-username">{{ img.username }}</h6>
                         </div>
                     </div>
-                    -->
                 </div>
             </div>
         </div>
@@ -93,6 +86,8 @@ export default {
             musicPlayerVisible: false,
             timerDisplayVisible: false,
             directMessagingVisible: false,
+            imageList: [],
+            currentUserImages: [],
         };
     },
     computed: {
@@ -128,6 +123,8 @@ export default {
         },
         getPublication() {
             this.imageList = [];
+            this.currentUserImages = []; // Agregar esta línea
+
             const pathPublications = this.backendPath + "/publicaciones";
 
             axios
@@ -137,7 +134,7 @@ export default {
                         return publi.id != null;
                     });
                     for (let i = 0; i < publications.length; i++) {
-                        //Use publication data to recover image from Firebase and create the card
+                        // Use publication data to recover image from Firebase and create the card
                         const postedImageRef = firebaseRef(
                             storage,
                             "postedImages/" + publications[i].imagen_url
@@ -149,9 +146,15 @@ export default {
                                 description: publications[i].descripcion,
                                 title: publications[i].titulo,
                                 username: publications[i].usuario_nombre,
-                                postDate: publications[i].fecha_publicacion,
+                                postDate: publications[i].fecha_creacion,
+                                postTags: JSON.parse(publications[i].tags),
                             };
                             this.imageList.push(image);
+
+                            // Verifica si la imagen pertenece al usuario actual y agrégala a currentUserImages
+                            if (image.username === this.username) {
+                                this.currentUserImages.push(image);
+                            }
                         });
                     }
                 })
