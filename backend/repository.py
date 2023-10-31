@@ -23,6 +23,11 @@ from passlib.context import CryptContext
 
 from dependencies import get_password_hash
 
+from sqlalchemy.orm import Session
+import models
+import schemas
+
+
 def create_user(db: Session, user: schemas.UsuarioCreate):
     hashed_password = get_password_hash(user.contrasena)
     db_user = models.Usuario(
@@ -60,6 +65,13 @@ def update_account(db: Session, username: str, account: schemas.Usuario):
     db.refresh(db_user)
     return db_user
 
+def change_password(db:Session, user: models.Usuario, new_password: schemas.UsuarioChangePassword):
+    user.contraseña = new_password.new_password
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
 def crear_publicacion(db: Session, publicacion: schemas.PublicacionCreate, usuario_id: int):
     db_publicacion = models.Publicacion(**publicacion.dict(), usuario_id=usuario_id)
     db.add(db_publicacion)
@@ -73,10 +85,23 @@ def get_post(db: Session, post_id: int):
 def obtener_publicaciones(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Publicacion).offset(skip).limit(limit).all()
 
-def delete_publication(db: Session, publication_id : int):
+def delete_publication(db: Session, publication_id: int):
     db_publication = db.query(models.Publicacion).filter(models.Publicacion.id == publication_id).first()
     if not db_publication:
         return None
+    db.query(models.Comentario).filter(models.Comentario.publicacion_id == publication_id).delete()
     db.delete(db_publication)
     db.commit()
+
     return db_publication
+
+def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_actual: models.Usuario):
+    db_comentario = models.Comentario(
+        usuario_id=usuario_actual.id,
+        publicacion_id=comentario.publicacion_id,
+        contenido=comentario.contenido
+    )
+    db.add(db_comentario)
+    db.commit()
+    db.refresh(db_comentario)
+    return db_comentario

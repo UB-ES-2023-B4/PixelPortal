@@ -26,6 +26,16 @@ class Usuario(UsuarioBase):
     class Config:
         orm_mode = True
 
+class UsuarioChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+    email: str
+class UsuarioChange(BaseModel):
+    nombre: str = None
+    email: str = None
+    descripcion: str = None
+    imagen_perfil_url: Optional[str] = None
+
 class UsuarioLogin(UsuarioBase):
     nombre: str = None
     email: str
@@ -48,12 +58,14 @@ class PublicacionBase(BaseModel):
     usuario_nombre: str
     titulo: str
     descripcion: str
+    tags: Optional[str] = None
     imagen_url: Optional[str] = None
 
 class PublicacionCreate(BaseModel):
     titulo: str
     descripcion: str
     usuario_nombre: str
+    tags: Optional[str] = None
     imagen_url: Optional[str] = None
 
 class Publicacion(PublicacionBase):

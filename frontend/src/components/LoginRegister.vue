@@ -125,7 +125,7 @@ export default {
   },
   methods: {
     checkLogin() {
-      const path = "http://localhost:8000/login";
+      const path = this.backendPath + "/login";
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
       if (emailRegex.test(this.loginEmail)) {
         axios
@@ -137,7 +137,7 @@ export default {
             this.$router.push({
               path: "/home",
               query: {
-                username: response.data.username,
+                user_id: response.data.user_id,
                 token: response.data.access_token,
               },
             });
@@ -153,7 +153,7 @@ export default {
       if (this.signUpPassword != this.signUpConfirmPassword) {
         alert("Passwords do not match");
       } else {
-        const path = "http://localhost:8000/usuario";
+        const path = this.backendPath + "/usuario";
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (emailRegex.test(this.signUpEmail)) {
           axios
@@ -162,14 +162,14 @@ export default {
               email: this.signUpEmail,
               contrasena: this.signUpPassword,
               descripcion: "",
-              imagen_perfil_url: "",
+              imagen_perfil_url: "profilePictures/default_PFP.png",
             })
             .then((response) => {
               if (response.status == 200) {
                 this.$router.push({
                   path: "/home",
                   query: {
-                    username: response.data.user.nombre,
+                    user_id: response.data.user.id,
                     token: response.data.access_token.access_token,
                   },
                 });
