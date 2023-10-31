@@ -7,23 +7,27 @@
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
+          <h1 class="website-title" @click="reloadPage">PixelPortal</h1>
+        </div>
+        <div class="user-info">
           <div class="username-and-picture">
             <img
-              src="../assets/default_PFP.png"
+              :src="profilePicture"
               alt="Profile Picture"
               class="profile-picture"
             />
             <h6 class="username">{{ username }}</h6>
           </div>
           <div class="dropdown">
-            <button class="options-button" @click="toggleDropdown">
+            <button class="options-button" @click="toggleUserDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
             <div
               id="dropdown-content"
               class="dropdown-content"
-              v-if="showDropdown"
+              v-if="showUserDropdown"
             >
+              <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
           </div>
@@ -31,14 +35,38 @@
         <button class="post-button" @click="showUploadImageForm = true">
           <i class="bx bx-plus"></i> Post
         </button>
+        <button
+          class="post-button"
+          :class="{ 'post-button-my-images-selected': showMyImages }"
+          @click="showMyImages = !showMyImages"
+        >
+          <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+          My Images
+        </button>
       </div>
     </div>
 
     <!-- Image container --->
     <div class="image-container">
-      <div class="search-box">
-        <i class="bx bx-search"></i>
-        <input type="text" v-model="search" placeholder="Search" />
+      <div class="search-container">
+        <div class="search-box" :hidden="showMyImages">
+          <i class="bx bx-search"></i>
+          <input type="text" v-model="search" placeholder="Search" />
+        </div>
+        <div class="dropdown">
+          <button class="sort-button" @click="toggleSortDropdown">
+            <img class="sort-icon" src="../assets/filter.svg" alt="" />
+          </button>
+          <div class="dropdown-content" v-if="showSortDropdown">
+            <a @click="sortImagesByUploadDate(true)"
+              >Sort by upload Date (ascending)</a
+            >
+            <a @click="sortImagesByUploadDate(false)"
+              >Sort by upload Date (descending)</a
+            >
+            <a>Sort by likes</a>
+          </div>
+        </div>
       </div>
       <!-- Popup to upload images component -->
       <UploadImagePopup
@@ -51,7 +79,7 @@
       <div class="images">
         <div
           class="image-card"
-          v-for="img in filteredList"
+          v-for="img in showMyImages ? myImagesList : filteredList"
           :key="img.id"
           :data-name="img.username"
         >
@@ -61,6 +89,8 @@
               params: { id: img.id },
               query: {
                 token: this.token,
+                loggedUsername: this.username,
+                loggedUserId: this.userID
               },
             }"
           >
@@ -89,11 +119,14 @@ export default {
   },
   data() {
     return {
-      backendPath: "https://pixelportal-backend-api.onrender.com",
       search: "",
+      profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
-      showDropdown: false,
+      showMyImages: false,
+      showUserDropdown: false,
+      showSortDropdown: false,
       username: "notLoggedIn",
+      userID: "",
       token: "",
       postedImageID: "",
     };
@@ -113,25 +146,55 @@ export default {
         // Remove the "#" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
-        // Filter and return images based on the modified search term
         return this.imageList.filter((img) => {
-          return img.title.toLowerCase().includes(searchTerm);
+          return img.postTags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm)
+          );
         });
       } else {
         return this.imageList;
       }
     },
+    myImagesList() {
+      return this.imageList.filter((img) => img.username === this.username);
+    },
   },
   methods: {
-    toggleDropdown(event) {
+    reloadPage() {
+      window.location.reload();
+    },
+    toggleUserDropdown(event) {
       if (event) {
         event.stopPropagation();
       }
-      this.showDropdown = !this.showDropdown;
+      this.showUserDropdown = !this.showUserDropdown;
     },
-    closeDropdown(event) {
+    closeUserDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
-        this.showDropdown = false;
+        this.showUserDropdown = false;
+      }
+    },
+    toggleSortDropdown(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      this.showSortDropdown = !this.showSortDropdown;
+    },
+    sortImagesByUploadDate(ascending) {
+      this.imageList.sort((a, b) => {
+        const dateA = new Date(a.postDate);
+        const dateB = new Date(b.postDate);
+
+        if (ascending) {
+          return dateA - dateB;
+        } else {
+          return dateB - dateA;
+        }
+      });
+    },
+    closeSortDropdown(event) {
+      if (!event.target.classList.contains("sort-button")) {
+        this.showSortDropdown = false;
       }
     },
     closeUploadImageForm(data) {
@@ -147,6 +210,7 @@ export default {
           descripcion: data.imageDescription,
           imagen_url: data.imageID,
           usuario_nombre: data.username,
+          tags: JSON.stringify(data.imageTags),
         };
         axios
           .post(path, dbData, { headers })
@@ -184,7 +248,8 @@ export default {
                 description: publications[i].descripcion,
                 title: publications[i].titulo,
                 username: publications[i].usuario_nombre,
-                postDate: publications[i].fecha_publicacion,
+                postDate: publications[i].fecha_creacion,
+                postTags: JSON.parse(publications[i].tags),
               };
               this.imageList.push(image);
             });
@@ -194,17 +259,41 @@ export default {
           console.error(error);
         });
     },
+    getUserInfo() {
+      this.userID = this.$route.query.user_id;
+      const pathUser = this.backendPath + "/usuario/" + this.userID;
+      axios
+        .get(pathUser)
+        .then((response) => {
+          this.username = response.data.nombre;
+          const profilePictureRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
+          getDownloadURL(profilePictureRef).then((url) => {
+            this.profilePicture = url;
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   },
   mounted() {
-    window.addEventListener("click", this.closeDropdown);
+    window.addEventListener("click", this.closeUserDropdown);
+    window.addEventListener("click", this.closeSortDropdown);
     this.getPublication();
   },
   beforeUnmount() {
-    window.removeEventListener("click", this.closeDropdown);
+    window.removeEventListener("click", this.closeUserDropdown);
   },
   created() {
-    this.username = this.$route.query.username;
     this.token = this.$route.query.token;
+    if (typeof this.token === "undefined") {
+      this.$router.push({ path: "/" });
+    } else {
+      this.getUserInfo();
+    }
   },
 };
 </script>
@@ -220,7 +309,7 @@ export default {
 .image-container {
   position: relative;
   min-height: 100vh;
-  max-width: 1000px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
@@ -256,6 +345,20 @@ export default {
   left: 15px;
   font-size: 20px;
   transform: translateY(-50%);
+}
+
+.sort-button {
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  display: flex;
+  background-color: rgba(20, 117, 236, 0.9);
+  padding: 0px 5px;
+}
+
+.sort-icon {
+  height: 2rem;
 }
 
 .image-container .images .image-card {
@@ -316,11 +419,12 @@ export default {
 
 .container {
   display: flex;
+  max-width: 100%;
 }
 
 .side-bar {
   background-color: rgba(20, 117, 236, 0.9);
-  width: 200px;
+  width: 20rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -332,6 +436,14 @@ export default {
   z-index: 2;
 }
 
+.website-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+  cursor: pointer;
+  margin: 0 1rem 1rem 1rem;
+}
 .user-info-wrapper {
   position: sticky;
   top: 0;
@@ -369,6 +481,7 @@ export default {
   color: white;
   font-size: 24px;
   cursor: pointer;
+  float: right;
 }
 
 /* Style the dropdown button and content */
@@ -414,6 +527,24 @@ export default {
   border-radius: 6px;
 }
 
+.post-button-my-images-selected {
+  background-color: white;
+  border: none;
+  color: rgba(20, 117, 236, 0.9);
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 6px;
+}
+
+.post-button-my-images-selected .sidebar-icon {
+  filter: none;
+}
+
 .post-button i {
   margin-right: 5px;
 }
@@ -422,5 +553,14 @@ export default {
   color: rgba(20, 117, 236, 0.9);
   background-color: white;
   transition: background-color 0.2s linear;
+}
+.sidebar-icon {
+  margin-right: 5px;
+  height: 1.1rem;
+  filter: invert(1) grayscale(100%);
+}
+
+.post-button:hover .sidebar-icon {
+  filter: none;
 }
 </style>

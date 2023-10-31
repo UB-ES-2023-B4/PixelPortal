@@ -1,38 +1,20 @@
-from fastapi import Depends, FastAPI, HTTPException,Request
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-import repository,models, schemas
-from database import SessionLocal, engine
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordRequestForm
-from utils import verify_password, create_access_token, create_refresh_token, get_hashed_password #production
-import models
-from fastapi import FastAPI, HTTPException, Depends, status
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from database import SessionLocal, engine  # Asegúrate de que tu módulo de base de datos está importado correctamente
-import models, schemas, repository  # Asegúrate de que tu
-app = FastAPI()
-import re
-models.Base.metadata.create_all(bind=engine) # Creem la base de dades amb els models que hem definit a SQLAlchemy
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy.orm import Session
-from repository import create_user
-from models import Usuario as DBUsuario
-from schemas import UsuarioCreate, Usuario
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 import models, schemas, repository
-from dependencies import get_db, verify_password, create_access_token, get_current_user
+from database import SessionLocal, engine
+from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
+from utils import verify_password, get_hashed_password
+from dependencies import get_db, get_current_user, create_access_token
 from datetime import timedelta
-from repository import get_user_by_email
 from typing import List
+import re
+from models import Usuario as DBUsuario
+
 
 #email pattern
 email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
-
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", "https://jolly-river-0df294303.4.azurestaticapps.net"],
@@ -108,15 +90,41 @@ async def login(usuario: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         data={"sub": usuario.email}, expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre}
+    return {"access_token": access_token, "token_type": "bearer", "username": db_user.nombre, "user_id": db_user.id}
 
 #Modificar perfil de usuario
 @app.put('/usuario/{username}', summary="Put user", response_model=schemas.Usuario)
-def update_account(username: str, account: schemas.Usuario, db: Session = Depends(get_db)):
+def update_account(username: str, account: schemas.UsuarioChange, db: Session = Depends(get_db)):
     db_account = repository.update_account(db, username, account)
     if db_account is None:
         raise HTTPException(status_code=404, detail="User does not exist")
     return db_account
+#Modificar la contraseña del usuario
+@app.post("/usuario/change_pass")
+def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(get_db)):
+    # Verificar si el usuario existe
+    db_user = repository.get_user_by_email(db, user.email)
+    if user.current_password == user.new_password:
+        raise HTTPException(status_code=404, detail="The new password is the same password")
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Autenticar al usuario
+    if not verify_password(user.current_password, db_user.contrasena):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    db_user = repository.change_password(db,db_user,user)
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)#Al cambiar la contraseña creamos un nuevo token
+    access_token = create_access_token(
+        subject=db_user.email, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
 
 #Obtener usuario por ID
 @app.get("/usuarios/", response_model=List[schemas.Usuario])
@@ -166,3 +174,14 @@ def delete_team(publication_id: int, db: Session = Depends(get_db),current_user:
         if db_publication is None:
             raise HTTPException(status_code=404, detail="Match not found")
         return db_publication
+      
+@app.post("/comentarios/", response_model=schemas.Comentario)
+async def crear_comentario(comentario: schemas.ComentarioCreate, db: Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    return repository.crear_comentario(db=db, comentario=comentario, usuario_actual=usuario_actual)
+
+@app.get("/publicaciones/{publicacion_id}/comentarios/", response_model=List[schemas.Comentario])
+def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
+    comentarios = db.query(models.Comentario).filter(models.Comentario.publicacion_id == publicacion_id).all()
+    if comentarios is None:
+        raise HTTPException(status_code=404, detail="Comentarios no encontrados")
+    return comentarios
