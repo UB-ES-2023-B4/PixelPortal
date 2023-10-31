@@ -8,8 +8,12 @@
               <p>{{ title }}</p>
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
-              <div class="tag pixel-color" v-for="(tag, index) in this.tags" :key="index">
-                  <p>#{{ tag }}</p>
+              <div
+                class="tag pixel-color"
+                v-for="(tag, index) in this.tags"
+                :key="index"
+              >
+                <p>#{{ tag }}</p>
               </div>
             </div>
           </div>
@@ -54,9 +58,9 @@
                   <div class="comment-text">
                     <span class="username"
                       >{{ comment.username }}
-                      <span class="text-muted pull-right"> {{
-                        comment.date
-                      }}</span> </span
+                      <span class="text-muted pull-right">
+                        {{ comment.date }}</span
+                      > </span
                     >{{ comment.content }}
                   </div>
                 </div>
@@ -79,10 +83,14 @@
             </button>
             <span class="pull-right text-muted">{{ this.numComments }}</span>
             <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width">ios_share</span>
+              <span class="material-icons pixel-color full-width"
+                >ios_share</span
+              >
             </button>
             <button type="button" class="btn btn-default btn-xs bookmark">
-                <span class="material-icons pixel-color full-width">bookmark</span>
+              <span class="material-icons pixel-color full-width"
+                >bookmark</span
+              >
             </button>
             <div class="box-footer">
               <img
@@ -101,7 +109,11 @@
                   @input="checkCommentSize"
                 />
               </div>
-              <button class="footer-button pixel-color" type="button" @click="this.postComment">
+              <button
+                class="footer-button pixel-color"
+                type="button"
+                @click="this.postComment"
+              >
                 Post
               </button>
             </div>
@@ -127,7 +139,7 @@ export default {
     return {
       id: this.$route.params.id,
       tags: [],
-      comment: '',
+      comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
       loggedInUserId: this.$route.query.loggedUserId,
       loggedInUserPFP: "",
@@ -153,9 +165,9 @@ export default {
       history.back();
     },
     checkCommentSize() {
-        if (this.comment.length >= 150) {
-            alert("You've reached the maximum of 150 characters for your comment.");
-        }
+      if (this.comment.length >= 150) {
+        alert("You've reached the maximum of 150 characters for your comment.");
+      }
     },
     deletePost() {
       // Ask for confirmation
@@ -191,31 +203,31 @@ export default {
     redirectComment() {
       this.$refs.input_comment.focus();
     },
-      getUserProfilePic() {
-          const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
-          const headers = { Authorization: "Bearer " + this.token };
+    getUserProfilePic() {
+      const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
+      const headers = { Authorization: "Bearer " + this.token };
 
-          axios
-              .get(postUserPath, { headers })
-              .then((response) => {
-                  const userProfilePicRef = firebaseRef(
-                      storage,
-                      response.data.imagen_perfil_url
-                  );
+      axios
+        .get(postUserPath, { headers })
+        .then((response) => {
+          const userProfilePicRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
 
-                  getDownloadURL(userProfilePicRef)
-                      .then((url) => {
-                          this.loggedInUserPFP = url // Resolvemos la promesa con la URL
-                      })
-                      .catch((error) => {
-                          alert("Firebase Error: " + error.message);
-                      });
-              })
-              .catch((error) => {
-                  alert("Backend Error: " + error.message);
-              });
-      },
-      getPostAuthorInfo(userID) {
+          getDownloadURL(userProfilePicRef)
+            .then((url) => {
+              this.loggedInUserPFP = url; // Resolvemos la promesa con la URL
+            })
+            .catch((error) => {
+              alert("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error: " + error.message);
+        });
+    },
+    getPostAuthorInfo(userID) {
       const postAuthorPath = this.backendPath + "/usuario/" + userID;
       const headers = { Authorization: "Bearer " + this.token };
 
@@ -240,64 +252,73 @@ export default {
         });
     },
     postComment() {
-        const path = this.backendPath + "/comentarios";
-        const headers = { Authorization: "Bearer " + this.token };
-        axios.post(path, {
-            "usuario_id": this.loggedInUserId,
-            "publicacion_id": this.id,
-            "contenido": this.comment
-        }, { headers }
-        ).then(() => {
-            this.getComments();
-        }).catch((error) => {
-            alert("Error: " + error.message);
+      const path = this.backendPath + "/comentarios";
+      const headers = { Authorization: "Bearer " + this.token };
+      axios
+        .post(
+          path,
+          {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: this.id,
+            contenido: this.comment,
+          },
+          { headers }
+        )
+        .then(() => {
+          this.getComments();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
         });
     },
-    getUserData(idx){
-      const path  = this.backendPath + "/usuario/" + this.comments[idx].user_id;
-      axios.get(path).then((res) => {
+    getUserData(idx) {
+      const path = this.backendPath + "/usuario/" + this.comments[idx].user_id;
+      axios
+        .get(path)
+        .then((res) => {
           this.comments[idx].username = res.data.nombre;
-          const postImageRef = firebaseRef(
-              storage,
-              res.data.imagen_perfil_url);
+          const postImageRef = firebaseRef(storage, res.data.imagen_perfil_url);
           getDownloadURL(postImageRef)
-              .then((url) => {
-                  this.comments[idx].image = url;
-              })
-              .catch((error) => {
-                  console.error("Firebase Error: " + error.message);
-              });
-      })
-          .catch((error) => {
-              alert("Backend Error:" + error.message);
-          });
+            .then((url) => {
+              this.comments[idx].image = url;
+            })
+            .catch((error) => {
+              console.error("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error:" + error.message);
+        });
     },
     getUsersData() {
-        for (let i = 0; i < this.comments.length; i += 1) {
-          this.getUserData(i);
-        }
+      for (let i = 0; i < this.comments.length; i += 1) {
+        this.getUserData(i);
+      }
     },
     getComments() {
-        this.comments = []
-        const path = this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
-        axios.get(path)
-            .then((res) => {
-              var comments = res.data;
-              for (let i = 0; i < comments.length; i += 1) {
-                  const comment = {
-                      user_id : comments[i].usuario_id,
-                      post_id : comments[i].publicacion_id,
-                      content : comments[i].contenido,
-                      id : comments[i].id,
-                      date : new Date(comments[i].fecha_creacion).toLocaleString(),
-                  }
-                  this.comments.push(comment);
-              }
-              this.getUsersData();
-            }).catch((error) => {
-              alert("Error: " + error.message);
+      this.comments = [];
+      const path =
+        this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
+      axios
+        .get(path)
+        .then((res) => {
+          var comments = res.data;
+          for (let i = 0; i < comments.length; i += 1) {
+            const comment = {
+              user_id: comments[i].usuario_id,
+              post_id: comments[i].publicacion_id,
+              content: comments[i].contenido,
+              id: comments[i].id,
+              date: new Date(comments[i].fecha_creacion).toLocaleString(),
+            };
+            this.comments.push(comment);
+          }
+          this.getUsersData();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
         });
-    }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -330,8 +351,8 @@ export default {
       .catch((error) => {
         alert("Backend Error:" + error.message);
       });
-      this.getUserProfilePic();
-      this.getComments();
+    this.getUserProfilePic();
+    this.getComments();
   },
 };
 </script>
@@ -573,10 +594,10 @@ body {
 }
 
 .tag {
-    display: inline-block;
-    margin-right: 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
 .bookmark {
-    float: right;
+  float: right;
 }
 </style>
