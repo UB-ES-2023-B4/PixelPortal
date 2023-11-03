@@ -7,8 +7,8 @@
                     <div class="card-body text-center">
                         <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px;">
                         <h5 class="my-3">{{ username }}</h5>
-                        <p class="text-muted mb-1">27 Followers    21 Following</p>
-                        <p class="text-muted mb-1">{{description}}</p>
+                        <p class="text-muted mb-1">27 Followers 21 Following</p>
+                        <p class="text-muted mb-1">{{ description }}</p>
                         <div>
                             <p class="text-muted mb-1"> </p>
                         </div>
@@ -22,19 +22,30 @@
                 <div class="card mb-4 mb-lg-0">
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush rounded-3">
-                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3">
-                                <img src="../assets/editar.png" alt="Icono personalizado" class="custom-icon">
-                                <p class="mb-0" style="text-align: center;">Edit Profile</p>
-                            </li>
+                            <router-link :to="{
+                                name: 'editProfile',
+                                params: { id: this.userID },
+                                query: {
+                                    token: this.token,
+                                    loggedUsername: this.username,
+                                },
+                            }">
+                                <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <img src="../assets/editar.png" alt="Icono personalizado" class="custom-icon">
+                                    <p class="mb-0" style="text-align: center; color: black;">Edit Profile</p>
+                                </li>
+                            </router-link>
                             <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3">
                                 <img src="../assets/marcador.png" alt="Icono personalizado" class="custom-icon">
                                 <p class="mb-0">Bookmarks</p>
                             </li>
-                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3" @click="showUploadImageForm = true">
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                                @click="showUploadImageForm = true">
                                 <img src="../assets/agregar.png" alt="Icono personalizado" class="custom-icon">
                                 <p class="mb-0">New Post</p>
                             </li>
-                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3" @click="redirectToMainPage">
+                            <li class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                                @click="redirectToMainPage">
                                 <img src="../assets/casa.png" alt="Icono personalizado" class="custom-icon">
                                 <p class="mb-0">Home</p>
                             </li>
@@ -232,15 +243,18 @@ export default {
   
 <style scoped>
 .custom-list-group-item:hover {
-  background-color: #178fff; /* Color de fondo oscuro */
-  color: #fff; /* Color de texto blanco */
-  /* Otros estilos adicionales, como sombras u otros cambios de diseño */
+    background-color: #178fff;
+    /* Color de fondo oscuro */
+    color: #fff;
+    /* Color de texto blanco */
+    /* Otros estilos adicionales, como sombras u otros cambios de diseño */
 }
 
 .custom-icon {
-  height: 2em;
-  width: 2em;
+    height: 2em;
+    width: 2em;
 }
+
 .image-container {
     position: relative;
     min-height: 100vh;

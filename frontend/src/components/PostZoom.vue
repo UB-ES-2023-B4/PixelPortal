@@ -9,36 +9,33 @@
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
               <div class="tag pixel-color" v-for="(tag, index) in this.tags" :key="index">
-                  <p>#{{ tag }}</p>
+                <p>#{{ tag }}</p>
               </div>
             </div>
           </div>
           <div class="box-info">
             <div class="box-header with-border">
               <div class="user-block">
-                <img
-                  class="img-circle"
-                  :src="postAuthorProfilePic"
-                  alt="User Image"
-                />
-                <span class="username"
-                  ><a href="#">{{ postAuthorUsername }}</a></span
-                >
+                <img class="img-circle" :src="postAuthorProfilePic" alt="User Image" />
+                <span class="username">
+                  <router-link :to="{
+                    name: 'userProfile',
+                    params: { id: this.id },
+                    query: {
+                      token: this.token,
+                      loggedUsername: this.postAuthorUsername,
+                    },
+                  }">
+                    <a href="#">{{ postAuthorUsername }}</a>
+                  </router-link>
+                </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
               </div>
               <div class="box-tools">
-                <button
-                  class="blue-button"
-                  :hidden="!isLoggedUsersPost"
-                  @click="deletePost"
-                >
+                <button class="blue-button" :hidden="!isLoggedUsersPost" @click="deletePost">
                   Delete
                 </button>
-                <button
-                  type="button"
-                  class="blue-button"
-                  @click="redirectToMainPage()"
-                >
+                <button type="button" class="blue-button" @click="redirectToMainPage()">
                   <i class="fa fa-share"></i> Go Back
                 </button>
               </div>
@@ -46,60 +43,35 @@
             <div class="box-footer box-comments" style="display: block">
               <div v-for="comment in this.comments" :key="comment.id">
                 <div class="box-comment">
-                  <img
-                    class="img-circle img-sm"
-                    :src="comment.image"
-                    alt="User Image"
-                  />
+                  <img class="img-circle img-sm" :src="comment.image" alt="User Image" />
                   <div class="comment-text">
-                    <span class="username"
-                      >{{ comment.username }}
+                    <span class="username">{{ comment.username }}
                       <span class="text-muted pull-right"> {{
                         comment.date
-                      }}</span> </span
-                    >{{ comment.content }}
+                      }}</span> </span>{{ comment.content }}
                   </div>
                 </div>
               </div>
             </div>
             <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width"
-                >favorite_border</span
-              >
+              <span class="material-icons pixel-color full-width">favorite_border</span>
             </button>
             <span class="pull-right text-muted">127</span>
-            <button
-              type="button"
-              class="btn btn-default btn-xs"
-              @click="this.redirectComment()"
-            >
-              <span class="material-icons pixel-color full-width"
-                >chat_bubble_outline</span
-              >
+            <button type="button" class="btn btn-default btn-xs" @click="this.redirectComment()">
+              <span class="material-icons pixel-color full-width">chat_bubble_outline</span>
             </button>
             <span class="pull-right text-muted">{{ this.numComments }}</span>
             <button type="button" class="btn btn-default btn-xs">
               <span class="material-icons pixel-color full-width">ios_share</span>
             </button>
             <button type="button" class="btn btn-default btn-xs bookmark">
-                <span class="material-icons pixel-color full-width">bookmark</span>
+              <span class="material-icons pixel-color full-width">bookmark</span>
             </button>
             <div class="box-footer">
-              <img
-                class="img-responsive img-circle img-sm footer-image"
-                :src="this.loggedInUserPFP"
-                alt="Alt Text"
-              />
+              <img class="img-responsive img-circle img-sm footer-image" :src="this.loggedInUserPFP" alt="Alt Text" />
               <div class="footer-text">
-                <input
-                  ref="input_comment"
-                  type="text"
-                  class="form-control input-sm"
-                  placeholder="Add a comment..."
-                  maxlength="150"
-                  v-model="this.comment"
-                  @input="checkCommentSize"
-                />
+                <input ref="input_comment" type="text" class="form-control input-sm" placeholder="Add a comment..."
+                  maxlength="150" v-model="this.comment" @input="checkCommentSize" />
               </div>
               <button class="footer-button pixel-color" type="button" @click="this.postComment">
                 Post
@@ -153,9 +125,9 @@ export default {
       history.back();
     },
     checkCommentSize() {
-        if (this.comment.length >= 150) {
-            alert("You've reached the maximum of 150 characters for your comment.");
-        }
+      if (this.comment.length >= 150) {
+        alert("You've reached the maximum of 150 characters for your comment.");
+      }
     },
     deletePost() {
       // Ask for confirmation
@@ -174,8 +146,8 @@ export default {
               .then(() => {
                 alert(
                   "Post with Title:" +
-                    response.data.titulo +
-                    " deleted successfully"
+                  response.data.titulo +
+                  " deleted successfully"
                 );
                 this.redirectToMainPage();
               })
@@ -191,31 +163,31 @@ export default {
     redirectComment() {
       this.$refs.input_comment.focus();
     },
-      getUserProfilePic() {
-          const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
-          const headers = { Authorization: "Bearer " + this.token };
+    getUserProfilePic() {
+      const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
+      const headers = { Authorization: "Bearer " + this.token };
 
-          axios
-              .get(postUserPath, { headers })
-              .then((response) => {
-                  const userProfilePicRef = firebaseRef(
-                      storage,
-                      response.data.imagen_perfil_url
-                  );
+      axios
+        .get(postUserPath, { headers })
+        .then((response) => {
+          const userProfilePicRef = firebaseRef(
+            storage,
+            response.data.imagen_perfil_url
+          );
 
-                  getDownloadURL(userProfilePicRef)
-                      .then((url) => {
-                          this.loggedInUserPFP = url // Resolvemos la promesa con la URL
-                      })
-                      .catch((error) => {
-                          alert("Firebase Error: " + error.message);
-                      });
-              })
-              .catch((error) => {
-                  alert("Backend Error: " + error.message);
-              });
-      },
-      getPostAuthorInfo(userID) {
+          getDownloadURL(userProfilePicRef)
+            .then((url) => {
+              this.loggedInUserPFP = url // Resolvemos la promesa con la URL
+            })
+            .catch((error) => {
+              alert("Firebase Error: " + error.message);
+            });
+        })
+        .catch((error) => {
+          alert("Backend Error: " + error.message);
+        });
+    },
+    getPostAuthorInfo(userID) {
       const postAuthorPath = this.backendPath + "/usuario/" + userID;
       const headers = { Authorization: "Bearer " + this.token };
 
@@ -240,62 +212,62 @@ export default {
         });
     },
     postComment() {
-        const path = this.backendPath + "/comentarios";
-        const headers = { Authorization: "Bearer " + this.token };
-        axios.post(path, {
-            "usuario_id": this.loggedInUserId,
-            "publicacion_id": this.id,
-            "contenido": this.comment
-        }, { headers }
-        ).then(() => {
-            this.getComments();
-        }).catch((error) => {
-            alert("Error: " + error.message);
+      const path = this.backendPath + "/comentarios";
+      const headers = { Authorization: "Bearer " + this.token };
+      axios.post(path, {
+        "usuario_id": this.loggedInUserId,
+        "publicacion_id": this.id,
+        "contenido": this.comment
+      }, { headers }
+      ).then(() => {
+        this.getComments();
+      }).catch((error) => {
+        alert("Error: " + error.message);
+      });
+    },
+    getUserData(idx) {
+      const path = this.backendPath + "/usuario/" + this.comments[idx].user_id;
+      axios.get(path).then((res) => {
+        this.comments[idx].username = res.data.nombre;
+        const postImageRef = firebaseRef(
+          storage,
+          res.data.imagen_perfil_url);
+        getDownloadURL(postImageRef)
+          .then((url) => {
+            this.comments[idx].image = url;
+          })
+          .catch((error) => {
+            console.error("Firebase Error: " + error.message);
+          });
+      })
+        .catch((error) => {
+          alert("Backend Error:" + error.message);
         });
     },
-    getUserData(idx){
-      const path  = this.backendPath + "/usuario/" + this.comments[idx].user_id;
-      axios.get(path).then((res) => {
-          this.comments[idx].username = res.data.nombre;
-          const postImageRef = firebaseRef(
-              storage,
-              res.data.imagen_perfil_url);
-          getDownloadURL(postImageRef)
-              .then((url) => {
-                  this.comments[idx].image = url;
-              })
-              .catch((error) => {
-                  console.error("Firebase Error: " + error.message);
-              });
-      })
-          .catch((error) => {
-              alert("Backend Error:" + error.message);
-          });
-    },
     getUsersData() {
-        for (let i = 0; i < this.comments.length; i += 1) {
-          this.getUserData(i);
-        }
+      for (let i = 0; i < this.comments.length; i += 1) {
+        this.getUserData(i);
+      }
     },
     getComments() {
-        this.comments = []
-        const path = this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
-        axios.get(path)
-            .then((res) => {
-              var comments = res.data;
-              for (let i = 0; i < comments.length; i += 1) {
-                  const comment = {
-                      user_id : comments[i].usuario_id,
-                      post_id : comments[i].publicacion_id,
-                      content : comments[i].contenido,
-                      id : comments[i].id,
-                      date : new Date(comments[i].fecha_creacion).toLocaleString(),
-                  }
-                  this.comments.push(comment);
-              }
-              this.getUsersData();
-            }).catch((error) => {
-              alert("Error: " + error.message);
+      this.comments = []
+      const path = this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
+      axios.get(path)
+        .then((res) => {
+          var comments = res.data;
+          for (let i = 0; i < comments.length; i += 1) {
+            const comment = {
+              user_id: comments[i].usuario_id,
+              post_id: comments[i].publicacion_id,
+              content: comments[i].contenido,
+              id: comments[i].id,
+              date: new Date(comments[i].fecha_creacion).toLocaleString(),
+            }
+            this.comments.push(comment);
+          }
+          this.getUsersData();
+        }).catch((error) => {
+          alert("Error: " + error.message);
         });
     }
   },
@@ -330,8 +302,8 @@ export default {
       .catch((error) => {
         alert("Backend Error:" + error.message);
       });
-      this.getUserProfilePic();
-      this.getComments();
+    this.getUserProfilePic();
+    this.getComments();
   },
 };
 </script>
@@ -346,11 +318,13 @@ body {
   border: none;
   position: relative;
 }
+
 .img-responsive {
   display: block;
   max-width: 100%;
   height: 80vh;
 }
+
 .box {
   border-radius: 3px;
   height: 100vh;
@@ -362,7 +336,8 @@ body {
   display: grid;
   grid-template-columns: 60% 40%;
   grid-template-rows: auto;
-  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+  grid-gap: 0;
+  /* Espacio entre las columnas (opcional) */
 }
 
 .box-header.with-border {
@@ -399,7 +374,7 @@ body {
   margin-left: 50px;
 }
 
-.box-header > .box-tools {
+.box-header>.box-tools {
   position: absolute;
   right: 10px;
   top: 5px;
@@ -448,6 +423,7 @@ body {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
+
 .box-comments {
   height: 70vh;
   max-height: 70vh;
@@ -487,7 +463,7 @@ body {
   font-size: 12px;
 }
 
-.img-sm + .img-push {
+.img-sm+.img-push {
   margin-left: 40px;
 }
 
@@ -500,9 +476,11 @@ body {
 .box-info {
   grid-row: 1;
 }
+
 .box-image {
   grid-row: 1;
 }
+
 .full-width {
   display: block;
   width: 100%;
@@ -517,6 +495,7 @@ body {
   .box-info {
     grid-row: 2;
   }
+
   .box-comments {
     height: auto;
     max-height: 70vh;
@@ -531,7 +510,8 @@ body {
   display: grid;
   grid-template-columns: 10% 80% 10%;
   grid-template-rows: auto;
-  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+  grid-gap: 0;
+  /* Espacio entre las columnas (opcional) */
 }
 
 .blue-button {
@@ -552,12 +532,15 @@ body {
 .blue-button:hover {
   background-color: rgba(20, 117, 236, 1);
 }
+
 .footer-text {
   grid-row: 1;
 }
+
 .footer-image {
   grid-row: 1;
 }
+
 .footer-button {
   grid-row: 1;
   font-weight: bold;
@@ -565,18 +548,21 @@ body {
   border-color: transparent;
   transition: color 0.2s;
 }
+
 .pixel-color:hover {
   color: rgba(20, 117, 236, 0.6);
 }
+
 .pixel-color {
   color: rgba(20, 117, 236, 0.9);
 }
 
 .tag {
-    display: inline-block;
-    margin-right: 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
+
 .bookmark {
-    float: right;
+  float: right;
 }
 </style>

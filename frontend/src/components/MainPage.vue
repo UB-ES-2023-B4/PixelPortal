@@ -8,6 +8,7 @@
         </div>
         <div class="user-info">
           <div class="username-and-picture">
+            <img :src="profilePicture" alt="Profile Picture" class="profile-picture" />
             <router-link :to="{
               name: 'userProfile',
               params: { id: this.userID },
@@ -16,11 +17,10 @@
                 loggedUsername: this.username,
               },
             }">
-              <img :src="profilePicture" alt="Profile Picture" class="profile-picture" />
               <h6 class="username">{{ username }}</h6>
             </router-link>
           </div>
-          <div class="dropdown">
+          <div class="dropdown" style="align-items:flex-end;">
             <button class="options-button" @click="toggleUserDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
