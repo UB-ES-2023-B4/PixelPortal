@@ -5,11 +5,8 @@ from database import Base
 from sqlalchemy.sql import func 
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func, Table, BigInteger
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
-
-Base = declarative_base()
 
 class Usuario(Base):
     __tablename__ = 'Usuarios'
