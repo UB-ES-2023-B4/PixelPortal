@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
+      rel="stylesheet"
+    />
     <div class="side-bar">
       <div class="user-info-wrapper">
         <div class="user-info">
@@ -8,23 +11,33 @@
         </div>
         <div class="user-info">
           <div class="username-and-picture">
-            <img :src="profilePicture" alt="Profile Picture" class="profile-picture" />
-            <router-link :to="{
-              name: 'userProfile',
-              params: { id: this.userID },
-              query: {
-                token: this.token,
-                loggedUsername: this.username,
-              },
-            }">
+            <img
+              :src="profilePicture"
+              alt="Profile Picture"
+              class="profile-picture"
+            />
+            <router-link
+              :to="{
+                name: 'userProfile',
+                params: { id: this.userID },
+                query: {
+                  token: this.token,
+                  loggedUsername: this.username,
+                },
+              }"
+            >
               <h6 class="username">{{ username }}</h6>
             </router-link>
           </div>
-          <div class="dropdown" style="align-items:flex-end;">
+          <div class="dropdown" style="align-items: flex-end">
             <button class="options-button" @click="toggleUserDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
-            <div id="dropdown-content" class="dropdown-content" v-if="showDropdown">
+            <div
+              id="dropdown-content"
+              class="dropdown-content"
+              v-if="showUserDropdown"
+            >
               <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
@@ -67,18 +80,30 @@
         </div>
       </div>
       <!-- Popup to upload images component -->
-      <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token" @close="closeUploadImageForm">
+      <UploadImagePopup
+        :open="showUploadImageForm"
+        :username="username"
+        :token="token"
+        @close="closeUploadImageForm"
+      >
       </UploadImagePopup>
       <div class="images">
-        <div class="image-card" v-for="img in filteredList" :key="img.id" :data-name="img.username">
-          <router-link :to="{
-            name: 'postZoom',
-            params: { id: img.id },
-            query: {
-              token: this.token,
-              loggedUsername: this.username,
-            },
-          }">
+        <div
+          class="image-card"
+          v-for="img in showMyImages ? myImagesList : filteredList"
+          :key="img.id"
+          :data-name="img.username"
+        >
+          <router-link
+            :to="{
+              name: 'postZoom',
+              params: { id: img.id },
+              query: {
+                token: this.token,
+                loggedUserID: this.userID,
+              },
+            }"
+          >
             <img :src="img.image" />
           </router-link>
           <h6 class="image-title">{{ img.title }}</h6>
