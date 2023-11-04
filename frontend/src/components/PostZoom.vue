@@ -279,6 +279,7 @@ export default {
         )
         .then(() => {
           this.getComments();
+          this.comment = "";
         })
         .catch((error) => {
           alert("Error: " + error.message);
