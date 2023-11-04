@@ -163,30 +163,6 @@ export default {
     redirectComment() {
       this.$refs.input_comment.focus();
     },
-    getUserProfilePic() {
-      const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
-      const headers = { Authorization: "Bearer " + this.token };
-
-      axios
-        .get(postUserPath, { headers })
-        .then((response) => {
-          const userProfilePicRef = firebaseRef(
-            storage,
-            response.data.imagen_perfil_url
-          );
-
-          getDownloadURL(userProfilePicRef)
-            .then((url) => {
-              this.loggedInUserPFP = url // Resolvemos la promesa con la URL
-            })
-            .catch((error) => {
-              alert("Firebase Error: " + error.message);
-            });
-        })
-        .catch((error) => {
-          alert("Backend Error: " + error.message);
-        });
-    },
     getPostAuthorInfo(userID) {
       const postAuthorPath = this.backendPath + "/usuario/" + userID;
       const headers = { Authorization: "Bearer " + this.token };
@@ -302,7 +278,6 @@ export default {
       .catch((error) => {
         alert("Backend Error:" + error.message);
       });
-    this.getUserProfilePic();
     this.getComments();
   },
 };

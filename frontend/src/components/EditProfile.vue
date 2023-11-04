@@ -1,27 +1,30 @@
 <template>
     <div class="container py-5">
 
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mx-auto">
+                <div class="card mb-4 mx-auto">
                     <div class="card-body text-center">
-                        <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px;">
-                        <div class="d-flex justify-content-center mb-2">
-                            <button type="button" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-outline-primary ms-1" @click="goBack">Cancel</button>
-                        </div>
+                        <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+                    </div>
+                    <div class="form-input mx-auto">
+                        <input type="file" class="image-upload-input" ref="imageInput" accept="image/png,image/jpeg"
+                            @change="imageInputChanged" />
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6 mx-auto">
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Full Name</p>
+                                <p class="mb-0">Name</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{ username }}</p>
+                                <input type="text" id="name" v-model="username" class="form-control"
+                                    placeholder="{{username}}">
                             </div>
                         </div>
                         <hr>
@@ -33,16 +36,24 @@
                                 <p class="text-muted mb-0">{{ email }}</p>
                             </div>
                         </div>
+                        <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <p class="mb-0">Description</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{ description }}</p>
+                                <textarea id="description" v-model="description" class="form-control"
+                                    placeholder="{{description}}"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="d-flex justify-content-center mb-2">
+                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-outline-primary ms-1" @click="goBack">Cancel</button>
             </div>
         </div>
     </div>
@@ -67,6 +78,7 @@ export default {
             token: this.$route.query.token,
             description: "",
             profilePicture: "",
+            postImageExtension: "",
             leftSidebarMinimized: false,
             musicPlayerVisible: false,
             timerDisplayVisible: false,
@@ -85,6 +97,18 @@ export default {
     methods: {
         goBack() {
             history.back();
+        },
+        imageInputChanged() {
+            const imageInput = this.$refs.imageInput;
+
+            // Check if the user canceled the file selection
+            if (!imageInput.files.length) {
+                this.profilePicture = this.defaultImagePath;
+                return;
+            }
+
+            this.postImageExtension = imageInput.files[0].name.split(".").pop();
+            this.profilePicture = URL.createObjectURL(imageInput.files[0]);
         },
         getUserInfo() {
             this.userID = this.$route.params.id;

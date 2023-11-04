@@ -28,7 +28,7 @@
               />
             </div>
             <div class="form-input">
-              <h4 class="title">Ttile</h4>
+              <h4 class="title">Title</h4>
               <input
                 type="text"
                 placeholder="Title"
