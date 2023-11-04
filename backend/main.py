@@ -104,6 +104,8 @@ def update_account(username: str, account: schemas.UsuarioChange, db: Session = 
 def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(get_db)):
     # Verificar si el usuario existe
     db_user = repository.get_user_by_email(db, user.email)
+    if user.new_password == "":
+        raise HTTPException(status_code=404, detail="The new password is empty")
     if user.current_password == user.new_password:
         raise HTTPException(status_code=404, detail="The new password is the same password")
     if db_user is None:
@@ -121,7 +123,7 @@ def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(ge
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)#Al cambiar la contraseña creamos un nuevo token
     access_token = create_access_token(
-        subject=db_user.email, expires_delta=access_token_expires
+        data={"sub": db_user.email}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
