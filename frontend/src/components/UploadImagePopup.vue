@@ -160,11 +160,21 @@ export default {
       if (event.key === "Enter" && this.remainingTags > 0) {
         this.tag = this.tag.replace(/\s+/g, " ").toLowerCase();
         if (this.tag.length > 1 && !this.tags.includes(this.tag)) {
-          this.tag.split(",").forEach((tag) => {
-            this.tags.push(tag);
-          });
+          let splitTags = this.tag.split(",");
+          if (splitTags.length + this.tags.length > this.maxTags) {
+            alert("Too many tags at once");
+          } else {
+            splitTags.filter((value, index, self) => {
+              return self.indexOf(value) === index;
+            });
+            splitTags.forEach((tag) => {
+              if (!this.tags.includes(tag)) {
+                this.tags.push(tag);
+              }
+            });
+            this.tag = "";
+          }
         }
-        this.tag = "";
       } else if (event.key === "Enter" && this.remainingTags <= 0) {
         alert("Max tags reached");
       }

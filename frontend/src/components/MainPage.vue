@@ -90,7 +90,7 @@
       <div class="images">
         <div
           class="image-card"
-          v-for="img in filteredList"
+          v-for="img in showMyImages ? myImagesList : filteredList"
           :key="img.id"
           :data-name="img.username"
         >
