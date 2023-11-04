@@ -8,7 +8,11 @@
               <p>{{ title }}</p>
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
-              <div class="tag pixel-color" v-for="(tag, index) in this.tags" :key="index">
+              <div
+                class="tag pixel-color"
+                v-for="(tag, index) in this.tags"
+                :key="index"
+              >
                 <p>#{{ tag }}</p>
               </div>
             </div>
@@ -16,26 +20,40 @@
           <div class="box-info">
             <div class="box-header with-border">
               <div class="user-block">
-                <img class="img-circle" :src="postAuthorProfilePic" alt="User Image" />
+                <img
+                  class="img-circle"
+                  :src="postAuthorProfilePic"
+                  alt="User Image"
+                />
                 <span class="username">
-                  <router-link :to="{
-                    name: 'userProfile',
-                    params: { id: this.id },
-                    query: {
-                      token: this.token,
-                      loggedUsername: this.postAuthorUsername,
-                    },
-                  }">
+                  <router-link
+                    :to="{
+                      name: 'userProfile',
+                      params: { id: this.postAuthorUserId },
+                      query: {
+                        token: this.token,
+                        loggedUsername: this.postAuthorUsername,
+                      },
+                    }"
+                  >
                     <a href="#">{{ postAuthorUsername }}</a>
                   </router-link>
                 </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
               </div>
               <div class="box-tools">
-                <button class="blue-button" :hidden="!isLoggedUsersPost" @click="deletePost">
+                <button
+                  class="blue-button"
+                  :hidden="!isLoggedUsersPost"
+                  @click="deletePost"
+                >
                   Delete
                 </button>
-                <button type="button" class="blue-button" @click="redirectToMainPage()">
+                <button
+                  type="button"
+                  class="blue-button"
+                  @click="redirectToMainPage()"
+                >
                   <i class="fa fa-share"></i> Go Back
                 </button>
               </div>
@@ -43,37 +61,70 @@
             <div class="box-footer box-comments" style="display: block">
               <div v-for="comment in this.comments" :key="comment.id">
                 <div class="box-comment">
-                  <img class="img-circle img-sm" :src="comment.image" alt="User Image" />
+                  <img
+                    class="img-circle img-sm"
+                    :src="comment.image"
+                    alt="User Image"
+                  />
                   <div class="comment-text">
-                    <span class="username">{{ comment.username }}
-                      <span class="text-muted pull-right"> {{
-                        comment.date
-                      }}</span> </span>{{ comment.content }}
+                    <span class="username"
+                      >{{ comment.username }}
+                      <span class="text-muted pull-right">
+                        {{ comment.date }}</span
+                      > </span
+                    >{{ comment.content }}
                   </div>
                 </div>
               </div>
             </div>
             <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width">favorite_border</span>
+              <span class="material-icons pixel-color full-width"
+                >favorite_border</span
+              >
             </button>
             <span class="pull-right text-muted">127</span>
-            <button type="button" class="btn btn-default btn-xs" @click="this.redirectComment()">
-              <span class="material-icons pixel-color full-width">chat_bubble_outline</span>
+            <button
+              type="button"
+              class="btn btn-default btn-xs"
+              @click="this.redirectComment()"
+            >
+              <span class="material-icons pixel-color full-width"
+                >chat_bubble_outline</span
+              >
             </button>
             <span class="pull-right text-muted">{{ this.numComments }}</span>
             <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width">ios_share</span>
+              <span class="material-icons pixel-color full-width"
+                >ios_share</span
+              >
             </button>
             <button type="button" class="btn btn-default btn-xs bookmark">
-              <span class="material-icons pixel-color full-width">bookmark</span>
+              <span class="material-icons pixel-color full-width"
+                >bookmark</span
+              >
             </button>
             <div class="box-footer">
-              <img class="img-responsive img-circle img-sm footer-image" :src="this.loggedInUserPFP" alt="Alt Text" />
+              <img
+                class="img-responsive img-circle img-sm footer-image"
+                :src="this.loggedInUserPFP"
+                alt="Alt Text"
+              />
               <div class="footer-text">
-                <input ref="input_comment" type="text" class="form-control input-sm" placeholder="Add a comment..."
-                  maxlength="150" v-model="this.comment" @input="checkCommentSize" />
+                <input
+                  ref="input_comment"
+                  type="text"
+                  class="form-control input-sm"
+                  placeholder="Add a comment..."
+                  maxlength="150"
+                  v-model="this.comment"
+                  @input="checkCommentSize"
+                />
               </div>
-              <button class="footer-button pixel-color" type="button" @click="this.postComment">
+              <button
+                class="footer-button pixel-color"
+                type="button"
+                @click="this.postComment"
+              >
                 Post
               </button>
             </div>
@@ -99,14 +150,15 @@ export default {
     return {
       id: this.$route.params.id,
       tags: [],
-      comment: '',
+      comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
-      loggedInUserId: this.$route.query.loggedUserId,
+      loggedInUserId: this.$route.query.loggedUserID,
       loggedInUserPFP: "",
       postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
+      postAuthorUserId: 0,
       postDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
@@ -146,8 +198,8 @@ export default {
               .then(() => {
                 alert(
                   "Post with Title:" +
-                  response.data.titulo +
-                  " deleted successfully"
+                    response.data.titulo +
+                    " deleted successfully"
                 );
                 this.redirectToMainPage();
               })
@@ -164,11 +216,12 @@ export default {
       this.$refs.input_comment.focus();
     },
     getUserProfilePic() {
-      const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
+      const loggedInUserPath =
+        this.backendPath + "/usuario/" + this.loggedInUserId;
       const headers = { Authorization: "Bearer " + this.token };
 
       axios
-        .get(postUserPath, { headers })
+        .get(loggedInUserPath, { headers })
         .then((response) => {
           const userProfilePicRef = firebaseRef(
             storage,
@@ -177,7 +230,7 @@ export default {
 
           getDownloadURL(userProfilePicRef)
             .then((url) => {
-              this.loggedInUserPFP = url // Resolvemos la promesa con la URL
+              this.loggedInUserPFP = url; // Resolvemos la promesa con la URL
             })
             .catch((error) => {
               alert("Firebase Error: " + error.message);
@@ -214,32 +267,38 @@ export default {
     postComment() {
       const path = this.backendPath + "/comentarios";
       const headers = { Authorization: "Bearer " + this.token };
-      axios.post(path, {
-        "usuario_id": this.loggedInUserId,
-        "publicacion_id": this.id,
-        "contenido": this.comment
-      }, { headers }
-      ).then(() => {
-        this.getComments();
-      }).catch((error) => {
-        alert("Error: " + error.message);
-      });
+      axios
+        .post(
+          path,
+          {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: this.id,
+            contenido: this.comment,
+          },
+          { headers }
+        )
+        .then(() => {
+          this.getComments();
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
     },
     getUserData(idx) {
       const path = this.backendPath + "/usuario/" + this.comments[idx].user_id;
-      axios.get(path).then((res) => {
-        this.comments[idx].username = res.data.nombre;
-        const postImageRef = firebaseRef(
-          storage,
-          res.data.imagen_perfil_url);
-        getDownloadURL(postImageRef)
-          .then((url) => {
-            this.comments[idx].image = url;
-          })
-          .catch((error) => {
-            console.error("Firebase Error: " + error.message);
-          });
-      })
+      axios
+        .get(path)
+        .then((res) => {
+          this.comments[idx].username = res.data.nombre;
+          const postImageRef = firebaseRef(storage, res.data.imagen_perfil_url);
+          getDownloadURL(postImageRef)
+            .then((url) => {
+              this.comments[idx].image = url;
+            })
+            .catch((error) => {
+              console.error("Firebase Error: " + error.message);
+            });
+        })
         .catch((error) => {
           alert("Backend Error:" + error.message);
         });
@@ -250,9 +309,11 @@ export default {
       }
     },
     getComments() {
-      this.comments = []
-      const path = this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
-      axios.get(path)
+      this.comments = [];
+      const path =
+        this.backendPath + "/publicaciones/" + this.id + "/comentarios/";
+      axios
+        .get(path)
         .then((res) => {
           var comments = res.data;
           for (let i = 0; i < comments.length; i += 1) {
@@ -262,14 +323,15 @@ export default {
               content: comments[i].contenido,
               id: comments[i].id,
               date: new Date(comments[i].fecha_creacion).toLocaleString(),
-            }
+            };
             this.comments.push(comment);
           }
           this.getUsersData();
-        }).catch((error) => {
+        })
+        .catch((error) => {
           alert("Error: " + error.message);
         });
-    }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -277,6 +339,7 @@ export default {
       .get(pathPost)
       .then((response) => {
         this.title = response.data.titulo;
+        this.postAuthorUserId = response.data.usuario_id;
         this.postAuthorUsername = response.data.usuario_nombre;
         this.description = response.data.descripcion;
         this.imageFirebaseURL = response.data.imagen_url;
@@ -374,7 +437,7 @@ body {
   margin-left: 50px;
 }
 
-.box-header>.box-tools {
+.box-header > .box-tools {
   position: absolute;
   right: 10px;
   top: 5px;
@@ -463,7 +526,7 @@ body {
   font-size: 12px;
 }
 
-.img-sm+.img-push {
+.img-sm + .img-push {
   margin-left: 40px;
 }
 
