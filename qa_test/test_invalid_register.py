@@ -11,6 +11,6 @@ import pytest
 	{"nombre": "failtest8", 	"email": "bad_format@asdf.a", 		"contrasena": "testpassword"}
 ])
 
-def test_register_valid_user(test_client, invalid_user_data):
+def test_invalid_register(test_client, invalid_user_data):
     response = test_client.post("/usuario/", json=invalid_user_data)
     assert response.status_code == 400, f"Expected status code 404 but got {response.status_code}. Response: {response.json()}"

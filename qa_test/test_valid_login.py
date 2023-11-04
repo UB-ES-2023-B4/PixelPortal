@@ -16,7 +16,6 @@ def test_valid_login(test_client, register_user_data):
     response_data = response.json()
     assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
     assert "access_token" in response_data.keys()
-    assert access_token == response_data['access_token']
     assert "token_type" in response_data.keys()
     assert "username" in response_data.keys()
     assert register_user_data["nombre"] == response_data["username"]

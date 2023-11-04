@@ -8,7 +8,7 @@ import pytest
 	{"email": "", "contrasena": ""}
 ])
 
-def test_valid_login(test_client, invalid_user_data):
+def test_invalid_login(test_client, invalid_user_data):
     register_user_data = {
         "nombre": "testuser",
         "email": "test@example.com",

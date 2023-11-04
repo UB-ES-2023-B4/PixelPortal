@@ -31,7 +31,7 @@ import pytest
     	},
 ])
 
-def test_post_image(test_client, image_data):
+def test_invalid_post_image(test_client, image_data):
     user_data = {
         "nombre": "Jonadan",
         "email": "jona@hotmail.com",

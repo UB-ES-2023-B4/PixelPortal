@@ -7,7 +7,7 @@ import pytest
     {"nombre": "Pepe",          "email": "pepe@gmail.com",          "contrasena": "Qwer!234"}
 ])
 
-def test_register_valid_user(test_client, valid_user_data):
+def test_valid_register(test_client, valid_user_data):
     response = test_client.post("/usuario/", json=valid_user_data)
     response_data = response.json()
     assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response_data}"
