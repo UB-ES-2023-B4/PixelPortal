@@ -210,18 +210,6 @@ export default {
                     console.error(error);
                 });
         },
-        toggleLeftSidebar() {
-            this.leftSidebarMinimized = !this.leftSidebarMinimized;
-        },
-        toggleMusicPlayer() {
-            this.musicPlayerVisible = !this.musicPlayerVisible;
-        },
-        toggleTimerDisplay() {
-            this.timerDisplayVisible = !this.timerDisplayVisible;
-        },
-        toggleDirectMessaging() {
-            this.directMessagingVisible = !this.directMessagingVisible;
-        },
     },
     mounted() {
         window.addEventListener("click", this.closeDropdown);

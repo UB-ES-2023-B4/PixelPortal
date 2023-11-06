@@ -52,7 +52,7 @@
         </div>
         <div class="row">
             <div class="d-flex justify-content-center mb-2">
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary" @click="updateProfile">Save</button>
                 <button type="button" class="btn btn-outline-primary ms-1" @click="goBack">Cancel</button>
             </div>
         </div>
@@ -60,7 +60,7 @@
 </template>
   
 <script>
-import { ref } from "vue";
+import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import axios from "axios";
@@ -78,11 +78,9 @@ export default {
             token: this.$route.query.token,
             description: "",
             profilePicture: "",
+            changePicture: "",
             postImageExtension: "",
-            leftSidebarMinimized: false,
-            musicPlayerVisible: false,
-            timerDisplayVisible: false,
-            directMessagingVisible: false,
+            profilePicUploaded: false,
             imageList: [],
             currentUserImages: [],
         };
@@ -98,17 +96,103 @@ export default {
         goBack() {
             history.back();
         },
+        uuidv4() {
+            return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                (
+                    c ^
+                    (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+                ).toString(16)
+            );
+        },
+        updateProfile() {
+            const pathUser = this.backendPath + "/usuario/" + this.id;
+            const headers = { Authorization: "Bearer " + this.token };
+
+            // Comprueba si se ha subido una nueva imagen
+            if (this.profilePicUploaded) {
+                this.postProfilePic();
+                // La carga de la imagen se ha completado, ahora puedes actualizar el perfil
+                const data = {
+                    nombre: this.username,
+                    descripcion: this.description,
+                    imagen_perfil_url: this.imagePostedRef, // Utiliza la referencia completa de la imagen
+                };
+
+                console.log("Estamos enviando estos datos: ", data);
+
+                axios
+                    .put(pathUser, data, { headers })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            alert("Perfil actualizado con éxito.");
+                            history.back();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al actualizar el perfil:", error);
+                        alert("Error al actualizar el perfil: " + error.response.data.detail);
+                    });
+            } else {
+                // Si no se subió una nueva imagen, actualiza el perfil sin cambios en la imagen
+                const data = {
+                    nombre: this.username,
+                    descripcion: this.description,
+                };
+
+                console.log("Estamos enviando estos datos: ", data);
+
+                axios
+                    .put(pathUser, data, { headers })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            alert("Perfil actualizado con éxito.");
+                            history.back();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al actualizar el perfil:", error);
+                        alert("Error al actualizar el perfil: " + error.response.data.detail);
+                    });
+            }
+        },
+        postProfilePic() {
+            const imageInput = this.$refs.imageInput;
+            var imageToUpload = imageInput.files[0];
+            this.imageID = this.uuidv4();
+            const imagePostedRef = ref(
+                storage,
+                "profilePictures/" + this.imageID + "." + this.postImageExtension
+            );
+            console.log("Subiendo imagen...");
+
+            uploadBytes(imagePostedRef, imageToUpload)
+                .then(() => {
+                    console.log("Imagen subida con éxito");
+                    this.imagePostedRef = imagePostedRef; // Guardar la referencia de la imagen
+                    this.$emit("close", {
+                        profilePicUploaded: true,
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar la imagen:", error);
+                });
+            console.log("imagePostedRef...2", imagePostedRef);
+        },
         imageInputChanged() {
             const imageInput = this.$refs.imageInput;
 
             // Check if the user canceled the file selection
             if (!imageInput.files.length) {
-                this.profilePicture = this.defaultImagePath;
+                this.changePicture = this.defaultImagePath;
+                this.profilePicUploaded = false;
                 return;
             }
 
+            this.profilePicUploaded = true;
+            console.log("Imagen subida");
             this.postImageExtension = imageInput.files[0].name.split(".").pop();
-            this.profilePicture = URL.createObjectURL(imageInput.files[0]);
+            console.log("Extension", this.postImageExtension);
+            this.changePicture = URL.createObjectURL(imageInput.files[0]);
         },
         getUserInfo() {
             this.userID = this.$route.params.id;
@@ -198,18 +282,6 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-        },
-        toggleLeftSidebar() {
-            this.leftSidebarMinimized = !this.leftSidebarMinimized;
-        },
-        toggleMusicPlayer() {
-            this.musicPlayerVisible = !this.musicPlayerVisible;
-        },
-        toggleTimerDisplay() {
-            this.timerDisplayVisible = !this.timerDisplayVisible;
-        },
-        toggleDirectMessaging() {
-            this.directMessagingVisible = !this.directMessagingVisible;
         },
     },
     mounted() {
