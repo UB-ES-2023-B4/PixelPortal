@@ -5,7 +5,7 @@
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px;">
+                        <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
                         <h5 class="my-3">{{ username }}</h5>
                         <p class="text-muted mb-1">27 Followers 21 Following</p>
                         <p class="text-muted mb-1">{{ description }}</p>
