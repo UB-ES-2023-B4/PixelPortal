@@ -5,7 +5,7 @@
         <div class="box box-widget">
           <div class="box-image">
             <div class="box-body" style="display: block">
-              <p>{{ title }}</p>
+              <h4>{{ title }}</h4>
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
               <div class="tag pixel-color" v-for="(tag, index) in this.tags" :key="index">
@@ -18,16 +18,7 @@
               <div class="user-block">
                 <img class="img-circle" :src="postAuthorProfilePic" alt="User Image" />
                 <span class="username">
-                  <router-link :to="{
-                    name: 'userProfile',
-                    params: { id: this.id },
-                    query: {
-                      token: this.token,
-                      loggedUsername: this.postAuthorUsername,
-                    },
-                  }">
-                    <a href="#">{{ postAuthorUsername }}</a>
-                  </router-link>
+                {{ postAuthorUsername }}
                 </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
               </div>
