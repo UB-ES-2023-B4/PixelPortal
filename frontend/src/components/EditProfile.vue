@@ -1,24 +1,26 @@
 <template>
     <div class="container py-5">
 
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="card mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mx-auto">
+                <div class="card mb-4 mx-auto">
                     <div class="card-body text-center">
-                        <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px;">
-                        <div class="d-flex justify-content-center mb-2">
-                            <button type="button" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-outline-primary ms-1" @click="goBack">Cancel</button>
-                        </div>
+                        <img :src="changePicture" class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+                    </div>
+                    <div class="form-input mx-auto">
+                        <input type="file" class="image-upload-input" ref="imageInput" accept="image/png,image/jpeg"
+                            @change="imageInputChanged" />
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6 mx-auto">
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-3">
-                                <p class="mb-0">Full Name</p>
+                                <p class="mb-0">Name</p>
                             </div>
                             <div class="col-sm-9">
                                 <p class="text-muted mb-0">{{ username }}</p>
@@ -33,23 +35,31 @@
                                 <p class="text-muted mb-0">{{ email }}</p>
                             </div>
                         </div>
+                        <hr>
                         <div class="row">
                             <div class="col-sm-3">
                                 <p class="mb-0">Description</p>
                             </div>
                             <div class="col-sm-9">
-                                <p class="text-muted mb-0">{{ description }}</p>
+                                <textarea id="description" v-model="description" class="form-control"
+                                    placeholder="{{description}}"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="d-flex justify-content-center mb-2">
+                <button type="button" class="btn btn-primary" @click="updateProfile">Save</button>
+                <button type="button" class="btn btn-outline-primary ms-1" @click="goBack">Cancel</button>
+            </div>
+        </div>
     </div>
 </template>
   
 <script>
-import { ref } from "vue";
+import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import axios from "axios";
@@ -64,13 +74,14 @@ export default {
         return {
             id: this.$route.params.id,
             username: "",
+            lastUsername: "",
+            email: "",
             token: this.$route.query.token,
             description: "",
             profilePicture: "",
-            leftSidebarMinimized: false,
-            musicPlayerVisible: false,
-            timerDisplayVisible: false,
-            directMessagingVisible: false,
+            changePicture: "",
+            postImageExtension: "",
+            profilePicUploaded: false,
             imageList: [],
             currentUserImages: [],
         };
@@ -86,6 +97,145 @@ export default {
         goBack() {
             history.back();
         },
+        uuidv4() {
+            return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+                (
+                    c ^
+                    (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+                ).toString(16)
+            );
+        },
+        updateProfile() {
+            const pathUser = this.backendPath + "/usuario/" + this.id;
+            const headers = { Authorization: "Bearer " + this.token };
+
+            // Comprueba si se ha subido una nueva imagen
+            if (this.profilePicUploaded) {
+                console.log("Se va a actualizar la imagen");
+                this.postProfilePic();
+                // La carga de la imagen se ha completado, ahora puedes actualizar el perfil
+                const data = {
+                    nombre: this.username,
+                    descripcion: this.description,
+                    imagen_perfil_url: this.profilePicture, // Utiliza la referencia completa de la imagen
+                };
+
+                console.log("Estamos enviando estos datos: ", data);
+
+                axios
+                    .put(pathUser, data, { headers })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            alert("Perfil actualizado con éxito.");
+                            history.back();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al actualizar el perfil:", error);
+                        alert("Error al actualizar el perfil: " + error.response.data.detail);
+                    });
+            } else {
+                // Si no se subió una nueva imagen, actualiza el perfil sin cambios en la imagen
+                const data = {
+                    nombre: this.username,
+                    descripcion: this.description,
+                };
+
+                console.log("Estamos enviando estos datos: ", data);
+
+                axios
+                    .put(pathUser, data, { headers })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            alert("Perfil actualizado con éxito.");
+                            // Actualiza el nombre de usuario en las publicaciones
+                            //this.updateUsernameInPublications(this.lastUsername, this.username);
+                            //this.lastUsername = this.username;
+                            history.back();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error al actualizar el perfil:", error);
+                        alert("Error al actualizar el perfil: " + error.response.data.detail);
+                    });
+            }
+        },
+        updateUsernameInPublications(lastUsername, newUsername) {
+            const headers = { Authorization: "Bearer " + this.token };
+            const pathPublications = this.backendPath + "/publicaciones";
+
+            // Hacer una solicitud para obtener las publicaciones del usuario
+            axios.get(pathPublications)
+                .then((res) => {
+                    const publications = res.data;
+                    for (const publication of publications) {
+                        if (publication.usuario_nombre === lastUsername) {
+                            // Actualiza el nombre de usuario en la publicación
+                            publication.usuario_nombre = newUsername;
+
+                            // Hacer una solicitud para actualizar el nombre en la publicación
+                            const pathPublication = this.backendPath + "/publicaciones/" + publication.id;
+                            axios.put(pathPublication, { usuario_nombre: newUsername }, { headers })
+                                .then((response) => {
+                                    if (response.status === 200) {
+                                        alert("Publicaciones actualizadas con éxito.");
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error("Error al actualizar el nombre de usuario en la publicación:", error);
+                                });
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error al obtener las publicaciones:", error);
+                });
+        },
+        postProfilePic() {
+            const imageInput = this.$refs.imageInput;
+            console.log("convertimos la imagen: ", imageInput);
+            var imageToUpload = imageInput.files[0];
+            console.log("image to upload: ", imageToUpload);
+            this.imageID = this.uuidv4();
+            console.log("image id en uuidv4: ", this.imageID);
+            const imagePostedRef = ref(
+                storage,
+                "profilePictures/" + this.imageID + "." + this.postImageExtension
+            );
+
+            this.profilePicture = "profilePictures/" + this.imageID + "." + this.postImageExtension;
+
+            uploadBytes(imagePostedRef,imageToUpload)
+                .then(() => {
+                    console.log("Imagen subida con éxito");
+                    this.imagePostedRef = imagePostedRef;
+                    this.newImageRef = imagePostedRef; // Guardar la referencia de la imagen
+                    this.$emit("close", {
+                        profilePicUploaded: true,
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar la imagen:", error);
+                });
+            console.log("imagePostedRef...", imagePostedRef);
+        },
+        imageInputChanged() {
+            const imageInput = this.$refs.imageInput;
+
+            // Check if the user canceled the file selection
+            if (!imageInput.files.length) {
+                this.profilePicUploaded = false;
+                return;
+            }
+
+            this.changePicture = imageInput;
+            this.profilePicUploaded = true;
+            console.log("Imagen subida: ", this.changePicture);
+            this.postImageExtension = imageInput.files[0].name.split(".").pop();
+            console.log("Extension", this.postImageExtension);
+            this.changePicture = URL.createObjectURL(imageInput.files[0]);
+            console.log("url de la imagen creada: ", this.changePicture);
+        },
         getUserInfo() {
             this.userID = this.$route.params.id;
             const pathUser = this.backendPath + "/usuario/" + this.userID;
@@ -93,6 +243,8 @@ export default {
                 .get(pathUser)
                 .then((response) => {
                     this.username = response.data.nombre;
+                    this.lastUsername = response.data.nombre;
+                    this.email = response.data.email;
                     this.description = response.data.descripcion;
                     const profilePictureRef = firebaseRef(
                         storage,
@@ -100,6 +252,7 @@ export default {
                     );
                     getDownloadURL(profilePictureRef).then((url) => {
                         this.profilePicture = url;
+                        this.changePicture = url;
                     });
                 })
                 .catch((error) => {
@@ -174,18 +327,6 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-        },
-        toggleLeftSidebar() {
-            this.leftSidebarMinimized = !this.leftSidebarMinimized;
-        },
-        toggleMusicPlayer() {
-            this.musicPlayerVisible = !this.musicPlayerVisible;
-        },
-        toggleTimerDisplay() {
-            this.timerDisplayVisible = !this.timerDisplayVisible;
-        },
-        toggleDirectMessaging() {
-            this.directMessagingVisible = !this.directMessagingVisible;
         },
     },
     mounted() {
