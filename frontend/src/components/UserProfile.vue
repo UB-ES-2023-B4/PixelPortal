@@ -106,7 +106,7 @@
                   params: { id: img.id },
                   query: {
                     token: this.token,
-                    loggedUsername: this.username,
+                    loggedUserID: this.id,
                   },
                 }"
               >
