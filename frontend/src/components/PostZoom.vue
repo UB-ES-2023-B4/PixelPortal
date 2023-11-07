@@ -26,7 +26,7 @@
                   alt="User Image"
                 />
                 <span class="username">
-                {{ postAuthorUsername }}
+                  {{ postAuthorUsername }}
                 </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
               </div>
@@ -356,6 +356,7 @@ export default {
         alert("Backend Error:" + error.message);
       });
     this.getComments();
+    this.getUserProfilePic();
   },
 };
 </script>
