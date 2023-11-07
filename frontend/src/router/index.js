@@ -3,6 +3,8 @@ import AboutView from "../views/AboutView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginregisterView from "../views/LoginregisterView.vue";
 import PostZoom from "../components/PostZoom.vue";
+import UserProfile from "../components/UserProfile.vue";
+import EditProfile from "../components/EditProfile.vue";
 
 const routes = [
   {
@@ -27,6 +29,18 @@ const routes = [
     path: '/postZoom/:id',
     name:"postZoom",
     component: PostZoom,
+    props: true,
+  },
+  {
+    path: '/user/:id',
+    name:"userProfile",
+    component: UserProfile,
+    props: true,
+  },
+  {
+    path: '/editProfile/:id',
+    name:"editProfile",
+    component: EditProfile,
     props: true,
   },
 ];

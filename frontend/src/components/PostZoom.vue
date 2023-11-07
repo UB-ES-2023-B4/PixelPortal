@@ -5,7 +5,7 @@
         <div class="box box-widget">
           <div class="box-image">
             <div class="box-body" style="display: block">
-              <p>{{ title }}</p>
+              <h4>{{ title }}</h4>
               <img class="img-responsive pad" :src="image" alt="Photo" />
               <p>{{ description }}</p>
               <div
@@ -25,9 +25,9 @@
                   :src="postAuthorProfilePic"
                   alt="User Image"
                 />
-                <span class="username"
-                  ><a href="#">{{ postAuthorUsername }}</a></span
-                >
+                <span class="username">
+                  {{ postAuthorUsername }}
+                </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
               </div>
               <div class="box-tools">
@@ -141,12 +141,13 @@ export default {
       tags: [],
       comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
-      loggedInUserId: this.$route.query.loggedUserId,
+      loggedInUserId: this.$route.query.loggedUserID,
       loggedInUserPFP: "",
       postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
+      postAuthorUserId: 0,
       postDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
@@ -204,11 +205,12 @@ export default {
       this.$refs.input_comment.focus();
     },
     getUserProfilePic() {
-      const postUserPath = this.backendPath + "/usuario/" + this.loggedInUserId;
+      const loggedInUserPath =
+        this.backendPath + "/usuario/" + this.loggedInUserId;
       const headers = { Authorization: "Bearer " + this.token };
 
       axios
-        .get(postUserPath, { headers })
+        .get(loggedInUserPath, { headers })
         .then((response) => {
           const userProfilePicRef = firebaseRef(
             storage,
@@ -266,6 +268,7 @@ export default {
         )
         .then(() => {
           this.getComments();
+          this.comment = "";
         })
         .catch((error) => {
           alert("Error: " + error.message);
@@ -326,6 +329,7 @@ export default {
       .get(pathPost)
       .then((response) => {
         this.title = response.data.titulo;
+        this.postAuthorUserId = response.data.usuario_id;
         this.postAuthorUsername = response.data.usuario_nombre;
         this.description = response.data.descripcion;
         this.imageFirebaseURL = response.data.imagen_url;
@@ -351,8 +355,8 @@ export default {
       .catch((error) => {
         alert("Backend Error:" + error.message);
       });
-    this.getUserProfilePic();
     this.getComments();
+    this.getUserProfilePic();
   },
 };
 </script>
@@ -367,11 +371,13 @@ body {
   border: none;
   position: relative;
 }
+
 .img-responsive {
   display: block;
   max-width: 100%;
   height: 80vh;
 }
+
 .box {
   border-radius: 3px;
   height: 100vh;
@@ -383,7 +389,8 @@ body {
   display: grid;
   grid-template-columns: 60% 40%;
   grid-template-rows: auto;
-  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+  grid-gap: 0;
+  /* Espacio entre las columnas (opcional) */
 }
 
 .box-header.with-border {
@@ -469,6 +476,7 @@ body {
   padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
+
 .box-comments {
   height: 70vh;
   max-height: 70vh;
@@ -521,9 +529,11 @@ body {
 .box-info {
   grid-row: 1;
 }
+
 .box-image {
   grid-row: 1;
 }
+
 .full-width {
   display: block;
   width: 100%;
@@ -538,6 +548,7 @@ body {
   .box-info {
     grid-row: 2;
   }
+
   .box-comments {
     height: auto;
     max-height: 70vh;
@@ -552,7 +563,8 @@ body {
   display: grid;
   grid-template-columns: 10% 80% 10%;
   grid-template-rows: auto;
-  grid-gap: 0; /* Espacio entre las columnas (opcional) */
+  grid-gap: 0;
+  /* Espacio entre las columnas (opcional) */
 }
 
 .blue-button {
@@ -573,12 +585,15 @@ body {
 .blue-button:hover {
   background-color: rgba(20, 117, 236, 1);
 }
+
 .footer-text {
   grid-row: 1;
 }
+
 .footer-image {
   grid-row: 1;
 }
+
 .footer-button {
   grid-row: 1;
   font-weight: bold;
@@ -586,9 +601,11 @@ body {
   border-color: transparent;
   transition: color 0.2s;
 }
+
 .pixel-color:hover {
   color: rgba(20, 117, 236, 0.6);
 }
+
 .pixel-color {
   color: rgba(20, 117, 236, 0.9);
 }
@@ -597,6 +614,7 @@ body {
   display: inline-block;
   margin-right: 10px;
 }
+
 .bookmark {
   float: right;
 }

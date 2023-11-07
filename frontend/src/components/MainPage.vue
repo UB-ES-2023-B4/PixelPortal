@@ -16,9 +16,20 @@
               alt="Profile Picture"
               class="profile-picture"
             />
-            <h6 class="username">{{ username }}</h6>
+            <router-link
+              :to="{
+                name: 'userProfile',
+                params: { id: this.userID },
+                query: {
+                  token: this.token,
+                  loggedUsername: this.username,
+                },
+              }"
+            >
+              <h6 class="username">{{ username }}</h6>
+            </router-link>
           </div>
-          <div class="dropdown">
+          <div class="dropdown" style="align-items: flex-end">
             <button class="options-button" @click="toggleUserDropdown">
               <i class="bx bx-dots-vertical-rounded"></i>
             </button>
@@ -27,7 +38,6 @@
               class="dropdown-content"
               v-if="showUserDropdown"
             >
-              <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
           </div>
@@ -89,8 +99,7 @@
               params: { id: img.id },
               query: {
                 token: this.token,
-                loggedUsername: this.username,
-                loggedUserId: this.userID,
+                loggedUserID: this.userID,
               },
             }"
           >
