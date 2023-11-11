@@ -5,7 +5,7 @@ on:
     branches:
       - qa_test
 jobs:
-  build:
+  backend_pylint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -22,6 +22,20 @@ jobs:
       working-directory: ./backend
       run: |
         pylint '*.py' --disable=C0114,C0115,C0116,C0301,R0903,E1102
+
+  backend_api_tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python "3.11"
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+        pip install pylint
     - name: Backend Test
       working-directory: ./test/backend_test
       run: |
