@@ -38,7 +38,6 @@
               class="dropdown-content"
               v-if="showUserDropdown"
             >
-              <a href="/">Edit Profile</a>
               <a href="/">Log out</a>
             </div>
           </div>
