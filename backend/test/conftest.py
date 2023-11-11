@@ -5,17 +5,16 @@ from sqlalchemy.orm import Session
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))))
-sys.path.append(os.path.dirname(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) + "\\backend")
+sys.path.append(os.path.dirname(os.path.abspath(os.path.join(os.path.dirname(__file__)))))
 
-from backend.main import app, models, get_db, get_current_user
+from main import app, models, get_db, get_current_user
 from fastapi import Depends, HTTPException, status
 from fastapi.testclient import TestClient
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from backend.dependencies import SECRET_KEY, ALGORITHM
-from backend.dependencies import get_user_by_email
-import backend.schemas as schemas
+from dependencies import SECRET_KEY, ALGORITHM
+from dependencies import get_user_by_email
+import schemas as schemas
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 

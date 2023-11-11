@@ -37,6 +37,6 @@ jobs:
         if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
         pip install pylint
     - name: Backend Test
-      working-directory: ./test/backend_test
+      working-directory: ./backend/test
       run: |
         pytest --disable-warnings
