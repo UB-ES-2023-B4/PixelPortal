@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))) + "\\backend")
+sys.path.append(os.path.dirname(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))))
+sys.path.append(os.path.dirname(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) + "\\backend")
 
 from backend.main import app, models, get_db, get_current_user
 from fastapi import Depends, HTTPException, status
