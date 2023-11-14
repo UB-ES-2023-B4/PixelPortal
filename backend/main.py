@@ -172,7 +172,7 @@ def read_post(publication_id: int, db: Session = Depends(get_db)):
 def delete_team(publication_id: int, db: Session = Depends(get_db),current_user: models.Usuario = Depends(get_current_user) ):
         db_publication = repository.delete_publication(db, publication_id)
         if db_publication is None:
-            raise HTTPException(status_code=404, detail="Match not found")
+            raise HTTPException(status_code=404, detail="Post not found")
         return db_publication
       
 @app.post("/comentarios/", response_model=schemas.Comentario)
@@ -185,3 +185,46 @@ def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
     if comentarios is None:
         raise HTTPException(status_code=404, detail="Comentarios no encontrados")
     return comentarios
+
+#likes
+@app.post("/likes/", response_model = schemas.Like)
+async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    db_post = repository.get_post(db, like.publicacion_id)
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    like = repository.crear_like(db=db, like=like, usuario_actual=usuario_actual)
+    if like is not None:
+        raise HTTPException(status_code=404, detail="Like already exist")
+    return like
+
+@app.get("/likes/", response_model = List[schemas.Like])
+async def get_all_likes(skip: int = 0, limit: int = 100,db:Session = Depends(get_db)):
+    likes = repository.get_all_likes(db, skip, limit)
+    return likes
+@app.get("/likes/{publication_id}", response_model = List[schemas.Usuario])
+async def get_likes_publication(publication_id: int, db:Session = Depends(get_db)):
+    db_publication = repository.get_post(db, publication_id)
+    if db_publication is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    db_users = repository.get_users_liked_a_post(db,publication_id)
+    if db_users is None:
+        raise HTTPException(status_code=404, detail="Users not found")
+    return db_users
+
+@app.get("/likes/user/{user_id}", response_model=List[schemas.Publicacion])
+async def get_likes_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = repository.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    publications =repository.get_posts_liked_by_user(db,user_id)
+
+    if publications is None:
+        raise HTTPException(status_code=404, detail="Likes no encontrados")
+    return publications
+@app.delete("/likes/", response_model=schemas.Like)
+def delete_like(like: schemas.Like, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    deleted_like = repository.delete_like(db, like)
+    if deleted_like is None:
+        raise HTTPException(status_code=404, detail="Like not found")
+    return deleted_like
