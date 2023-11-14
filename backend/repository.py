@@ -1,3 +1,4 @@
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
@@ -89,7 +90,9 @@ def delete_publication(db: Session, publication_id: int):
     db_publication = db.query(models.Publicacion).filter(models.Publicacion.id == publication_id).first()
     if not db_publication:
         return None
-    db.query(models.Comentario).filter(models.Comentario.publicacion_id == publication_id).delete()
+
+    db.query(models.Comentario).filter(models.Comentario.publicacion_id == publication_id).delete() #Borramos los comentarios
+    db.query(models.Like).filter(models.Like.publicacion_id == publication_id).delete()
     db.delete(db_publication)
     db.commit()
 
@@ -105,3 +108,52 @@ def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_
     db.commit()
     db.refresh(db_comentario)
     return db_comentario
+
+def crear_like(db: Session, like: schemas.LikeCreate, usuario_actual: models.Usuario):
+
+    like_exist = db.query(models.Like).filter(and_(models.Like.publicacion_id == like.publicacion_id, models.Like.usuario_id == like.usuario_id)).all()
+    if like_exist: #ese like ya existe
+        return None
+    db_like = models.Like(usuario_id=usuario_actual.id, publicacion_id=like.publicacion_id)
+    db.add(db_like)
+    db.commit()
+    db.refresh(db_like)
+    return db_like
+
+def get_users_liked_a_post(db: Session, publication_id: int):
+    # Obtener todos los likes para la publicación con la ID dada
+    db_likes = db.query(models.Like).filter(models.Like.publicacion_id == publication_id).all()
+
+    # Obtener los usuarios correspondientes a esos likes
+    users_likes = []
+    for like in db_likes:
+        user = db.query(models.Usuario).filter(models.Usuario.id == like.usuario_id).first()
+        if user:
+            users_likes.append(user)
+
+    return users_likes
+
+def get_posts_liked_by_user(db: Session, user_id: int):
+    # Obtener todos los likes para la publicación con la ID dada
+    db_likes = db.query(models.Like).filter(models.Like.usuario_id == user_id).all()
+
+    # Obtener los usuarios correspondientes a esos likes
+    publication_likes = []
+    for like in db_likes:
+        publication = db.query(models.Publicacion).filter(models.Publicacion.id == like.publicacion_id).first()
+        if publication:
+            publication_likes.append(publication)
+
+    return publication_likes
+
+def get_all_likes(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Like).offset(skip).limit(limit).all()
+
+def delete_like(db: Session, like: schemas.Like):
+    db_like = db.query(models.Like).filter(and_(models.Like.publicacion_id == like.publicacion_id, models.Like.usuario_id == like.usuario_id)).first()
+    if not db_like:
+        return None
+    db.query(models.Like).filter(and_(models.Like.publicacion_id == like.publicacion_id, models.Like.usuario_id == like.usuario_id)).delete()
+    db.commit()
+
+    return db_like
