@@ -46,13 +46,24 @@
         <div class="white-panel">
           <div class="login-show">
             <h2 style="font-weight: bold">LOGIN</h2>
-            <input type="text" placeholder="Username" v-model="loginEmail" />
+            <input 
+              type="text" 
+              placeholder="Username" 
+              v-model="loginEmail"
+              data-cy="login-email"
+            />
             <input
               type="password"
               placeholder="Password"
               v-model="loginPassword"
+              data-cy="login-password"
             />
-            <input type="button" value="Login" @click="checkLogin" />
+            <input
+              type="button"
+              value="Login"
+              data-cy="login-button"
+              @click="checkLogin"
+            />
             <a href="">Forgot password?</a>
           </div>
           <div class="register-show">
