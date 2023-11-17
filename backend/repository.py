@@ -114,7 +114,7 @@ def crear_like(db: Session, like: schemas.LikeCreate, usuario_actual: models.Usu
     like_exist = db.query(models.Like).filter(and_(models.Like.publicacion_id == like.publicacion_id, models.Like.usuario_id == like.usuario_id)).all()
     if like_exist: #ese like ya existe
         return None
-    db_like = models.Like(usuario_id=usuario_actual.id, publicacion_id=like.publicacion_id)
+    db_like = models.Like(usuario_id=like.usuario_id, publicacion_id=like.publicacion_id)
     db.add(db_like)
     db.commit()
     db.refresh(db_like)
