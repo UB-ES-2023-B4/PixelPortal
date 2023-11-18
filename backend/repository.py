@@ -112,8 +112,9 @@ def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_
 def crear_like(db: Session, like: schemas.LikeCreate, usuario_actual: models.Usuario):
 
     like_exist = db.query(models.Like).filter(and_(models.Like.publicacion_id == like.publicacion_id, models.Like.usuario_id == like.usuario_id)).all()
-    if like_exist: #ese like ya existe
-        return None
+    if like_exist: #Ese like ya existe
+        like_exist = None
+        return like_exist
     db_like = models.Like(usuario_id=like.usuario_id, publicacion_id=like.publicacion_id)
     db.add(db_like)
     db.commit()
