@@ -38,7 +38,7 @@
             id="label-login"
             for="log-login-show"
             style="border-color: white"
-              data-cy="sign-up-button"
+            data-cy="sign-up-button"
             >Sign Up</label
           >
           <input type="radio" name="active-log-panel" id="log-login-show" />

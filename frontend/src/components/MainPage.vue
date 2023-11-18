@@ -42,7 +42,7 @@
             </div>
           </div>
         </div>
-        <button class="post-button" @click="showUploadImageForm = true">
+        <button class="post-button" data-cy="post-button" @click="showUploadImageForm = true">
           <i class="bx bx-plus"></i> Post
         </button>
         <button
