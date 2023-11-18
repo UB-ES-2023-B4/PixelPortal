@@ -11,6 +11,11 @@ from typing import List
 import re
 from models import Usuario as DBUsuario
 
+# se deberia dejar comentado estos 4 lineas antes del deploy
+from models import Base
+from database import SQLALCHEMY_DATABASE_URL
+if (SQLALCHEMY_DATABASE_URL == "sqlite:///./test.db"):
+    Base.metadata.create_all(bind=engine)
 
 #email pattern
 email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"

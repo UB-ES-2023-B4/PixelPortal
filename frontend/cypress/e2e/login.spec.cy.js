@@ -1,15 +1,15 @@
-describe('Login functionality', () => {
-  it('should log in with valid credentials', () => {
+describe('Test login', () => {
+  it('valid login', () => {
     cy.visit('http://localhost:8080');
-    cy.get('[data-cy=login-email]').type('jhwan818@gmail.com');
-    cy.get('[data-cy=login-password]').type('Zmfltmaktm1@');
+    cy.get('[data-cy=login-email]').type('testemail999@hotmail.com');
+    cy.get('[data-cy=login-password]').type('testPassword1!');
     cy.get('[data-cy=login-button]').click();
     cy.url().should('include', '/home');
   });
 
-  it('should show an error with invalid credentials', () => {
+  it('invalid login', () => {
     cy.visit('http://localhost:8080');
-    cy.get('[data-cy=login-email]').type('invalid-email');
+    cy.get('[data-cy=login-email]').type('invalid-email'); 
     cy.get('[data-cy=login-password]').type('invalid-password');
     cy.get('[data-cy=login-button]').click();
     cy.on('window:alert',(t)=>{

@@ -38,6 +38,7 @@
             id="label-login"
             for="log-login-show"
             style="border-color: white"
+              data-cy="sign-up-button"
             >Sign Up</label
           >
           <input type="radio" name="active-log-panel" id="log-login-show" />
@@ -72,19 +73,32 @@
               type="text"
               placeholder="Username"
               v-model="signUpUsername"
+              data-cy="register-username"
             />
-            <input type="text" placeholder="Email" v-model="signUpEmail" />
+            <input
+              type="text"
+              placeholder="Email"
+              v-model="signUpEmail"
+              data-cy="register-email"
+            />
             <input
               type="password"
               placeholder="Password"
               v-model="signUpPassword"
+              data-cy="register-password"
             />
             <input
               type="password"
               placeholder="Confirm Password"
               v-model="signUpConfirmPassword"
+              data-cy="register-confirm_password"
             />
-            <input type="button" value="Sign Up" @click="checkSignup" />
+            <input
+              type="button"
+              value="Sign Up"
+              data-cy="register-button"
+              @click="checkSignup"
+            />
           </div>
         </div>
       </div>
