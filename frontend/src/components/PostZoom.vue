@@ -29,6 +29,7 @@
                   {{ postAuthorUsername }}
                 </span>
                 <span class="description">Shared on {{ this.postDate }}</span>
+                <span class="debug-description" style="display: none;">{{ this.debugDate }}</span>
               </div>
               <div class="box-tools">
                 <button
@@ -149,6 +150,7 @@ export default {
       postAuthorUsername: "",
       postAuthorUserId: 0,
       postDate: "",
+      debugDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
       description: "",
@@ -254,7 +256,7 @@ export default {
         });
     },
     postComment() {
-      const path = this.backendPath + "/comentarios";
+      const path = this.backendPath + "/comentarios/";
       const headers = { Authorization: "Bearer " + this.token };
       axios
         .post(
@@ -334,6 +336,7 @@ export default {
         this.description = response.data.descripcion;
         this.imageFirebaseURL = response.data.imagen_url;
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        this.debugDate = new Date(response.data.fecha_creacion).toISOString();
         this.tags = JSON.parse(response.data.tags);
         if (this.loggedInUsername == this.postAuthorUsername) {
           this.isLoggedUsersPost = true;
