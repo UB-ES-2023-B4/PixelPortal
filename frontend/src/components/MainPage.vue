@@ -49,6 +49,7 @@
         <button
           class="post-button"
           :class="{ 'post-button-my-images-selected': showMyImages }"
+          data-cy="myimages-button"
           @click="showMyImages = !showMyImages"
         >
           <img class="sidebar-icon" src="../assets/images.svg" alt="" />

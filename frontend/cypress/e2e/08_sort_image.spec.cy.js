@@ -1,4 +1,4 @@
-describe('Main Page Tests', () => {
+describe('Test sort image', () => {
 	beforeEach(() => {
 	  // Login before each test
 	  cy.visit('http://localhost:8080');
