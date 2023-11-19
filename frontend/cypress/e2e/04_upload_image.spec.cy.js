@@ -12,7 +12,7 @@ describe('Test upload image', () => {
 		cy.visit('http://localhost:8080');
 	};
 
-	const  upload_image = (_fileContent, _filename, _mimeType, title, description, tags) => {
+	const upload_image = (_fileContent, _filename, _mimeType, title, description, tags) => {
 		cy.get('[data-cy=post-button]').click();
 		if (_fileContent && _mimeType){
 			cy.fixture(_fileContent).then((fileContent) => {
@@ -35,11 +35,11 @@ describe('Test upload image', () => {
 		}
 		cy.get('[data-cy=upload-publish-button]').then(($button) => {
 			if ($button.is(":disabled")) {
-			  return
+			  return ;
 			} else {
-			  cy.wrap($button).click()
+			  cy.wrap($button).click();
 			}
-		  })
+		  });
 	};
 
 	it('valid upload image', () => {

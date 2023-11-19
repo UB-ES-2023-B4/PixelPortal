@@ -62,7 +62,7 @@
       <div class="search-container">
         <div class="search-box" :hidden="showMyImages">
           <i class="bx bx-search"></i>
-          <input type="text" v-model="search" placeholder="Search" />
+          <input type="text" v-model="search" placeholder="Search" data-cy="search-bar"/>
         </div>
         <div class="dropdown">
           <button class="sort-button" @click="toggleSortDropdown">
@@ -107,8 +107,8 @@
           >
             <img :src="img.image" />
           </router-link>
-          <h6 class="image-title">{{ img.title }}</h6>
-          <h6 class="image-username">{{ img.username }}</h6>
+          <h6 class="image-title" data-cy="image-card-title">{{ img.title }}</h6>
+          <h6 class="image-username" data-cy="image-card-username">{{ img.username }}</h6>
         </div>
       </div>
     </div>
