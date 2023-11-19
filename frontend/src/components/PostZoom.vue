@@ -28,7 +28,8 @@
                 <span class="username">
                   {{ postAuthorUsername }}
                 </span>
-                <span class="description">Shared on {{ this.postDate }}</span>
+                <span class="post-date-description">Shared on {{ this.postDate }}</span>
+                <span class="post-date-debug" style="display: none;">{{ this.debugDate }}</span>
               </div>
               <div class="box-tools">
                 <button
@@ -150,6 +151,7 @@ export default {
       postAuthorUsername: "",
       postAuthorUserId: 0,
       postDate: "",
+      debugDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
       description: "",
@@ -335,6 +337,7 @@ export default {
         this.description = response.data.descripcion;
         this.imageFirebaseURL = response.data.imagen_url;
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
+        this.debugDate = new Date(response.data.fecha_creacion).toISOString();
         this.tags = JSON.parse(response.data.tags);
         if (this.loggedInUsername == this.postAuthorUsername) {
           this.isLoggedUsersPost = true;
@@ -416,13 +419,13 @@ body {
   font-weight: 600;
 }
 
-.user-block .description {
+.user-block .post-date-description {
   color: #999;
   font-size: 13px;
 }
 
 .user-block .username,
-.user-block .description,
+.user-block .post-date-description,
 .user-block .comment {
   display: block;
   margin-left: 50px;
