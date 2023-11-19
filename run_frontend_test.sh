@@ -1,4 +1,10 @@
 # !/bin/bash
+
+if [ -f backend/test.db ]; then
+  echo "Removing existing test.db file..."
+  rm backend/test.db
+fi
+
 cd backend
 uvicorn main:app --reload > /dev/null 2>&1 &
 
@@ -28,6 +34,6 @@ rm uvicorn_pid.txt
 rm npm_pid.txt
 
 cd backend
-rm test.db
+#rm test.db
 
 echo "Test completed."

@@ -31,12 +31,13 @@
           </div>
           <div class="dropdown" style="align-items: flex-end">
             <button class="options-button" @click="toggleUserDropdown">
-              <i class="bx bx-dots-vertical-rounded"></i>
+              <i class="bx bx-dots-vertical-rounded" data-cy="user-vertical-rounded-dots"></i>
             </button>
             <div
               id="dropdown-content"
               class="dropdown-content"
               v-if="showUserDropdown"
+              data-cy="logout-button"
             >
               <a href="/">Log out</a>
             </div>
@@ -92,6 +93,7 @@
           v-for="img in showMyImages ? myImagesList : filteredList"
           :key="img.id"
           :data-name="img.username"
+          data-cy="image-card"
         >
           <router-link
             :to="{
