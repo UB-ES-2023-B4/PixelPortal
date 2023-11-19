@@ -39,6 +39,13 @@ describe('Test register', () => {
                  'testPassword3!');
     cy.url().should('include', '/home');
   });
+  it('valid register4', () => {
+    registerUser('test', 
+                 'test@gmail.com', 
+                 'test', 
+                 'test');
+    cy.url().should('include', '/home');
+  });
   it('repeated username register', () => {
     registerUser('testUser',
                  'newEmail@hotmail.com',

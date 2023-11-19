@@ -12,7 +12,7 @@ describe('Test sort image', () => {
 	it('should sort images by upload date in ascending order', () => {
 	  cy.get('.sort-button').click();
 	  cy.contains('Sort by upload Date (ascending)').click();
-	  cy.wait(1000);
+	  cy.wait(1500);
   
 	  cy.get('.images .image-card').should('not.be.empty').first().click();
 	  cy.url().should('include', '/postZoom');
@@ -27,7 +27,7 @@ describe('Test sort image', () => {
   
 	  cy.get('.sort-button').click();
 	  cy.contains('Sort by upload Date (ascending)').click();
-	  cy.wait(1000);
+	  cy.wait(1500);
   
 	  cy.get('[data-cy=image-card]').should('not.be.empty').eq(1).click();
 	  cy.url().should('include', '/postZoom');

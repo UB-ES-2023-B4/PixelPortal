@@ -7,6 +7,7 @@ describe('Test upload image', () => {
 		cy.get('[data-cy=login-password]').type(password);
 		cy.get('[data-cy=login-button]').click();
 		cy.url().should('include', '/home');
+		cy.wait(500);
 	};
 	const after_each = () => {
 		cy.visit('http://localhost:8080');
@@ -51,7 +52,7 @@ describe('Test upload image', () => {
 					 'This image represents a very tierd cat.',
 					 'cat, cutie, cattie');
 		cy.on('window:confirm', () => true);
-		cy.wait(500)
+		cy.wait(1000)
 		after_each();
 	});
 	it('valid upload image2', () => {
@@ -63,7 +64,7 @@ describe('Test upload image', () => {
 					 'Be aware from this angry cat',
 					 'Do Not Distrub, cat');
 		cy.on('window:confirm', () => true);
-		cy.wait(500)
+		cy.wait(1000)
 		after_each();
 	});
 	it('valid upload image3', () => {
@@ -75,7 +76,7 @@ describe('Test upload image', () => {
 					 'That\'s very tasty!',
 					 'nyam, cat');
 		cy.on('window:confirm', () => true);
-		cy.wait(500)
+		cy.wait(1000)
 		after_each();
 	});
 	it('valid upload image4', () => {
@@ -87,7 +88,7 @@ describe('Test upload image', () => {
 					 'The most cutiest cat',
 					 '');
 		cy.on('window:confirm', () => true);
-		cy.wait(500)
+		cy.wait(1000)
 		after_each();
 	});
 	it('empty attachFile upload image', () => {
