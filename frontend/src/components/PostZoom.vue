@@ -66,12 +66,20 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width"
-                >favorite_border</span
-              >
+            <button
+              type="button"
+              class="btn btn-default btn-xs like-button"
+              @click="likePost"
+            >
+              <img
+                :src="
+                  loggedInUserHasLikedPost
+                    ? require('../assets/favorite_black_24dp.svg')
+                    : require('../assets/favorite_border_black_24dp.svg')
+                "
+              />
             </button>
-            <span class="pull-right text-muted">127</span>
+            <span class="pull-right text-muted"> {{ postLikeNumber }} </span>
             <button
               type="button"
               class="btn btn-default btn-xs"
@@ -137,17 +145,19 @@ export default {
   name: "PostZoom",
   data() {
     return {
-      id: this.$route.params.id,
+      id: parseInt(this.$route.params.id),
       tags: [],
       comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
-      loggedInUserId: this.$route.query.loggedUserID,
+      loggedInUserId: parseInt(this.$route.query.loggedUserID),
       loggedInUserPFP: "",
+      loggedInUserHasLikedPost: false,
       postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
       postAuthorUserId: 0,
+      postLikeNumber: 0,
       postDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
@@ -322,6 +332,40 @@ export default {
           alert("Error: " + error.message);
         });
     },
+    getLikes() {
+      const pathLikes = this.backendPath + "/likes/" + this.id;
+      axios.get(pathLikes).then((response) => {
+        console.log(response.data);
+        console.log(this.loggedInUserId);
+        this.postLikeNumber = response.data.length;
+        this.loggedInUserHasLikedPost = response.data.some(
+          (item) => item.id === this.loggedInUserId
+        );
+      });
+    },
+    likePost() {
+      console.log("LIKING POST");
+      if (this.loggedInUserHasLikedPost) {
+        console.log("has liked post alredy, removing like");
+      } else {
+        console.log("hasnt liked post yet, liking it");
+        const pathLike = this.backendPath + "/likes/";
+        const headers = { Authorization: "Bearer " + this.token };
+        const data = {
+          usuario_id: this.loggedInUserId,
+          publicacion_id: this.id,
+        };
+        console.log(headers);
+        axios
+          .post(pathLike, data, { headers })
+          .then(() => {
+            this.getLikes();
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -357,6 +401,7 @@ export default {
       });
     this.getComments();
     this.getUserProfilePic();
+    this.getLikes();
   },
 };
 </script>
@@ -604,6 +649,10 @@ body {
 
 .pixel-color:hover {
   color: rgba(20, 117, 236, 0.6);
+}
+
+.like-button:hover {
+  filter: brightness(150%);
 }
 
 .pixel-color {
