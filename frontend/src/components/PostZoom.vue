@@ -335,8 +335,6 @@ export default {
     getLikes() {
       const pathLikes = this.backendPath + "/likes/" + this.id;
       axios.get(pathLikes).then((response) => {
-        console.log(response.data);
-        console.log(this.loggedInUserId);
         this.postLikeNumber = response.data.length;
         this.loggedInUserHasLikedPost = response.data.some(
           (item) => item.id === this.loggedInUserId
@@ -344,25 +342,40 @@ export default {
       });
     },
     likePost() {
-      console.log("LIKING POST");
       if (this.loggedInUserHasLikedPost) {
-        console.log("has liked post alredy, removing like");
+        let pathLike = this.backendPath + "/likes/user/" + this.loggedInUserId;
+        axios.get(pathLike).then((response) => {
+          let likePostInfo = response.data.find((item) => item.id === this.id);
+          pathLike = this.backendPath + "/likes/";
+          const headers = { Authorization: "Bearer " + this.token };
+          const data = {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: likePostInfo.id,
+            fecha_creacion: likePostInfo.fecha_creacion,
+          };
+          axios
+            .delete(pathLike, { data: data, headers: headers })
+            .then(() => {
+              this.getLikes();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
       } else {
-        console.log("hasnt liked post yet, liking it");
         const pathLike = this.backendPath + "/likes/";
         const headers = { Authorization: "Bearer " + this.token };
         const data = {
           usuario_id: this.loggedInUserId,
           publicacion_id: this.id,
         };
-        console.log(headers);
         axios
           .post(pathLike, data, { headers })
           .then(() => {
             this.getLikes();
           })
           .catch((error) => {
-            alert(error.message);
+            console.log(error);
           });
       }
     },
