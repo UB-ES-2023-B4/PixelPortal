@@ -5,7 +5,7 @@ describe('Test delete post', () => {
 		cy.get('.login-show input[placeholder="Password"]').type(password);
 		cy.get('.login-show input[type="button"][value="Login"]').click();
 		cy.url().should('include', '/home');
-		cy.wait(1000);
+		cy.wait(500);
 	};
 
 	it('test deleting post', () => {

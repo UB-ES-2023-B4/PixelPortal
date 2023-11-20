@@ -18,7 +18,7 @@ describe('Test upload image', () => {
 		if (_fileContent && _mimeType){
 			cy.fixture(_fileContent).then((fileContent) => {
 				cy.get('.popup-inner .image-upload-input').attachFile({
-				  fileContent,
+				  fileContent: fileContent.toString(),
 				  fileName: _filename,
 				  mimeType: _mimeType,
 				});
@@ -47,7 +47,7 @@ describe('Test upload image', () => {
 		before_each('testemail111@hotmail.com', 'testPassword1!');
 		upload_image('tiredcat.jpg',
 					 'tiredcat.jpg',
-					 'image/jpg',
+					 'image/jpeg',
 					 'Tired cat',
 					 'This image represents a very tierd cat.',
 					 'cat, cutie, cattie');
@@ -59,7 +59,7 @@ describe('Test upload image', () => {
 		before_each('testemail111@hotmail.com', 'testPassword1!');
 		upload_image('angrycat.jpg',
 					 'angrycat.jpg',
-					 'image/jpg',
+					 'image/jpeg',
 					 'Angry cat',
 					 'Be aware from this angry cat',
 					 'Do Not Distrub, cat');
@@ -71,7 +71,7 @@ describe('Test upload image', () => {
 		before_each('testemail222@hotmail.com', 'testPassword2!');
 		upload_image('lickingcat.jpg',
 					 'lickingcat.jpg',
-					 'image/jpg',
+					 'image/jpeg',
 					 'Licking cat',
 					 'That\'s very tasty!',
 					 'nyam, cat');
@@ -83,7 +83,7 @@ describe('Test upload image', () => {
 		before_each('testemail333@hotmail.com', 'testPassword3!');
 		upload_image('cutiecat.jpg',
 					 'cutiecat.jpg',
-					 'image/jpg',
+					 'image/jpeg',
 					 'Cutie cat',
 					 'The most cutiest cat',
 					 '');
@@ -107,7 +107,7 @@ describe('Test upload image', () => {
 		before_each('testemail111@hotmail.com', 'testPassword1!');
 		upload_image('tiredcat.jpg',
 					 'tiredcat.jpg',
-					 'image/jpg',
+					 'image/jpeg',
 					 '',
 					 '',
 					 '');

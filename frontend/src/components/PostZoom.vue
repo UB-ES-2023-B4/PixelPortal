@@ -121,6 +121,7 @@
               <button
                 class="footer-button pixel-color"
                 type="button"
+                data-cy="post-comment-button"
                 @click="this.postComment"
               >
                 Post

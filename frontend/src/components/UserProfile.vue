@@ -11,7 +11,7 @@
             />
             <h5 class="my-3">{{ username }}</h5>
             <p class="text-muted mb-1">27 Followers 21 Following</p>
-            <p class="text-muted mb-1">{{ description }}</p>
+            <p class="text-muted mb-1" data-cy="user-description">{{ description }}</p>
             <div>
               <p class="text-muted mb-1"></p>
             </div>
@@ -37,6 +37,7 @@
               >
                 <li
                   class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                  data-cy="edit-profile"
                 >
                   <img
                     src="../assets/editar.png"

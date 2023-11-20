@@ -5,7 +5,7 @@ describe('Test logout', () => {
 		cy.get('.login-show input[placeholder="Password"]').type('testPassword1!');
 		cy.get('.login-show input[type="button"][value="Login"]').click();
 		cy.url().should('include', '/home');
-		cy.wait(1000);
+		cy.wait(500);
 	});
 
 	it('logout user', () => {
