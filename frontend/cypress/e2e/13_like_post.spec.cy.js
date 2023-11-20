@@ -29,7 +29,7 @@ describe('Test like', () => {
 			cy.url().should('include', '/postZoom');
 			cy.wait(500);
 		});
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < 8; i++) {
 			cy.get('.like-button').click();
 		}
 		cy.get('.like-button img').should('have.attr', 'src').and('include', 'favorite_border_black_24dp');

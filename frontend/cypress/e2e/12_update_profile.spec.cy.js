@@ -1,3 +1,5 @@
+import 'cypress-file-upload';
+
 describe('Test update profile', () => {
 	before(() => {
 		cy.visit('http://localhost:8080');
@@ -13,12 +15,12 @@ describe('Test update profile', () => {
 		cy.wait(200);
 		cy.fixture("pingu.jpg").then((fileContent) => {
 			cy.get('.image-upload-input').attachFile({
-			  fileContent: fileContent,
-			  fileName: "pingu.jpg",
-			  mimeType: 'image/jpeg',
+				fileContent: fileContent.toString(),
+				fileName: "pingu.jpg",
+				mimeType: 'image/jpeg',
 			});
-			cy.get('.image-upload-input').trigger('change', { force: true });
-		  });
+		});
+		cy.get('.image-upload-input').trigger('change', { force: true });
 		cy.get('.form-control').clear();
 		cy.get('.form-control').type('Yee@t');
 		cy.get('button:contains("Save")').click();

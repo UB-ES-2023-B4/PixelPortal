@@ -22,7 +22,7 @@ describe('Test upload image', () => {
 				  fileName: _filename,
 				  mimeType: _mimeType,
 				});
-			  });
+			});
 		}
 		cy.get('.popup-inner .image-upload-input').trigger('change', { force: true });
 		if (title) {
