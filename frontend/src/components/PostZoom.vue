@@ -28,8 +28,8 @@
                 <span class="username">
                   {{ postAuthorUsername }}
                 </span>
-                <span class="post-date-description">Shared on {{ this.postDate }}</span>
-                <span class="post-date-debug" style="display: none;">{{ this.debugDate }}</span>
+                <span class="description">Shared on {{ this.postDate }}</span>
+                <span class="debug-description" style="display: none;">{{ this.debugDate }}</span>
               </div>
               <div class="box-tools">
                 <button
@@ -259,7 +259,7 @@ export default {
         });
     },
     postComment() {
-      const path = this.backendPath + "/comentarios";
+      const path = this.backendPath + "/comentarios/";
       const headers = { Authorization: "Bearer " + this.token };
       axios
         .post(

@@ -2,20 +2,20 @@ describe('Test register', () => {
 
   const registerUser = (username, email, password, confirmPassword) => {
     cy.visit('http://localhost:8080');
-    cy.get('[data-cy=sign-up-button]').click();
+    cy.get('label[for="log-login-show"]').click();
     if (username){
-      cy.get('[data-cy=register-username]').type(username);
+      cy.get('.register-show input[placeholder="Username"]').type(username);
     }
     if (email){
-    cy.get('[data-cy=register-email]').type(email);
+      cy.get('.register-show input[placeholder="Email"]').type(email);
     }
     if (password){
-    cy.get('[data-cy=register-password]').type(password);
+      cy.get('.register-show input[placeholder="Password"]').type(password);
     }
     if (confirmPassword){
-    cy.get('[data-cy=register-confirm_password]').type(confirmPassword);
+      cy.get('.register-show input[placeholder="Confirm Password"]').type(confirmPassword);
     }
-    cy.get('[data-cy=register-button]').click();
+    cy.get('.register-show input[type="button"][value="Sign Up"]').click();
   };
 
   it('valid register1', () => {

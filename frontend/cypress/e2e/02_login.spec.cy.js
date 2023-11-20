@@ -2,12 +2,12 @@ describe('Test login', () => {
   const loginUser = (email, password) => {
     cy.visit('http://localhost:8080');
     if (email) {
-    cy.get('[data-cy=login-email]').type(email);
+      cy.get('.login-show input[placeholder="Username"]').type(email);
     }
     if (password) {
-    cy.get('[data-cy=login-password]').type(password);
+      cy.get('.login-show input[placeholder="Password"]').type(password);
     }
-    cy.get('[data-cy=login-button]').click();
+    cy.get('.login-show input[type="button"][value="Login"]').click();
   };
 
   it('valid login1', () => {

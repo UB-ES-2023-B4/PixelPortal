@@ -1,14 +1,15 @@
 describe('Test filter image by category', () => {
-	before(() => {
+	beforeEach(() => {
 		cy.visit('http://localhost:8080');
-		cy.get('[data-cy=login-email]').type('testemail111@hotmail.com');
-		cy.get('[data-cy=login-password]').type('testPassword1!');
-		cy.get('[data-cy=login-button]').click();
+		cy.get('.login-show input[placeholder="Username"]').type('testemail111@hotmail.com');
+		cy.get('.login-show input[placeholder="Password"]').type('testPassword1!');
+		cy.get('.login-show input[type="button"][value="Login"]').click();
 		cy.url().should('include', '/home');
 	});
 
 	const filter_image_by_category = (category) => {
-		cy.get('[data-cy=search-bar]').type('#' + category);
+		cy.get('.image-container .search-container .search-box input[type="text"]').as('searchInput');
+		cy.get('@searchInput').type('#' + category);
 		cy.wait(500);
 		if (category) {
 			cy.get('.images .image-card').should('not.be.empty')
@@ -18,10 +19,7 @@ describe('Test filter image by category', () => {
 				cy.get('.tag').should(($tags) => {
 					expect($tags.toArray().some((tag) => tag.innerText.toLowerCase().includes(category))).to.be.true;
 				});
-				cy.get('[data-cy=go-back-button]').click();
-				cy.url().should('include', '/home');
 			});
-			cy.get('[data-cy=search-bar]').clear();
 		}
 	}
 

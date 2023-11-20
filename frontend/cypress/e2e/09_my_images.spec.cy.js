@@ -1,9 +1,9 @@
 describe('Test my images view', () => {
 	const before_each = (email, password) => {
 		cy.visit('http://localhost:8080');
-		cy.get('[data-cy=login-email]').type(email);
-		cy.get('[data-cy=login-password]').type(password);
-		cy.get('[data-cy=login-button]').click();
+		cy.get('.login-show input[placeholder="Username"]').type(email);
+		cy.get('.login-show input[placeholder="Password"]').type(password);
+		cy.get('.login-show input[type="button"][value="Login"]').click();
 		cy.url().should('include', '/home');
 	};
 	const after_each = () => {
@@ -11,11 +11,11 @@ describe('Test my images view', () => {
 	};
 	
 	const show_my_images = (username) => {
-		cy.get('[data-cy=myimages-button]').click();
+		cy.get('.user-info-wrapper .post-button:contains("My Images")').click();
 		cy.wait(500);
 		if (username) {
 			cy.get('.images .image-card').should('not.be.empty');
-			cy.get('[data-cy=image-card-username]').each(($usernameElement) => {
+			cy.get('.images .image-card .image-username').each(($usernameElement) => {
 				cy.wrap($usernameElement).should('include.text', username);
 			  });
 		}

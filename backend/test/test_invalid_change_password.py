@@ -27,7 +27,7 @@ import pytest
         }
 ])
 
-def test_valid_change_password(test_client, user_data, new_password):
+def test_invalid_change_password(test_client, user_data, new_password):
     response = test_client.post("/usuario/", json=user_data)
     assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
     response = test_client.post("/usuario/change_pass", json=new_password)

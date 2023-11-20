@@ -103,6 +103,7 @@
               query: {
                 token: this.token,
                 loggedUserID: this.userID,
+                loggedUsername: this.username,
               },
             }"
           >

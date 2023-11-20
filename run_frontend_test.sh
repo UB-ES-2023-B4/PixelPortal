@@ -34,6 +34,6 @@ rm uvicorn_pid.txt
 rm npm_pid.txt
 
 cd backend
-#rm test.db
+rm test.db
 
 echo "Test completed."
