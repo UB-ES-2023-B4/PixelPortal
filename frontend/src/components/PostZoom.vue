@@ -222,6 +222,10 @@ export default {
       axios
         .get(loggedInUserPath, { headers })
         .then((response) => {
+          this.loggedInUsername = response.data.nombre;
+          if (this.loggedInUsername == this.postAuthorUsername) {
+            this.isLoggedUsersPost = true;
+          }
           const userProfilePicRef = firebaseRef(
             storage,
             response.data.imagen_perfil_url
@@ -392,9 +396,6 @@ export default {
         this.imageFirebaseURL = response.data.imagen_url;
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
         this.tags = JSON.parse(response.data.tags);
-        if (this.loggedInUsername == this.postAuthorUsername) {
-          this.isLoggedUsersPost = true;
-        }
         //GETTING POST IMAGE FROM FIREBASE
         const postImageRef = firebaseRef(
           storage,
