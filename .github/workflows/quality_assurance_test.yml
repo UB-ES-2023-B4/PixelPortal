@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - qa_test
+      - qa_test_frontend
 jobs:
   # backend_pylint:
   #   runs-on: ubuntu-latest
