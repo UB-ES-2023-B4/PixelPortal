@@ -37,3 +37,5 @@ cd backend
 rm test.db
 
 echo "Test completed."
+
+exit $cypress_exit_status
