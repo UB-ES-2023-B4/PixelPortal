@@ -158,3 +158,43 @@ def delete_like(db: Session, like: schemas.Like):
     db.commit()
 
     return db_like
+
+
+###### METODOS RELACIONADOS CON SEGUIDORES ################
+
+def follow_user(db: Session, user_id: int, follower_id: int):
+   
+    if not db.query(models.Usuario).filter(models.Usuario.id == user_id).first():
+        return None
+    if not db.query(models.Usuario).filter(models.Usuario.id == follower_id).first():
+        return None
+    
+    if db.query(models.Seguidor).filter(models.Seguidor.seguidor_id == follower_id, models.Seguidor.seguido_id == user_id).first():
+        return None
+
+    new_follow = models.Seguidor(seguidor_id=follower_id, seguido_id=user_id)
+    db.add(new_follow)
+    db.commit()
+    return new_follow
+
+
+def unfollow_user(db: Session, user_id: int, follower_id: int):
+    follow_relation = db.query(models.Seguidor).filter(models.Seguidor.seguidor_id == follower_id, models.Seguidor.seguido_id == user_id).first()
+    if not follow_relation:
+        return None
+
+    db.delete(follow_relation)
+    db.commit()
+    return follow_relation
+
+
+def get_followers(db: Session, user_id: int):
+    followers = db.query(models.Seguidor).filter(models.Seguidor.seguido_id == user_id).all()
+    return [follower.seguidor for follower in followers]
+
+
+def get_following(db: Session, user_id: int):
+    following = db.query(models.Seguidor).filter(models.Seguidor.seguidor_id == user_id).all()
+    return [follow.seguido for follow in following]
+
+

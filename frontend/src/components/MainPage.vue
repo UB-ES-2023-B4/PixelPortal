@@ -61,7 +61,7 @@
       <div class="search-container">
         <div class="search-box" :hidden="showMyImages">
           <i class="bx bx-search"></i>
-          <input type="text" v-model="search" placeholder="Search" />
+          <input type="text" v-model="search" placeholder="Search"/>
         </div>
         <div class="dropdown">
           <button class="sort-button" @click="toggleSortDropdown">
@@ -100,6 +100,7 @@
               query: {
                 token: this.token,
                 loggedUserID: this.userID,
+                loggedUsername: this.username,
               },
             }"
           >

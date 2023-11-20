@@ -11,6 +11,11 @@ from typing import List
 import re
 from models import Usuario as DBUsuario
 
+# se deberia dejar comentado estos 4 lineas antes del deploy
+from models import Base
+from database import SQLALCHEMY_DATABASE_URL
+if (SQLALCHEMY_DATABASE_URL == "sqlite:///./test.db"):
+    Base.metadata.create_all(bind=engine)
 
 #email pattern
 email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
@@ -199,6 +204,7 @@ async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), us
         raise HTTPException(status_code=404, detail="User not found")
     like = repository.crear_like(db=db, like=like, usuario_actual=usuario_actual)
     if like is None:
+        raise HTTPException(status_code=404, detail="Like already exist")
         raise HTTPException(status_code=404, detail="Like already exists")
     return like
 
@@ -232,3 +238,30 @@ def delete_like(like: schemas.Like, db: Session = Depends(get_db), current_user:
     if deleted_like is None:
         raise HTTPException(status_code=404, detail="Like not found")
     return deleted_like
+
+
+@app.post("/usuario/{user_id}/follow/{follower_id}")
+async def follow_user(user_id: int, follower_id: int, db: Session = Depends(get_db)):
+    result = repository.follow_user(db, user_id, follower_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Follow action could not be completed")
+    return {"message": "User followed successfully"}
+
+
+@app.delete("/usuario/{user_id}/unfollow/{follower_id}")
+async def unfollow_user(user_id: int, follower_id: int, db: Session = Depends(get_db)):
+    result = repository.unfollow_user(db, user_id, follower_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Unfollow action could not be completed")
+    return {"message": "User unfollowed successfully"}
+
+@app.get("/usuario/{user_id}/followers", response_model=List[schemas.Usuario])
+async def get_followers(user_id: int, db: Session = Depends(get_db)):
+    followers = repository.get_followers(db, user_id)
+    return followers
+
+@app.get("/usuario/{user_id}/following", response_model=List[schemas.Usuario])
+async def get_following(user_id: int, db: Session = Depends(get_db)):
+    following = repository.get_following(db, user_id)
+    return following
+

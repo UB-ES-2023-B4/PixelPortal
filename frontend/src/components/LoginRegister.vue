@@ -50,18 +50,15 @@
               type="text" 
               placeholder="Username" 
               v-model="loginEmail"
-              data-cy="login-email"
             />
             <input
               type="password"
               placeholder="Password"
               v-model="loginPassword"
-              data-cy="login-password"
             />
             <input
               type="button"
               value="Login"
-              data-cy="login-button"
               @click="checkLogin"
             />
             <a href="">Forgot password?</a>
@@ -73,7 +70,11 @@
               placeholder="Username"
               v-model="signUpUsername"
             />
-            <input type="text" placeholder="Email" v-model="signUpEmail" />
+            <input
+              type="text"
+              placeholder="Email"
+              v-model="signUpEmail"
+            />
             <input
               type="password"
               placeholder="Password"
@@ -84,7 +85,11 @@
               placeholder="Confirm Password"
               v-model="signUpConfirmPassword"
             />
-            <input type="button" value="Sign Up" @click="checkSignup" />
+            <input
+              type="button"
+              value="Sign Up"
+              @click="checkSignup"
+            />
           </div>
         </div>
       </div>
