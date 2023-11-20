@@ -164,6 +164,7 @@ export default {
       description: "",
       token: this.$route.query.token,
       comments: [],
+      isLikePostInProgress: false,
     };
   },
   computed: {
@@ -346,6 +347,13 @@ export default {
       });
     },
     likePost() {
+      if (this.isLikePostInProgress) {
+        console.log("Request alredy in progress, wait a bit");
+        return;
+      }
+
+      this.isLikePostInProgress = true;
+
       if (this.loggedInUserHasLikedPost) {
         let pathLike = this.backendPath + "/likes/user/" + this.loggedInUserId;
         axios.get(pathLike).then((response) => {
@@ -364,6 +372,9 @@ export default {
             })
             .catch((error) => {
               console.log(error);
+            })
+            .finally(() => {
+              this.isLikePostInProgress = false;
             });
         });
       } else {
@@ -380,6 +391,9 @@ export default {
           })
           .catch((error) => {
             console.log(error);
+          })
+          .finally(() => {
+            this.isLikePostInProgress = false;
           });
       }
     },
