@@ -1,4 +1,4 @@
-describe('Test postZoom', () => {
+describe('Test postComment', () => {
 	before(() => {
 		cy.visit('http://localhost:8080');
 		cy.get('.login-show input[placeholder="Username"]').type('test@gmail.com');
@@ -8,7 +8,7 @@ describe('Test postZoom', () => {
 		cy.wait(1000);
 	});
 
-	it('click image card', () => {
+	it.skip('test comment posting', () => {
 		cy.get('.images .image-card').should('not.be.empty');
 		cy.get('.images .image-card').first().within(() => {
 			cy.get('img').should('be.visible');

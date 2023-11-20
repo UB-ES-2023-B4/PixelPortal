@@ -31,25 +31,23 @@
           </div>
           <div class="dropdown" style="align-items: flex-end">
             <button class="options-button" @click="toggleUserDropdown">
-              <i class="bx bx-dots-vertical-rounded" data-cy="user-vertical-rounded-dots"></i>
+              <i class="bx bx-dots-vertical-rounded"></i>
             </button>
             <div
               id="dropdown-content"
               class="dropdown-content"
               v-if="showUserDropdown"
-              data-cy="logout-button"
             >
               <a href="/">Log out</a>
             </div>
           </div>
         </div>
-        <button class="post-button" data-cy="post-button" @click="showUploadImageForm = true">
+        <button class="post-button" @click="showUploadImageForm = true">
           <i class="bx bx-plus"></i> Post
         </button>
         <button
           class="post-button"
           :class="{ 'post-button-my-images-selected': showMyImages }"
-          data-cy="myimages-button"
           @click="showMyImages = !showMyImages"
         >
           <img class="sidebar-icon" src="../assets/images.svg" alt="" />
@@ -63,7 +61,7 @@
       <div class="search-container">
         <div class="search-box" :hidden="showMyImages">
           <i class="bx bx-search"></i>
-          <input type="text" v-model="search" placeholder="Search" data-cy="search-bar"/>
+          <input type="text" v-model="search" placeholder="Search"/>
         </div>
         <div class="dropdown">
           <button class="sort-button" @click="toggleSortDropdown">
@@ -94,7 +92,6 @@
           v-for="img in showMyImages ? myImagesList : filteredList"
           :key="img.id"
           :data-name="img.username"
-          data-cy="image-card"
         >
           <router-link
             :to="{
@@ -109,8 +106,8 @@
           >
             <img :src="img.image" />
           </router-link>
-          <h6 class="image-title" data-cy="image-card-title">{{ img.title }}</h6>
-          <h6 class="image-username" data-cy="image-card-username">{{ img.username }}</h6>
+          <h6 class="image-title">{{ img.title }}</h6>
+          <h6 class="image-username">{{ img.username }}</h6>
         </div>
       </div>
     </div>

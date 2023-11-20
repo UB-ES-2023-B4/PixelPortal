@@ -24,7 +24,6 @@
                 class="image-upload-input"
                 ref="imageInput"
                 accept="image/png,image/jpeg"
-                data-cy="image-upload-input"
                 @change="imageInputChanged"
               />
             </div>
@@ -35,7 +34,6 @@
                 placeholder="Title"
                 class="image-title-input"
                 v-model="imageTitle"
-                data-cy="upload-title"
                 @keyup="isPublishButtonEnabled"
               />
             </div>
@@ -46,7 +44,6 @@
                 placeholder="Description"
                 class="image-description-input"
                 v-model="imageDescription"
-                data-cy="upload-description"
                 @keyup="isPublishButtonEnabled"
               />
             </div>
@@ -72,7 +69,6 @@
                         class="image-tags-input"
                         type="text"
                         v-model="tag"
-                        data-cy="upload-tags-input"
                         @keyup="addTag"
                       />
                     </ul>
@@ -92,7 +88,6 @@
               <button
                 type="button"
                 class="popup-button"
-                data-cy="upload-close-button"
                 @click="closeComponent"
               >
                 Close
@@ -102,7 +97,6 @@
                 @click="postImage"
                 :disabled="!publishButtonEnabled"
                 class="popup-button"
-                data-cy="upload-publish-button"
                 :class="{ 'disabled-button': !publishButtonEnabled }"
               >
                 Publish

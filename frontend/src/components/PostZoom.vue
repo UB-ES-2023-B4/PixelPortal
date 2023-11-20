@@ -42,7 +42,6 @@
                 <button
                   type="button"
                   class="blue-button"
-                  data-cy="go-back-button"
                   @click="redirectToMainPage()"
                 >
                   <i class="fa fa-share"></i> Go Back
@@ -50,7 +49,7 @@
               </div>
             </div>
             <div class="box-footer box-comments" style="display: block">
-              <div v-for="comment in this.comments" data-cy="comment-list" :key="comment.id">
+              <div v-for="comment in this.comments" :key="comment.id">
                 <div class="box-comment">
                   <img
                     class="img-circle img-sm"
@@ -116,14 +115,12 @@
                   placeholder="Add a comment..."
                   maxlength="150"
                   v-model="this.comment"
-                  data-cy="input-comment"
                   @input="checkCommentSize"
                 />
               </div>
               <button
                 class="footer-button pixel-color"
                 type="button"
-                data-cy="post-comment-button"
                 @click="this.postComment"
               >
                 Post
