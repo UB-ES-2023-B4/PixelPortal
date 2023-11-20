@@ -199,9 +199,13 @@ async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), us
     db_post = repository.get_post(db, like.publicacion_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
+    db_user = repository.get_user(db, like.usuario_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     like = repository.crear_like(db=db, like=like, usuario_actual=usuario_actual)
     if like is None:
         raise HTTPException(status_code=404, detail="Like already exist")
+        raise HTTPException(status_code=404, detail="Like already exists")
     return like
 
 @app.get("/likes/", response_model = List[schemas.Like])
@@ -213,7 +217,6 @@ async def get_likes_publication(publication_id: int, db:Session = Depends(get_db
     db_publication = repository.get_post(db, publication_id)
     if db_publication is None:
         raise HTTPException(status_code=404, detail="Post not found")
-
     db_users = repository.get_users_liked_a_post(db,publication_id)
     if db_users is None:
         raise HTTPException(status_code=404, detail="Users not found")
