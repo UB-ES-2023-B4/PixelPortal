@@ -68,12 +68,20 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width"
-                >favorite_border</span
-              >
+            <button
+              type="button"
+              class="btn btn-default btn-xs like-button"
+              @click="likePost"
+            >
+              <img
+                :src="
+                  loggedInUserHasLikedPost
+                    ? require('../assets/favorite_black_24dp.svg')
+                    : require('../assets/favorite_border_black_24dp.svg')
+                "
+              />
             </button>
-            <span class="pull-right text-muted">127</span>
+            <span class="pull-right text-muted"> {{ postLikeNumber }} </span>
             <button
               type="button"
               class="btn btn-default btn-xs"
@@ -141,17 +149,19 @@ export default {
   name: "PostZoom",
   data() {
     return {
-      id: this.$route.params.id,
+      id: parseInt(this.$route.params.id),
       tags: [],
       comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
-      loggedInUserId: this.$route.query.loggedUserID,
+      loggedInUserId: parseInt(this.$route.query.loggedUserID),
       loggedInUserPFP: "",
+      loggedInUserHasLikedPost: false,
       postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
       postAuthorUserId: 0,
+      postLikeNumber: 0,
       postDate: "",
       debugDate: "",
       isLoggedUsersPost: false,
@@ -217,6 +227,10 @@ export default {
       axios
         .get(loggedInUserPath, { headers })
         .then((response) => {
+          this.loggedInUsername = response.data.nombre;
+          if (this.loggedInUsername == this.postAuthorUsername) {
+            this.isLoggedUsersPost = true;
+          }
           const userProfilePicRef = firebaseRef(
             storage,
             response.data.imagen_perfil_url
@@ -327,6 +341,53 @@ export default {
           alert("Error: " + error.message);
         });
     },
+    getLikes() {
+      const pathLikes = this.backendPath + "/likes/" + this.id;
+      axios.get(pathLikes).then((response) => {
+        this.postLikeNumber = response.data.length;
+        this.loggedInUserHasLikedPost = response.data.some(
+          (item) => item.id === this.loggedInUserId
+        );
+      });
+    },
+    likePost() {
+      if (this.loggedInUserHasLikedPost) {
+        let pathLike = this.backendPath + "/likes/user/" + this.loggedInUserId;
+        axios.get(pathLike).then((response) => {
+          let likePostInfo = response.data.find((item) => item.id === this.id);
+          pathLike = this.backendPath + "/likes/";
+          const headers = { Authorization: "Bearer " + this.token };
+          const data = {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: likePostInfo.id,
+            fecha_creacion: likePostInfo.fecha_creacion,
+          };
+          axios
+            .delete(pathLike, { data: data, headers: headers })
+            .then(() => {
+              this.getLikes();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      } else {
+        const pathLike = this.backendPath + "/likes/";
+        const headers = { Authorization: "Bearer " + this.token };
+        const data = {
+          usuario_id: this.loggedInUserId,
+          publicacion_id: this.id,
+        };
+        axios
+          .post(pathLike, data, { headers })
+          .then(() => {
+            this.getLikes();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -341,9 +402,6 @@ export default {
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
         this.debugDate = new Date(response.data.fecha_creacion).toISOString();
         this.tags = JSON.parse(response.data.tags);
-        if (this.loggedInUsername == this.postAuthorUsername) {
-          this.isLoggedUsersPost = true;
-        }
         //GETTING POST IMAGE FROM FIREBASE
         const postImageRef = firebaseRef(
           storage,
@@ -363,6 +421,7 @@ export default {
       });
     this.getComments();
     this.getUserProfilePic();
+    this.getLikes();
   },
 };
 </script>
@@ -610,6 +669,10 @@ body {
 
 .pixel-color:hover {
   color: rgba(20, 117, 236, 0.6);
+}
+
+.like-button:hover {
+  filter: brightness(150%);
 }
 
 .pixel-color {

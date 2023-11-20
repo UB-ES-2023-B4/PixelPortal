@@ -200,7 +200,7 @@ async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), us
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
     like = repository.crear_like(db=db, like=like, usuario_actual=usuario_actual)
-    if like is not None:
+    if like is None:
         raise HTTPException(status_code=404, detail="Like already exist")
     return like
 
