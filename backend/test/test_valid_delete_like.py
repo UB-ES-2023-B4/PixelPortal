@@ -1,6 +1,4 @@
 import pytest
-from fastapi.testclient import TestClient
-from main import app
 
 user_data = {
         "nombre": "Jonadan",
@@ -20,9 +18,6 @@ likes_data_list = [
 	{"usuario_id": "1", "publicacion_id": "3"},
 	{"usuario_id": "1", "publicacion_id": "4"}
 ]
-class CustomTestClient(TestClient):
-    def delete_with_payload(self,  **kwargs):
-        return self.request(method="DELETE", **kwargs)
 def login_user_post(test_client,user_data):
     response = test_client.post("/usuario/", json=user_data)
     assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
@@ -50,9 +45,9 @@ def test_delete_like(test_client, count):
                                 headers=headers)
     response_data = response.json()
     assert response.status_code == 200,  f"Expected status code 200 but got {response.status_code}. Response: {response_data}"
-    client = CustomTestClient(app)
-
-    remove_favorite = client.delete_with_payload(url="/likes",headers=headers,
-                                                 json={"usuario_id":user_id, "publicacion_id": valid_pb_id_list[count]})
-
+    
+    response = test_client.request(method="DELETE",
+                                   url="/likes", headers=headers,
+                                   json={"usuario_id":user_id, "publicacion_id": valid_pb_id_list[count], "fecha_creacion": "0"})
+    response_data = response.json()
     assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response_data}"
