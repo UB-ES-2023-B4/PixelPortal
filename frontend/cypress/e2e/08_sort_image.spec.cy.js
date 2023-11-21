@@ -6,35 +6,37 @@ describe('Test sort image', () => {
 	  cy.get('.login-show input[placeholder="Password"]').type('testPassword1!');
 	  cy.get('.login-show input[type="button"][value="Login"]').click();
 	  cy.url().should('include', '/home');
-	  cy.wait(500);
+	  cy.wait(1000);
 	});
   
 	it('should sort images by upload date in ascending order', () => {
 	  cy.get('.sort-button').click();
 	  cy.contains('Sort by upload Date (ascending)').click();
-	  cy.wait(500);
+	  cy.wait(1000);
   
 	  cy.get('.images .image-card').should('not.be.empty').first().click();
 	  cy.url().should('include', '/postZoom');
 	  cy.wait(500);
   
 	  cy.get('.debug-description').invoke('text').then((text) => {
+		cy.log(text);
 		Cypress.env('postDate1', text);
 	  });
   
 	  cy.get('button:contains("Go Back")').click();
 	  cy.url().should('include', '/home');
-	  cy.wait(500);
+	  cy.wait(1000);
   
 	  cy.get('.sort-button').click();
 	  cy.contains('Sort by upload Date (ascending)').click();
-	  cy.wait(500);
+	  cy.wait(1000);
   
 	  cy.get('.images .image-card').should('not.be.empty').eq(1).click();
 	  cy.url().should('include', '/postZoom');
 	  cy.wait(500);
   
 	  cy.get('.debug-description').invoke('text').then((text) => {
+		cy.log(text);
 		Cypress.env('postDate2', text);
 	  });
   
@@ -58,7 +60,7 @@ describe('Test sort image', () => {
 	it('should sort images by upload date in descending order', () => {
 		cy.get('.sort-button').click();
 		cy.contains('Sort by upload Date (descending)').click();
-		cy.wait(500);
+		cy.wait(1000);
 	
 		cy.get('.images .image-card').should('not.be.empty').first().click();
 		cy.url().should('include', '/postZoom');
@@ -70,11 +72,11 @@ describe('Test sort image', () => {
 	
 		cy.get('button:contains("Go Back")').click();
 		cy.url().should('include', '/home');
-		cy.wait(500);
+		cy.wait(1000);
 	
 		cy.get('.sort-button').click();
 		cy.contains('Sort by upload Date (descending)').click();
-		cy.wait(500);
+		cy.wait(1000);
 	
 		cy.get('.images .image-card').should('not.be.empty').eq(1).click();
 		cy.url().should('include', '/postZoom');

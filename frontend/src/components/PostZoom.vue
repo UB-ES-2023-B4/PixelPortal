@@ -40,6 +40,7 @@
                     {{ postAuthorUsername }}
                   </span>
                   <span class="description">Shared on {{ this.postDate }}</span>
+                  <span class="debug-description" style="display: none;">{{ this.debugDate }}</span>
                 </div>
               </router-link>
               <div class="box-tools">
