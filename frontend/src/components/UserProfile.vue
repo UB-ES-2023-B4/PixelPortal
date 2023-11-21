@@ -10,7 +10,7 @@
               style="width: 150px; height: 150px"
             />
             <h5 class="my-3">{{ username }}</h5>
-            <p class="text-muted mb-1">
+            <p class="text-muted mb-1" data-cy="check-follow">
               {{ followerCount }} Followers {{ followingCount }} Following
             </p>
             <p class="text-muted mb-1">{{ description }}</p>
@@ -89,6 +89,7 @@
               </li>
               <li
                 class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                data-cy="home-button"
                 @click="redirectToMainPage"
               >
                 <img

@@ -53,6 +53,7 @@
                 <button
                   type="button"
                   class="blue-button"
+                  data-cy="go-back-button"
                   @click="redirectToMainPage()"
                 >
                   <i class="fa fa-share"></i> Go Back
