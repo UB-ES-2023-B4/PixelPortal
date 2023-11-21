@@ -22,7 +22,7 @@ echo "npm run serve started with PID: $(cat npm_pid.txt)"
 sleep 5
 
 cd frontend
-npx cypress run --spec "cypress/e2e/01_register.spec.cy.js"
+npx cypress run --spec "cypress/e2e/*.spec.cy.js"
 cypress_exit_status=$?
 
 cd ..

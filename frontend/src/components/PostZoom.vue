@@ -19,18 +19,29 @@
           </div>
           <div class="box-info">
             <div class="box-header with-border">
-              <div class="user-block">
-                <img
-                  class="img-circle"
-                  :src="postAuthorProfilePic"
-                  alt="User Image"
-                />
-                <span class="username">
-                  {{ postAuthorUsername }}
-                </span>
-                <span class="description">Shared on {{ this.postDate }}</span>
-                <span class="debug-description" style="display: none;">{{ this.debugDate }}</span>
-              </div>
+              <router-link
+                class="custom-link"
+                :to="{
+                  name: 'userProfile',
+                  params: { id: this.postAuthorUserId },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.loggedInUserId,
+                  },
+                }"
+              >
+                <div class="user-block">
+                  <img
+                    class="img-circle"
+                    :src="postAuthorProfilePic"
+                    alt="User Image"
+                  />
+                  <span class="username">
+                    {{ postAuthorUsername }}
+                  </span>
+                  <span class="description">Shared on {{ this.postDate }}</span>
+                </div>
+              </router-link>
               <div class="box-tools">
                 <button
                   class="blue-button"
@@ -57,12 +68,24 @@
                     alt="User Image"
                   />
                   <div class="comment-text">
-                    <span class="username"
-                      >{{ comment.username }}
-                      <span class="text-muted pull-right">
-                        {{ comment.date }}</span
-                      > </span
-                    >{{ comment.content }}
+                    <router-link
+                      class="custom-link"
+                      :to="{
+                        name: 'userProfile',
+                        params: { id: comment.user_id },
+                        query: {
+                          token: this.token,
+                          loggedUserID: this.loggedInUserId,
+                        },
+                      }"
+                      ><span class="username"
+                        >{{ comment.username }}
+                        <span class="text-muted pull-right">
+                          {{ comment.date }}</span
+                        >
+                      </span>
+                    </router-link>
+                    {{ comment.content }}
                   </div>
                 </div>
               </div>
@@ -167,6 +190,7 @@ export default {
       description: "",
       token: this.$route.query.token,
       comments: [],
+      isLikePostInProgress: false,
     };
   },
   computed: {
@@ -349,6 +373,13 @@ export default {
       });
     },
     likePost() {
+      if (this.isLikePostInProgress) {
+        console.log("Request alredy in progress, wait a bit");
+        return;
+      }
+
+      this.isLikePostInProgress = true;
+
       if (this.loggedInUserHasLikedPost) {
         let pathLike = this.backendPath + "/likes/user/" + this.loggedInUserId;
         axios.get(pathLike).then((response) => {
@@ -367,6 +398,9 @@ export default {
             })
             .catch((error) => {
               console.log(error);
+            })
+            .finally(() => {
+              this.isLikePostInProgress = false;
             });
         });
       } else {
@@ -383,6 +417,9 @@ export default {
           })
           .catch((error) => {
             console.log(error);
+          })
+          .finally(() => {
+            this.isLikePostInProgress = false;
           });
       }
     },
@@ -465,6 +502,10 @@ body {
   display: block;
   padding: 10px;
   position: relative;
+}
+
+.custom-link {
+  text-decoration: none;
 }
 
 .user-block img {
