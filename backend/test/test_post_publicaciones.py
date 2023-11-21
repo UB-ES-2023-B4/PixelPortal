@@ -1,3 +1,4 @@
+from data.test_parameters import Parameters
 import pytest
 
 @pytest.mark.parametrize("image_data", [
@@ -41,23 +42,12 @@ import pytest
 ])
 
 def test_post_image(test_client, image_data):
-    user_data = {
-        "nombre": "Jonadan",
-        "email": "jona@hotmail.com",
-        "contrasena": "Awsome123$"
-        }
-    response = test_client.post("/usuario/", json=user_data)
-    assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
-
-    login_data = {"email": "jona@hotmail.com", "contrasena": "Awsome123$"}
-    response = test_client.post("/login", json=login_data)
-    assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
-    access_token = response.json()["access_token"]
-
-    headers= {"Authorization": f"Bearer {access_token}"}
-    response = test_client.post("/publicaciones", json=image_data, headers=headers)
-    response_data = response.json()
-    assert response.status_code == 200,  f"Expected status code 200 but got {response.status_code}. Response: {response_data}"
+    user_data = Parameters().get_test_user()
+    response = Parameters().login(test_client, user_data)
+    access_token = response.json()['access_token']
+    response = Parameters().post_image(test_client, access_token, image_data)
+    assert response.status_code == 200, \
+        f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
 
 @pytest.mark.parametrize("image_data", [
     {
@@ -91,20 +81,9 @@ def test_post_image(test_client, image_data):
 ])
 
 def test_invalid_post_image(test_client, image_data):
-    user_data = {
-        "nombre": "Jonadan",
-        "email": "jona@hotmail.com",
-        "contrasena": "Awsome123$"
-        }
-    response = test_client.post("/usuario/", json=user_data)
-    assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
-
-    login_data = {"email": "jona@hotmail.com", "contrasena": "Awsome123$"}
-    response = test_client.post("/login", json=login_data)
-    assert response.status_code == 200, f"Expected status code 200 but got {response.status_code}. Response: {response.json()}"
-    access_token = response.json()["access_token"]
-
-    headers= {"Authorization": f"Bearer {access_token}"}
-    response = test_client.post("/publicaciones", json=image_data, headers=headers)
-    response_data = response.json()
-    assert response.status_code != 200,  f"Expected status code 404 but got {response.status_code}. Response: {response_data}"
+    user_data = Parameters().get_test_user()
+    response = Parameters().login(test_client, user_data)
+    access_token = response.json()['access_token']
+    response = Parameters().post_image(test_client, access_token, image_data)
+    assert response.status_code != 200, \
+        f"Expected status code 404 but got {response.status_code}. Response: {response.json()}"
