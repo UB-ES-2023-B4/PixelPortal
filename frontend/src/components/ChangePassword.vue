@@ -9,13 +9,13 @@
                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Change Password</p>
                 <div class="col-md-10 col-lg-6 col-xl-7 order-2 order-lg-2 align-items-center">
 
-                  <form class="mx-1 mx-md-4 align-items-center">
+                  <form @submit.prevent="submitForm" class="mx-1 mx-md-4 align-items-center">
 
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="form3Example4c">Current password</label>
-                        <input type="password" id="form3Example4c" class="form-control" />
+                        <input v-model="currentPassword" type="password" id="form3Example4c" class="form-control" />
                       </div>
                     </div>
 
@@ -23,7 +23,7 @@
                       <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="form3Example4c">New password</label>
-                        <input type="password" id="form3Example4c" class="form-control" />
+                        <input v-model="newPassword" type="password" id="form3Example4c" class="form-control" />
                       </div>
                     </div>
 
@@ -31,12 +31,12 @@
                       <i class="fas fa-key fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="form3Example4cd">Repeat password</label>
-                        <input type="password" id="form3Example4cd" class="form-control" />
+                        <input v-model="repeatPassword" type="password" id="form3Example4cd" class="form-control" />
                       </div>
                     </div>
 
                     <div class="d-flex flex-fill justify-content-center mx-4 mb-3 mb-lg-4">
-                      <button type="button" class="btn btn-primary btn-lg">Submit</button>
+                      <button type="submit" class="btn btn-primary btn-lg">Submit</button>
                     </div>
 
                   </form>
@@ -45,21 +45,21 @@
                 <div class="col-md-10 col-lg-6 col-xl-5 d-flex align-items-center order-1 order-lg-1 align-items-center"
                   style="display:flex; align-items:center; align-content: center; vertical-align:middle;">
 
-                
-                    <div class="card-body text-center">
-                      <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 230px; height: 230px" />
-                      <h3 class="my-3">{{ username }}</h3>
 
-                      <div>
-                        <p class="text-muted mb-1"></p>
-                      </div>
-                      <!--
+                  <div class="card-body text-center">
+                    <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 230px; height: 230px" />
+                    <h3 class="my-3">{{ username }}</h3>
+
+                    <div>
+                      <p class="text-muted mb-1"></p>
+                    </div>
+                    <!--
                         <div class="d-flex justify-content-center mb-2">
                             <button type="button" class="btn btn-primary">Edit Profile</button>
                         </div>
                         -->
-                    </div>
-                
+                  </div>
+
                 </div>
 
               </div>
@@ -102,6 +102,9 @@ export default {
       profilePicUploaded: false,
       imageList: [],
       currentUserImages: [],
+      currentPassword: "",
+      newPassword: "",
+      repeatPassword: "",
     };
   },
   computed: {
@@ -112,6 +115,46 @@ export default {
     },
   },
   methods: {
+    async submitForm() {
+      if (this.newPassword !== this.repeatPassword) {
+        // Mostrar pop-up de error: Las contraseñas no coinciden
+        alert('Las contraseñas no coinciden');
+        return;
+      }
+
+      const requestData = {
+        current_password: this.currentPassword,
+        new_password: this.newPassword,
+        email: this.email // Asegúrate de tener acceso al email del usuario
+      };
+
+      try {
+        console.log(requestData);
+        const path = this.backendPath + "/usuario/change_pass";
+        const response = await axios.post(path, requestData);
+        console.log(response);
+        if (response && response.data && response.data.access_token) {
+          // Cambio de contraseña exitoso
+          alert('Contraseña cambiada exitosamente');
+          this.goBack();
+          // Puedes redirigir al usuario a una nueva página o realizar alguna acción adicional
+        } else {
+          // Manejar una respuesta inesperada del backend
+          alert('Error al cambiar la contraseña');
+        }
+      } catch (error) {
+        // Manejar errores de la solicitud al backend
+        if (error.response && error.response.status == 401) {
+          // Contraseña actual incorrecta
+          alert('Error ' + error.response.status + ': ' + error.message);
+          alert('Contraseña actual incorrecta');
+        } else {
+          // Otro tipo de error
+          alert('Error: ' + error.message);
+          alert('Error al cambiar la contraseña '+ error.response.status);
+        }
+      }
+    },
     goBack() {
       history.back();
     },
