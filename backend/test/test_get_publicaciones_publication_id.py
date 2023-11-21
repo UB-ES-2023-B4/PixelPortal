@@ -72,3 +72,32 @@ def test_valid_get_publicaciones_by_id(test_client, count):
     response = test_client.get(f"/publicaciones/{valid_pb_id_list[count]}/")
     response_data = response.json()
     assert response.status_code == 200, response_data
+
+def test_invalid_get_publicaciones_by_id(test_client):
+    response = test_client.get(f"/publicaciones//")
+    response_data = response.json()
+    assert response.status_code != 200, response_data
+
+def test_invalid_get_publicaciones_by_id(test_client):
+    access_token = register_and_login(test_client)
+    for image_data in image_data_list:
+        post_images(test_client, access_token, image_data)
+    response = test_client.get(f"/publicaciones//")
+    response_data = response.json()
+    assert response.status_code != 200, response_data
+
+def test_invalid_get_publicaciones_by_id(test_client):
+    access_token = register_and_login(test_client)
+    for image_data in image_data_list:
+        post_images(test_client, access_token, image_data)
+    response = test_client.get(f"/publicaciones/anyinvalid/")
+    response_data = response.json()
+    assert response.status_code != 200, response_data
+
+def test_invalid_get_publicaciones_by_id(test_client):
+    access_token = register_and_login(test_client)
+    for image_data in image_data_list:
+        post_images(test_client, access_token, image_data)
+    response = test_client.get(f"/publicaciones/00000000/")
+    response_data = response.json()
+    assert response.status_code != 200, response_data
