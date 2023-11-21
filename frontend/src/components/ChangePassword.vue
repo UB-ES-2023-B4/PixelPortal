@@ -143,15 +143,12 @@ export default {
           alert('Error al cambiar la contraseña');
         }
       } catch (error) {
-        // Manejar errores de la solicitud al backend
-        if (error.response && error.response.status == 401) {
-          // Contraseña actual incorrecta
+        if (error.response && error.response.status) {
           alert('Error ' + error.response.status + ': ' + error.message);
-          alert('Contraseña actual incorrecta');
-        } else {
-          // Otro tipo de error
+        } else if (error.message) {
           alert('Error: ' + error.message);
-          alert('Error al cambiar la contraseña '+ error.response.status);
+        } else {
+          alert('Error desconocido');
         }
       }
     },
