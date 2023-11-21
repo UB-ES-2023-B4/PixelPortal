@@ -54,4 +54,13 @@ class Parameters():
 		headers= {"Authorization": f"Bearer {access_token}"}
 		response = test_client.post("/publicaciones", json=image_data, headers=headers)
 		return (response)
-
+	
+	def post_comment(self, test_client, access_token, userid, pid, comment):
+		headers= {"Authorization": f"Bearer {access_token}"}
+		json_data = {
+			"usuario_id": userid,
+			"publicacion_id": pid,
+			"contenido": comment
+		}
+		response = test_client.post("/comentarios", json=json_data, headers=headers)
+		return (response)
