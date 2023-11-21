@@ -67,7 +67,8 @@ def update_account(db: Session, username: str, account: schemas.Usuario):
     return db_user
 
 def change_password(db:Session, user: models.Usuario, new_password: schemas.UsuarioChangePassword):
-    user.contraseña = new_password.new_password
+    hashed_password = get_password_hash(new_password.new_password)
+    user.contrasena = hashed_password
     db.add(user)
     db.commit()
     db.refresh(user)
