@@ -12,7 +12,7 @@ describe('Test update profile', () => {
 	it('test change user profile', () => {
 		cy.get('.username').click();
 		cy.get('[data-cy=edit-profile]').click();
-		cy.wait(200);
+		cy.wait(1000);
 		cy.fixture("pingu.jpg").then((fileContent) => {
 			cy.get('.image-upload-input').attachFile({
 				fileContent: fileContent.toString(),
@@ -26,6 +26,7 @@ describe('Test update profile', () => {
 		cy.get('button:contains("Save")').click();
 		cy.on('window:confirm', () => true);
 		cy.url().should('include', '/user');
+		cy.wait(1000);
 		cy.get('p.text-muted.mb-1[data-cy=user-description]').should('include.text', 'Yee@t');
 	})
 });
