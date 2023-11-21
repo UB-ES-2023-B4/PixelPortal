@@ -1,17 +1,17 @@
 class Parameters():
 	def __init__(self):
-		self.test_user = {
+		self._test_user = {
         	"nombre": "Jonadan",
         	"email": "jona@hotmail.com",
         	"contrasena": "Awsome123$"
 		}
-		self.register_user_list = [
+		self._register_user_list = [
 			{"nombre": "testuser",      "email": "test@example.com",        "contrasena": "testpassword"},
 			{"nombre": "testuser2",     "email": "test@gmail.com",          "contrasena": "testpassword"},
 			{"nombre": "testuser3",     "email": "test.ub@alumnes.ub.edu",  "contrasena": "testpassword"},
 			{"nombre": "Pepe",          "email": "pepe@gmail.com",          "contrasena": "Qwer!234"}
 		]
-		self.image_data_list = [
+		self._image_data_list = [
 			{"titulo": "string1","descripcion": "string", \
 				"usuario_nombre": "Jonadan","tags": "[]","imagen_url": "string1"},
 			{"titulo": "string2","descripcion": "string", \
@@ -23,13 +23,13 @@ class Parameters():
 		]
 
 	def get_test_user(self) -> dict:
-		return (self.test_user)
+		return (self._test_user)
 	
 	def get_register_user_list(self) -> list:
-		return (self.register_user_list)
+		return (self._register_user_list)
 	
 	def get_image_data_list(self) -> list:
-		return (self.image_data_list)
+		return (self._image_data_list)
 	
 	def registerUser(self, test_client, user_data) -> dict:
 		response = test_client.post("/usuario/", json=user_data)
@@ -37,10 +37,10 @@ class Parameters():
 		return (response)
 
 	def registerUsers(self, test_client) -> list:
-		for user_data in self.register_user_list:
+		for user_data in self._register_user_list:
 			response = test_client.post("/usuario/", json=user_data)
 			assert response.status_code == 200, response.json()
-		return (self.register_user_list)
+		return (self._register_user_list)
 	
 	def login(self, test_client, user_data) -> dict:
 		response = test_client.post("/usuario/", json=user_data)
