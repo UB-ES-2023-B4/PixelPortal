@@ -21,35 +21,21 @@
 
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                      <div class="form-outline flex mb-0">
+                      <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="form3Example4c">New password</label>
-                        <Password v-model="value">
-                          <template #header>
-                            <h6>Pick a password</h6>
-                          </template>
-                          <template #footer>
-                            <Divider />
-                            <p class="mt-2">Suggestions</p>
-                            <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                              <li>At least one lowercase</li>
-                              <li>At least one uppercase</li>
-                              <li>At least one numeric</li>
-                              <li>Minimum 8 characters</li>
-                            </ul>
-                          </template>
-                        </Password>
+                        <input type="password" id="form3Example4c" class="form-control" />
                       </div>
                     </div>
 
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                      <div class="form-outline flex mb-0">
+                      <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="form3Example4cd">Repeat password</label>
                         <input type="password" id="form3Example4cd" class="form-control" />
                       </div>
                     </div>
 
-                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                    <div class="d-flex flex-fill justify-content-center mx-4 mb-3 mb-lg-4">
                       <button type="button" class="btn btn-primary btn-lg">Submit</button>
                     </div>
 
@@ -59,10 +45,21 @@
                 <div class="col-md-10 col-lg-6 col-xl-5 d-flex align-items-center order-1 order-lg-1 align-items-center"
                   style="display:flex; align-items:center; align-content: center; vertical-align:middle;">
 
-                  <img :src="profilePicture"
-                    style="border-radius: 50%; align-self: center; align-content: center;position: relative; width: 300px;height: 300px;"
-                    class="img" alt="Sample image">
+                
+                    <div class="card-body text-center">
+                      <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 230px; height: 230px" />
+                      <h3 class="my-3">{{ username }}</h3>
 
+                      <div>
+                        <p class="text-muted mb-1"></p>
+                      </div>
+                      <!--
+                        <div class="d-flex justify-content-center mb-2">
+                            <button type="button" class="btn btn-primary">Edit Profile</button>
+                        </div>
+                        -->
+                    </div>
+                
                 </div>
 
               </div>
@@ -573,4 +570,5 @@ body {
 
 .dropdown-content a:hover {
   background-color: #f1f1f1;
-}</style>
+}
+</style>
