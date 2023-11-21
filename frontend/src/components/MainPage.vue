@@ -22,7 +22,7 @@
                 params: { id: this.userID },
                 query: {
                   token: this.token,
-                  loggedUsername: this.username,
+                  loggedUserID: this.userID,
                 },
               }"
             >
