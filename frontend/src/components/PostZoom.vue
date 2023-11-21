@@ -19,17 +19,29 @@
           </div>
           <div class="box-info">
             <div class="box-header with-border">
-              <div class="user-block">
-                <img
-                  class="img-circle"
-                  :src="postAuthorProfilePic"
-                  alt="User Image"
-                />
-                <span class="username">
-                  {{ postAuthorUsername }}
-                </span>
-                <span class="description">Shared on {{ this.postDate }}</span>
-              </div>
+              <router-link
+                class="custom-link"
+                :to="{
+                  name: 'userProfile',
+                  params: { id: this.postAuthorUserId },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.loggedInUserId,
+                  },
+                }"
+              >
+                <div class="user-block">
+                  <img
+                    class="img-circle"
+                    :src="postAuthorProfilePic"
+                    alt="User Image"
+                  />
+                  <span class="username">
+                    {{ postAuthorUsername }}
+                  </span>
+                  <span class="description">Shared on {{ this.postDate }}</span>
+                </div>
+              </router-link>
               <div class="box-tools">
                 <button
                   class="blue-button"
@@ -56,12 +68,24 @@
                     alt="User Image"
                   />
                   <div class="comment-text">
-                    <span class="username"
-                      >{{ comment.username }}
-                      <span class="text-muted pull-right">
-                        {{ comment.date }}</span
-                      > </span
-                    >{{ comment.content }}
+                    <router-link
+                      class="custom-link"
+                      :to="{
+                        name: 'userProfile',
+                        params: { id: comment.user_id },
+                        query: {
+                          token: this.token,
+                          loggedUserID: this.loggedInUserId,
+                        },
+                      }"
+                      ><span class="username"
+                        >{{ comment.username }}
+                        <span class="text-muted pull-right">
+                          {{ comment.date }}</span
+                        >
+                      </span>
+                    </router-link>
+                    {{ comment.content }}
                   </div>
                 </div>
               </div>
@@ -475,6 +499,10 @@ body {
   display: block;
   padding: 10px;
   position: relative;
+}
+
+.custom-link {
+  text-decoration: none;
 }
 
 .user-block img {
