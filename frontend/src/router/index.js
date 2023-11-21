@@ -5,6 +5,7 @@ import LoginregisterView from "../views/LoginregisterView.vue";
 import PostZoom from "../components/PostZoom.vue";
 import UserProfile from "../components/UserProfile.vue";
 import EditProfile from "../components/EditProfile.vue";
+import ChangePassword from "../components/ChangePassword.vue";
 
 const routes = [
   {
@@ -41,6 +42,12 @@ const routes = [
     path: '/editProfile/:id',
     name:"editProfile",
     component: EditProfile,
+    props: true,
+  },
+  {
+    path: '/changePassword/:id',
+    name:"changePassword",
+    component: ChangePassword,
     props: true,
   },
 ];

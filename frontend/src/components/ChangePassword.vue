@@ -1,81 +1,77 @@
 <template>
-  <div class="container py-5">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mx-auto">
-        <div class="card mb-4 mx-auto">
-          <div class="card-body text-center">
-            <img
-              :src="changePicture"
-              class="rounded-circle img-fluid"
-              style="width: 150px; height: 150px"
-            />
-          </div>
-          <div class="form-input mx-auto">
-            <input
-              type="file"
-              class="image-upload-input"
-              ref="imageInput"
-              accept="image/png,image/jpeg"
-              @change="imageInputChanged"
-            />
+  <section class="vh-100" style="background-color: #eee;">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-lg-12 col-xl-11">
+          <div class="card text-black" style="border-radius: 25px;">
+            <div class="card-body p-md-5">
+              <div class="row justify-content-center">
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Change Password</p>
+                <div class="col-md-10 col-lg-6 col-xl-7 order-2 order-lg-2 align-items-center">
+
+                  <form class="mx-1 mx-md-4 align-items-center">
+
+                    <div class="d-flex flex-row align-items-center mb-4">
+                      <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                      <div class="form-outline flex-fill mb-0">
+                        <label class="form-label" for="form3Example4c">Current password</label>
+                        <input type="password" id="form3Example4c" class="form-control" />
+                      </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-4">
+                      <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                      <div class="form-outline flex mb-0">
+                        <label class="form-label" for="form3Example4c">New password</label>
+                        <Password v-model="value">
+                          <template #header>
+                            <h6>Pick a password</h6>
+                          </template>
+                          <template #footer>
+                            <Divider />
+                            <p class="mt-2">Suggestions</p>
+                            <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
+                              <li>At least one lowercase</li>
+                              <li>At least one uppercase</li>
+                              <li>At least one numeric</li>
+                              <li>Minimum 8 characters</li>
+                            </ul>
+                          </template>
+                        </Password>
+                      </div>
+                    </div>
+
+                    <div class="d-flex flex-row align-items-center mb-4">
+                      <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                      <div class="form-outline flex mb-0">
+                        <label class="form-label" for="form3Example4cd">Repeat password</label>
+                        <input type="password" id="form3Example4cd" class="form-control" />
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                      <button type="button" class="btn btn-primary btn-lg">Submit</button>
+                    </div>
+
+                  </form>
+
+                </div>
+                <div class="col-md-10 col-lg-6 col-xl-5 d-flex align-items-center order-1 order-lg-1 align-items-center"
+                  style="display:flex; align-items:center; align-content: center; vertical-align:middle;">
+
+                  <img :src="profilePicture"
+                    style="border-radius: 50%; align-self: center; align-content: center;position: relative; width: 300px;height: 300px;"
+                    class="img" alt="Sample image">
+
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row align-items-center">
-      <div class="col-lg-6 mx-auto">
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Name</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ username }}</p>
-              </div>
-            </div>
-            <hr />
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Email</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ email }}</p>
-              </div>
-            </div>
-            <hr />
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Description</p>
-              </div>
-              <div class="col-sm-9">
-                <textarea
-                  id="description"
-                  v-model="description"
-                  class="form-control"
-                  placeholder="{{description}}"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="d-flex justify-content-center mb-2">
-        <button type="button" class="btn btn-primary" @click="updateProfile">
-          Save
-        </button>
-        <button
-          type="button"
-          class="btn btn-outline-primary ms-1"
-          @click="goBack"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -89,7 +85,7 @@ import {
 import axios from "axios";
 
 export default {
-  name: "EditProfile",
+  name: "ChangePassword",
   setup() {
     const showUploadImageForm = ref(false);
     return { showUploadImageForm };
@@ -392,6 +388,47 @@ export default {
 </script>
 
 <style scoped>
+.rounded-t-5 {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+@media (min-width: 992px) {
+  .rounded-tr-lg-0 {
+    border-top-right-radius: 0;
+  }
+
+  .rounded-bl-lg-5 {
+    border-bottom-left-radius: 0.5rem;
+  }
+}
+
+body {
+  background: #eee;
+}
+
+.separator {
+  border-right: 1px solid #dfdfe0;
+}
+
+.icon-btn-save {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.btn-save-label {
+  position: relative;
+  left: -12px;
+  display: inline-block;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px 0 0 3px;
+}
+
 .custom-list-group-item:hover {
   background-color: #178fff;
   /* Color de fondo oscuro */
@@ -536,5 +573,4 @@ export default {
 
 .dropdown-content a:hover {
   background-color: #f1f1f1;
-}
-</style>
+}</style>
