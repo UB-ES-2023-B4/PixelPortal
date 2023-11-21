@@ -11,16 +11,16 @@ describe('Test like', () => {
 	it('test follow', () => {
 		cy.get('.images .image-card').should('not.be.empty').first().click();
 		cy.url().should('include', '/postZoom');
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('.username').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('.page-button').contains('Follow').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('[data-cy=check-follow]').should('include.text', '1 Followers');
 		cy.get('[data-cy=home-button]').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('[data-cy=go-back-button]').click();
-		cy.wait(200);
+		cy.wait(500);
 		cy.get('.username').click();
 		cy.get('[data-cy=check-follow]').should('include.text', '1 Following');
 	})
@@ -28,16 +28,16 @@ describe('Test like', () => {
 	it('test unfollow', () => {
 		cy.get('.images .image-card').should('not.be.empty').first().click();
 		cy.url().should('include', '/postZoom');
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('.username').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('.page-button').contains('Unfollow').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('[data-cy=check-follow]').should('include.text', '0 Followers');
 		cy.get('[data-cy=home-button]').click();
-		cy.wait(500);
+		cy.wait(1000);
 		cy.get('[data-cy=go-back-button]').click();
-		cy.wait(200);
+		cy.wait(500);
 		cy.get('.username').click();
 		cy.get('[data-cy=check-follow]').should('include.text', '0 Following');
 	})

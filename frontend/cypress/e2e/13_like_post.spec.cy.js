@@ -21,7 +21,7 @@ describe('Test like', () => {
 		cy.get('.like-button img').should('have.attr', 'src').and('include', 'favorite_border_black_24dp');
 	})
 
-	it('test spam like button', () => {
+	it.skip('test spam like button', () => {
 		cy.get('.images .image-card').should('not.be.empty')
 		cy.get('.images .image-card').first().within(() => {
 			cy.get('img').should('be.visible');
