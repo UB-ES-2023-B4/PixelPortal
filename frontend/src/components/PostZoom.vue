@@ -19,17 +19,29 @@
           </div>
           <div class="box-info">
             <div class="box-header with-border">
-              <div class="user-block">
-                <img
-                  class="img-circle"
-                  :src="postAuthorProfilePic"
-                  alt="User Image"
-                />
-                <span class="username">
-                  {{ postAuthorUsername }}
-                </span>
-                <span class="description">Shared on {{ this.postDate }}</span>
-              </div>
+              <router-link
+                class="custom-link"
+                :to="{
+                  name: 'userProfile',
+                  params: { id: this.postAuthorUserId },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.loggedInUserId,
+                  },
+                }"
+              >
+                <div class="user-block">
+                  <img
+                    class="img-circle"
+                    :src="postAuthorProfilePic"
+                    alt="User Image"
+                  />
+                  <span class="username">
+                    {{ postAuthorUsername }}
+                  </span>
+                  <span class="description">Shared on {{ this.postDate }}</span>
+                </div>
+              </router-link>
               <div class="box-tools">
                 <button
                   class="blue-button"
@@ -56,22 +68,42 @@
                     alt="User Image"
                   />
                   <div class="comment-text">
-                    <span class="username"
-                      >{{ comment.username }}
-                      <span class="text-muted pull-right">
-                        {{ comment.date }}</span
-                      > </span
-                    >{{ comment.content }}
+                    <router-link
+                      class="custom-link"
+                      :to="{
+                        name: 'userProfile',
+                        params: { id: comment.user_id },
+                        query: {
+                          token: this.token,
+                          loggedUserID: this.loggedInUserId,
+                        },
+                      }"
+                      ><span class="username"
+                        >{{ comment.username }}
+                        <span class="text-muted pull-right">
+                          {{ comment.date }}</span
+                        >
+                      </span>
+                    </router-link>
+                    {{ comment.content }}
                   </div>
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-default btn-xs">
-              <span class="material-icons pixel-color full-width"
-                >favorite_border</span
-              >
+            <button
+              type="button"
+              class="btn btn-default btn-xs like-button"
+              @click="likePost"
+            >
+              <img
+                :src="
+                  loggedInUserHasLikedPost
+                    ? require('../assets/favorite_black_24dp.svg')
+                    : require('../assets/favorite_border_black_24dp.svg')
+                "
+              />
             </button>
-            <span class="pull-right text-muted">127</span>
+            <span class="pull-right text-muted"> {{ postLikeNumber }} </span>
             <button
               type="button"
               class="btn btn-default btn-xs"
@@ -137,23 +169,26 @@ export default {
   name: "PostZoom",
   data() {
     return {
-      id: this.$route.params.id,
+      id: parseInt(this.$route.params.id),
       tags: [],
       comment: "",
       loggedInUsername: this.$route.query.loggedUsername,
-      loggedInUserId: this.$route.query.loggedUserID,
+      loggedInUserId: parseInt(this.$route.query.loggedUserID),
       loggedInUserPFP: "",
+      loggedInUserHasLikedPost: false,
       postAuthorProfilePic: "",
       image: "",
       title: "",
       postAuthorUsername: "",
       postAuthorUserId: 0,
+      postLikeNumber: 0,
       postDate: "",
       isLoggedUsersPost: false,
       imageFirebaseURL: "",
       description: "",
       token: this.$route.query.token,
       comments: [],
+      isLikePostInProgress: false,
     };
   },
   computed: {
@@ -212,6 +247,10 @@ export default {
       axios
         .get(loggedInUserPath, { headers })
         .then((response) => {
+          this.loggedInUsername = response.data.nombre;
+          if (this.loggedInUsername == this.postAuthorUsername) {
+            this.isLoggedUsersPost = true;
+          }
           const userProfilePicRef = firebaseRef(
             storage,
             response.data.imagen_perfil_url
@@ -322,6 +361,66 @@ export default {
           alert("Error: " + error.message);
         });
     },
+    getLikes() {
+      const pathLikes = this.backendPath + "/likes/" + this.id;
+      axios.get(pathLikes).then((response) => {
+        this.postLikeNumber = response.data.length;
+        this.loggedInUserHasLikedPost = response.data.some(
+          (item) => item.id === this.loggedInUserId
+        );
+      });
+    },
+    likePost() {
+      if (this.isLikePostInProgress) {
+        console.log("Request alredy in progress, wait a bit");
+        return;
+      }
+
+      this.isLikePostInProgress = true;
+
+      if (this.loggedInUserHasLikedPost) {
+        let pathLike = this.backendPath + "/likes/user/" + this.loggedInUserId;
+        axios.get(pathLike).then((response) => {
+          let likePostInfo = response.data.find((item) => item.id === this.id);
+          pathLike = this.backendPath + "/likes/";
+          const headers = { Authorization: "Bearer " + this.token };
+          const data = {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: likePostInfo.id,
+            fecha_creacion: likePostInfo.fecha_creacion,
+          };
+          axios
+            .delete(pathLike, { data: data, headers: headers })
+            .then(() => {
+              this.getLikes();
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.isLikePostInProgress = false;
+            });
+        });
+      } else {
+        const pathLike = this.backendPath + "/likes/";
+        const headers = { Authorization: "Bearer " + this.token };
+        const data = {
+          usuario_id: this.loggedInUserId,
+          publicacion_id: this.id,
+        };
+        axios
+          .post(pathLike, data, { headers })
+          .then(() => {
+            this.getLikes();
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.isLikePostInProgress = false;
+          });
+      }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -335,9 +434,6 @@ export default {
         this.imageFirebaseURL = response.data.imagen_url;
         this.postDate = new Date(response.data.fecha_creacion).toLocaleString();
         this.tags = JSON.parse(response.data.tags);
-        if (this.loggedInUsername == this.postAuthorUsername) {
-          this.isLoggedUsersPost = true;
-        }
         //GETTING POST IMAGE FROM FIREBASE
         const postImageRef = firebaseRef(
           storage,
@@ -357,6 +453,7 @@ export default {
       });
     this.getComments();
     this.getUserProfilePic();
+    this.getLikes();
   },
 };
 </script>
@@ -402,6 +499,10 @@ body {
   display: block;
   padding: 10px;
   position: relative;
+}
+
+.custom-link {
+  text-decoration: none;
 }
 
 .user-block img {
@@ -604,6 +705,10 @@ body {
 
 .pixel-color:hover {
   color: rgba(20, 117, 236, 0.6);
+}
+
+.like-button:hover {
+  filter: brightness(150%);
 }
 
 .pixel-color {

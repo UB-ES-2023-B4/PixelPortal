@@ -10,11 +10,27 @@
               style="width: 150px; height: 150px"
             />
             <h5 class="my-3">{{ username }}</h5>
-            <p class="text-muted mb-1">27 Followers 21 Following</p>
+            <p class="text-muted mb-1">
+              {{ followerCount }} Followers {{ followingCount }} Following
+            </p>
             <p class="text-muted mb-1">{{ description }}</p>
             <div>
               <p class="text-muted mb-1"></p>
             </div>
+            <button
+              class="page-button"
+              :hidden="!showFollowButton"
+              @click="followUser"
+            >
+              Follow
+            </button>
+            <button
+              class="page-button"
+              :hidden="!showUnfollowButton"
+              @click="unfollowUser"
+            >
+              Unfollow
+            </button>
             <!--
                         <div class="d-flex justify-content-center mb-2">
                             <button type="button" class="btn btn-primary">Edit Profile</button>
@@ -26,6 +42,7 @@
           <div class="card-body p-0">
             <ul class="list-group list-group-flush rounded-3">
               <router-link
+                :hidden="!isLoggedInUserProfile"
                 :to="{
                   name: 'editProfile',
                   params: { id: this.userID },
@@ -69,6 +86,30 @@
                 />
                 <p class="mb-0">New Post</p>
               </li>
+              <router-link
+                :hidden="!isLoggedInUserProfile"
+                :to="{
+                  name: 'changePassword',
+                  params: { id: this.userID },
+                  query: {
+                    token: this.token,
+                    loggedUsername: this.username,
+                  },
+                }"
+              >
+                <li
+                  class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                >
+                  <img
+                    src="../assets/fingerprint.png"
+                    alt="Icono personalizado"
+                    class="custom-icon"
+                  />
+                  <p class="mb-0" style="text-align: center; color: black">
+                    Change Password
+                  </p>
+                </li>
+              </router-link>
               <li
                 class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
                 @click="redirectToMainPage"
@@ -138,9 +179,10 @@ export default {
   },
   data() {
     return {
-      id: this.$route.params.id,
+      id: parseInt(this.$route.params.id),
       username: "",
       token: this.$route.query.token,
+      loggedInUserID: parseInt(this.$route.query.loggedUserID),
       description: "",
       profilePicture: "",
       leftSidebarMinimized: false,
@@ -150,6 +192,10 @@ export default {
       imageList: [],
       currentUserImages: [],
       showMyImages: false,
+      isLoggedInUserProfile: false,
+      isLoggedInUserFollowingUser: false,
+      followerCount: 0,
+      followingCount: 0,
     };
   },
   computed: {
@@ -157,6 +203,12 @@ export default {
       return this.imageList.filter((img) => {
         return img.username == this.username;
       });
+    },
+    showFollowButton() {
+      return !this.isLoggedInUserFollowingUser && !this.isLoggedInUserProfile;
+    },
+    showUnfollowButton() {
+      return this.isLoggedInUserFollowingUser && !this.isLoggedInUserProfile;
     },
   },
   methods: {
@@ -252,6 +304,54 @@ export default {
           console.error(error);
         });
     },
+    getFollowers() {
+      const followersPath =
+        this.backendPath + "/usuario/" + this.id + "/followers";
+      axios.get(followersPath).then((response) => {
+        this.isLoggedInUserFollowingUser = response.data.some(
+          (item) => item.id === this.loggedInUserID
+        );
+        this.followerCount = response.data.length;
+      });
+
+      const followingPath =
+        this.backendPath + "/usuario/" + this.id + "/following";
+      axios.get(followingPath).then((response) => {
+        this.followingCount = response.data.length;
+      });
+    },
+    followUser() {
+      const followUserPath =
+        this.backendPath +
+        "/usuario/" +
+        this.id +
+        "/follow/" +
+        this.loggedInUserID;
+      axios
+        .post(followUserPath)
+        .then(() => {
+          this.getFollowers();
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    },
+    unfollowUser() {
+      const unfollowUserPath =
+        this.backendPath +
+        "/usuario/" +
+        this.id +
+        "/unfollow/" +
+        this.loggedInUserID;
+      axios
+        .delete(unfollowUserPath)
+        .then(() => {
+          this.getFollowers();
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    },
   },
   mounted() {
     window.addEventListener("click", this.closeDropdown);
@@ -262,11 +362,15 @@ export default {
   },
   created() {
     this.token = this.$route.query.token;
+    if (this.loggedInUserID === this.id) {
+      this.isLoggedInUserProfile = true;
+    }
     if (typeof this.token === "undefined") {
       this.$router.push({ path: "/" });
     } else {
       this.getUserInfo();
     }
+    this.getFollowers();
   },
 };
 </script>
@@ -416,5 +520,14 @@ export default {
 
 .dropdown-content a:hover {
   background-color: #f1f1f1;
+}
+
+.page-button {
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  height: 45px;
+  width: 8rem;
+  margin: 10px;
+  border-radius: 6px;
 }
 </style>
