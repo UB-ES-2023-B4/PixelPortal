@@ -8,7 +8,12 @@
         <div class="side-bar" v-if="!isLoading">
           <div class="user-info-wrapper">
           <div class="user-info">
-            <h1 class="website-title" @click="reloadPage">PixelPortal</h1>
+            <img
+              src="../assets/sidebar-logo.png"
+              class="img-fluid"
+              style="margin-bottom: 25px;"
+              @click="reloadPage"
+            />
           </div>
           <div class="user-info">
             <div class="username-and-picture">
