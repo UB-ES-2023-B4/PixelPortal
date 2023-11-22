@@ -116,13 +116,9 @@ def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(ge
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    db_user = repository.change_password(db,db_user,user)
-
+    db_user = repository.change_password(db, db_user, user)
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)#Al cambiar la contraseña creamos un nuevo token
-    access_token = create_access_token(
-        subject=db_user.email, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": db_user.email}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
