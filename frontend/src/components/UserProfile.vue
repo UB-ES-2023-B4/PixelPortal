@@ -87,6 +87,7 @@
                 <p class="mb-0">New Post</p>
               </li>
               <router-link
+                :hidden="!isLoggedInUserProfile"
                 :to="{
                   name: 'changePassword',
                   params: { id: this.userID },

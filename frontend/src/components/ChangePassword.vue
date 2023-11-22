@@ -1,53 +1,87 @@
 <template>
-  <section class="vh-100" style="background-color: #eee;">
+  <section class="vh-100" style="background-color: #eee">
     <div class="container h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-lg-12 col-xl-11">
-          <div class="card text-black" style="border-radius: 25px;">
+          <div class="card text-black" style="border-radius: 25px">
             <div class="card-body p-md-5">
               <div class="row justify-content-center">
-                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Change Password</p>
-                <div class="col-md-10 col-lg-6 col-xl-7 order-2 order-lg-2 align-items-center">
-
-                  <form @submit.prevent="submitForm" class="mx-1 mx-md-4 align-items-center">
-
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
+                  Change Password
+                </p>
+                <div
+                  class="col-md-10 col-lg-6 col-xl-7 order-2 order-lg-2 align-items-center"
+                >
+                  <form
+                    @submit.prevent="submitForm"
+                    class="mx-1 mx-md-4 align-items-center"
+                  >
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
-                        <label class="form-label" for="form3Example4c">Current password</label>
-                        <input v-model="currentPassword" type="password" id="form3Example4c" class="form-control" />
+                        <label class="form-label" for="form3Example4c"
+                          >Current password</label
+                        >
+                        <input
+                          v-model="currentPassword"
+                          type="password"
+                          class="form-control"
+                        />
                       </div>
                     </div>
 
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
-                        <label class="form-label" for="form3Example4c">New password</label>
-                        <input v-model="newPassword" type="password" id="form3Example4c" class="form-control" />
+                        <label class="form-label" for="form3Example4c"
+                          >New password</label
+                        >
+                        <input
+                          v-model="newPassword"
+                          type="password"
+                          class="form-control"
+                        />
                       </div>
                     </div>
 
                     <div class="d-flex flex-row align-items-center mb-4">
                       <i class="fas fa-key fa-lg me-3 fa-fw"></i>
                       <div class="form-outline flex-fill mb-0">
-                        <label class="form-label" for="form3Example4cd">Repeat password</label>
-                        <input v-model="repeatPassword" type="password" id="form3Example4cd" class="form-control" />
+                        <label class="form-label" for="form3Example4cd"
+                          >Repeat password</label
+                        >
+                        <input
+                          v-model="repeatPassword"
+                          type="password"
+                          class="form-control"
+                        />
                       </div>
                     </div>
 
-                    <div class="d-flex flex-fill justify-content-center mx-4 mb-3 mb-lg-4">
-                      <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                    <div
+                      class="d-flex flex-fill justify-content-center mx-4 mb-3 mb-lg-4"
+                    >
+                      <button type="submit" class="btn btn-primary btn-lg">
+                        Submit
+                      </button>
                     </div>
-
                   </form>
-
                 </div>
-                <div class="col-md-10 col-lg-6 col-xl-5 d-flex align-items-center order-1 order-lg-1 align-items-center"
-                  style="display:flex; align-items:center; align-content: center; vertical-align:middle;">
-
-
+                <div
+                  class="col-md-10 col-lg-6 col-xl-5 d-flex align-items-center order-1 order-lg-1 align-items-center"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    align-content: center;
+                    vertical-align: middle;
+                  "
+                >
                   <div class="card-body text-center">
-                    <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 230px; height: 230px" />
+                    <img
+                      :src="profilePicture"
+                      class="rounded-circle img-fluid"
+                      style="width: 230px; height: 230px"
+                    />
                     <h3 class="my-3">{{ username }}</h3>
 
                     <div>
@@ -59,9 +93,7 @@
                         </div>
                         -->
                   </div>
-
                 </div>
-
               </div>
             </div>
           </div>
@@ -118,14 +150,14 @@ export default {
     async submitForm() {
       if (this.newPassword !== this.repeatPassword) {
         // Mostrar pop-up de error: Las contraseñas no coinciden
-        alert('Las contraseñas no coinciden');
+        alert("Las contraseñas no coinciden");
         return;
       }
 
       const requestData = {
         current_password: this.currentPassword,
         new_password: this.newPassword,
-        email: this.email // Asegúrate de tener acceso al email del usuario
+        email: this.email, // Asegúrate de tener acceso al email del usuario
       };
 
       try {
@@ -135,20 +167,20 @@ export default {
         console.log(response);
         if (response && response.data && response.data.access_token) {
           // Cambio de contraseña exitoso
-          alert('Contraseña cambiada exitosamente');
+          alert("Contraseña cambiada exitosamente");
           this.goBack();
           // Puedes redirigir al usuario a una nueva página o realizar alguna acción adicional
         } else {
           // Manejar una respuesta inesperada del backend
-          alert('Error al cambiar la contraseña');
+          alert("Error al cambiar la contraseña");
         }
       } catch (error) {
         if (error.response && error.response.status) {
-          alert('Error ' + error.response.status + ': ' + error.message);
+          alert("Error " + error.response.status + ": " + error.message);
         } else if (error.message) {
-          alert('Error: ' + error.message);
+          alert("Error: " + error.message);
         } else {
-          alert('Error desconocido');
+          alert("Error desconocido");
         }
       }
     },
