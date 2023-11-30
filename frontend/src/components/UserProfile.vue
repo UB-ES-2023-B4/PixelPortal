@@ -13,6 +13,11 @@
             <p class="text-muted mb-1">
               {{ followerCount }} Followers {{ followingCount }} Following
             </p>
+            <button
+              class="page-button"
+            >
+              show followers
+            </button>
             <p class="text-muted mb-1">{{ description }}</p>
             <div>
               <p class="text-muted mb-1"></p>
@@ -159,6 +164,40 @@
           </div>
         </div>
       </div>
+      <div class="col-lg-8">
+        <div class="image-container">
+          <UploadImagePopup
+            :open="showUploadImageForm"
+            :username="username"
+            :token="token"
+            @close="closeUploadImageForm"
+          >
+          </UploadImagePopup>
+          <div class="images">
+            <div
+              class="image-card"
+              v-for="follower in followersList"
+              :key="follower.id"
+              :data-name="follower.nombre"
+            >
+              <router-link
+                :to="{
+                  name: 'userProfile',
+                  params: { id: follower.id },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.id,
+                  },
+                }"
+              >
+                <img :src="follower.imagen_perfil_url" />
+              </router-link>
+              <h6 class="image-title">{{ follower.nombre }}</h6>
+              <h6 class="image-username">{{ follower.email }}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -196,6 +235,8 @@ export default {
       isLoggedInUserFollowingUser: false,
       followerCount: 0,
       followingCount: 0,
+      followersList: [],
+      followingList:[],
     };
   },
   computed: {
@@ -311,6 +352,8 @@ export default {
         this.isLoggedInUserFollowingUser = response.data.some(
           (item) => item.id === this.loggedInUserID
         );
+        this.followersList = response.data;
+        console.log(this.followersList);
         this.followerCount = response.data.length;
       });
 
@@ -356,6 +399,7 @@ export default {
   mounted() {
     window.addEventListener("click", this.closeDropdown);
     this.getPublication();
+    this.getFollowers();
   },
   beforeUnmount() {
     window.removeEventListener("click", this.closeDropdown);
