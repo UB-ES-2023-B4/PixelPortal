@@ -251,3 +251,46 @@ async def get_following(user_id: int, db: Session = Depends(get_db)):
     following = repository.get_following(db, user_id)
     return following
 
+#bookmarks
+@app.post("/bookmarks/", response_model = schemas.BookMark)
+async def create_like(bookmark: schemas.BookMarkCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    db_post = repository.get_post(db, bookmark.publicacion_id)
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    bookmark = repository.crear_like(db=db, bookmark=bookmark, usuario_actual=usuario_actual)
+    if bookmark is None:
+        raise HTTPException(status_code=404, detail="Bookmark already exist")
+    return bookmark
+
+@app.get("/bookmarks/", response_model = List[schemas.BookMark])
+async def get_all_bookmarks(skip: int = 0, limit: int = 100,db:Session = Depends(get_db)):
+    bookmarks = repository.get_all_bookmarks(db, skip, limit)
+    return bookmarks
+@app.get("/bookmarks/{publication_id}", response_model = List[schemas.Usuario])
+async def get_bookmarks_publication(publication_id: int, db:Session = Depends(get_db)):
+    db_publication = repository.get_post(db, publication_id)
+    if db_publication is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    db_users = repository.get_users_bookmarked_a_post(db,publication_id)
+    if db_users is None:
+        raise HTTPException(status_code=404, detail="Users not found")
+    return db_users
+
+@app.get("/bookmarks/user/{user_id}", response_model=List[schemas.Publicacion])
+async def get_bookmarks_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = repository.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    publications =repository.get_posts_bookmarked_by_user(db,user_id)
+
+    if publications is None:
+        raise HTTPException(status_code=404, detail="Bookmarks not found")
+    return publications
+@app.delete("/bookmarks/", response_model=schemas.BookMark)
+def delete_bookmark(bookmark: schemas.BookMark, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    deleted_bookmark = repository.delete_bookmark(db, bookmark)
+    if deleted_bookmark is None:
+        raise HTTPException(status_code=404, detail="Bookmark not found")
+    return deleted_bookmark
+

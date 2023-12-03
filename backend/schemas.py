@@ -110,3 +110,12 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: EmailStr
 
+class BookMarkBase(BaseModel):
+    usuario_id: int
+    publicacion_id: int
+class BookMarkCreate(BookMarkBase):
+    pass
+class BookMark(BookMarkBase):
+    fecha_creacion: datetime
+    class Config:
+        orm_mode = True
