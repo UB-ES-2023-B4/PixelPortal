@@ -253,11 +253,11 @@ async def get_following(user_id: int, db: Session = Depends(get_db)):
 
 #bookmarks
 @app.post("/bookmarks/", response_model = schemas.BookMark)
-async def create_like(bookmark: schemas.BookMarkCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+async def create_bookmark(bookmark: schemas.BookMarkCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
     db_post = repository.get_post(db, bookmark.publicacion_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
-    bookmark = repository.crear_like(db=db, bookmark=bookmark, usuario_actual=usuario_actual)
+    bookmark = repository.crear_bookmark(db=db, bookmark=bookmark, usuario_actual=usuario_actual)
     if bookmark is None:
         raise HTTPException(status_code=404, detail="Bookmark already exist")
     return bookmark

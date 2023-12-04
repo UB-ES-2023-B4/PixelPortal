@@ -24,7 +24,7 @@ class Usuario(UsuarioBase):
     fecha_creacion: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UsuarioChangePassword(BaseModel):
     current_password: str
@@ -51,7 +51,7 @@ class Seguidor(SeguidorBase):
     fecha_creacion: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PublicacionBase(BaseModel):
     usuario_id: int
@@ -73,7 +73,7 @@ class Publicacion(PublicacionBase):
     fecha_creacion: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ComentarioBase(BaseModel):
     usuario_id: int
@@ -88,7 +88,7 @@ class Comentario(ComentarioBase):
     fecha_creacion: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class LikeBase(BaseModel):
     usuario_id: int
@@ -101,7 +101,7 @@ class Like(LikeBase):
     fecha_creacion: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
@@ -118,4 +118,4 @@ class BookMarkCreate(BookMarkBase):
 class BookMark(BookMarkBase):
     fecha_creacion: datetime
     class Config:
-        orm_mode = True
+        from_attributes = True
