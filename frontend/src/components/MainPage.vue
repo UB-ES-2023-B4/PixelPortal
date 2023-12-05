@@ -1,90 +1,129 @@
 <template>
-  <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
-
   <div>
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
+      rel="stylesheet"
+    />
     <LoadingComponent v-if="isLoading"></LoadingComponent>
     <div v-else>
       <div class="container">
         <div class="side-bar" v-if="!isLoading">
           <div class="user-info-wrapper">
-          <div class="user-info">
-            <img
-              src="../assets/sidebar-logo.png"
-              class="img-fluid"
-              style="margin-bottom: 25px;"
-              @click="reloadPage"
-            />
-          </div>
-          <div class="user-info">
-            <div class="username-and-picture">
-              <img :src="profilePicture" alt="Profile Picture" class="profile-picture" />
-              <router-link :to="{
-                name: 'userProfile',
-                params: { id: this.userID },
-                query: {
-                  token: this.token,
-                  loggedUserID: this.userID,
-                },
-              }">
-                <h6 class="username">{{ username }}</h6>
-              </router-link>
+            <div class="user-info">
+              <img
+                src="../assets/sidebar-logo.png"
+                class="img-fluid"
+                style="margin-bottom: 25px"
+                @click="reloadPage"
+              />
             </div>
-            <div class="dropdown" style="align-items: flex-end">
-              <button class="options-button" @click="toggleUserDropdown">
-                <i class="bx bx-dots-vertical-rounded"></i>
-              </button>
-              <div id="dropdown-content" class="dropdown-content" v-if="showUserDropdown">
-                <a href="/">Log out</a>
+            <div class="user-info">
+              <div class="username-and-picture">
+                <img
+                  :src="profilePicture"
+                  alt="Profile Picture"
+                  class="profile-picture"
+                />
+                <router-link
+                  :to="{
+                    name: 'userProfile',
+                    params: { id: this.userID },
+                    query: {
+                      token: this.token,
+                      loggedUserID: this.userID,
+                    },
+                  }"
+                >
+                  <h6 class="username">{{ username }}</h6>
+                </router-link>
+              </div>
+              <div class="dropdown" style="align-items: flex-end">
+                <button class="options-button" @click="toggleUserDropdown">
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div
+                  id="dropdown-content"
+                  class="dropdown-content"
+                  v-if="showUserDropdown"
+                >
+                  <a href="/">Log out</a>
+                </div>
               </div>
             </div>
+            <button class="post-button" @click="showUploadImageForm = true">
+              <i class="bx bx-plus"></i> Post
+            </button>
+            <button
+              class="post-button"
+              :class="{ 'post-button-my-images-selected': showMyImages }"
+              @click="showMyImages = !showMyImages"
+            >
+              <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+              My Images
+            </button>
+            <button class="post-button" @click="showSearchUserForm = true">
+              <i class="bx bx-search"></i> Search User
+            </button>
           </div>
-          <button class="post-button" @click="showUploadImageForm = true">
-            <i class="bx bx-plus"></i> Post
-          </button>
-          <button class="post-button" :class="{ 'post-button-my-images-selected': showMyImages }"
-            @click="showMyImages = !showMyImages">
-            <img class="sidebar-icon" src="../assets/images.svg" alt="" />
-            My Images
-          </button>
-        </div>
         </div>
         <div class="image-container" v-if="!isLoading">
           <div class="search-container">
-          <div class="search-box" :hidden="showMyImages">
-            <i class="bx bx-search"></i>
-            <input type="text" v-model="search" placeholder="Search" />
-          </div>
-          <div class="dropdown">
-            <button class="sort-button" @click="toggleSortDropdown">
-              <img class="sort-icon" src="../assets/filter.svg" alt="" />
-            </button>
-            <div class="dropdown-content" v-if="showSortDropdown">
-              <a @click="sortImagesByUploadDate(true)">Sort by upload Date (ascending)</a>
-              <a @click="sortImagesByUploadDate(false)">Sort by upload Date (descending)</a>
-              <a>Sort by likes</a>
+            <div class="search-box" :hidden="showMyImages">
+              <i class="bx bx-search"></i>
+              <input type="text" v-model="search" placeholder="Search" />
+            </div>
+            <div class="dropdown">
+              <button class="sort-button" @click="toggleSortDropdown">
+                <img class="sort-icon" src="../assets/filter.svg" alt="" />
+              </button>
+              <div class="dropdown-content" v-if="showSortDropdown">
+                <a @click="sortImagesByUploadDate(true)"
+                  >Sort by upload Date (ascending)</a
+                >
+                <a @click="sortImagesByUploadDate(false)"
+                  >Sort by upload Date (descending)</a
+                >
+                <a>Sort by likes</a>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Popup to upload images component -->
-        <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token" @close="closeUploadImageForm">
-        </UploadImagePopup>
-        <div class="images">
-          <div class="image-card" v-for="img in showMyImages ? myImagesList : filteredList" :key="img.id"
-            :data-name="img.username">
-            <router-link :to="{
-              name: 'postZoom',
-              params: { id: img.id },
-              query: {
-                token: this.token,
-                loggedUserID: this.userID,
-              },
-            }">
-              <img :src="img.image" />
-            </router-link>
-            <h6 class="image-title">{{ img.title }}</h6>
-            <h6 class="image-username">{{ img.username }}</h6>
+          <!-- Popup to upload images component -->
+          <UploadImagePopup
+            :open="showUploadImageForm"
+            :username="username"
+            :token="token"
+            @close="closeUploadImageForm"
+          >
+          </UploadImagePopup>
+          <SearchUserPopup
+            :open="showSearchUserForm"
+            :loggedInUserID="userID"
+            :token="token"
+            @close="closeSearchUserForm"
+          ></SearchUserPopup>
+          <div class="images">
+            <div
+              class="image-card"
+              v-for="img in showMyImages ? myImagesList : filteredList"
+              :key="img.id"
+              :data-name="img.username"
+            >
+              <router-link
+                :to="{
+                  name: 'postZoom',
+                  params: { id: img.id },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.userID,
+                  },
+                }"
+              >
+                <img :src="img.image" />
+              </router-link>
+              <h6 class="image-title">{{ img.title }}</h6>
+              <h6 class="image-username">{{ img.username }}</h6>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -96,15 +135,17 @@ import { ref } from "vue";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
+import SearchUserPopup from "./SearchUserPopup.vue";
 import axios from "axios";
 import LoadingComponent from "../components/LoadingComponent";
 
 export default {
   name: "MainPage",
-  components: { UploadImagePopup, LoadingComponent },
+  components: { UploadImagePopup, LoadingComponent, SearchUserPopup },
   setup() {
     const showUploadImageForm = ref(false);
-    return { showUploadImageForm };
+    const showSearchUserForm = ref(false);
+    return { showUploadImageForm, showSearchUserForm };
   },
   data() {
     return {
@@ -215,6 +256,9 @@ export default {
           });
       }
     },
+    closeSearchUserForm() {
+      this.showSearchUserForm = false;
+    },
     getPublication() {
       this.imageList = [];
       const pathPublications = this.backendPath + "/publicaciones";
@@ -250,7 +294,7 @@ export default {
         });
     },
     getUserInfo() {
-      this.userID = this.$route.query.user_id;
+      this.userID = parseInt(this.$route.query.user_id);
       const pathUser = this.backendPath + "/usuario/" + this.userID;
       axios
         .get(pathUser)
