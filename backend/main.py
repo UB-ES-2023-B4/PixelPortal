@@ -124,8 +124,8 @@ def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(ge
 
 #Obtener usuario por ID
 @app.get("/usuarios/", response_model=List[schemas.Usuario])
-def read_user( db: Session = Depends(get_db)):
-    db_user = repository.get_all_user(db)
+def read_user(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
+    db_user = repository.get_all_user(db, skip=skip, limit=limit)
     return db_user
 
 
