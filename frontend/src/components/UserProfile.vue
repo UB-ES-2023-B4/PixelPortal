@@ -6,7 +6,7 @@
                     <div class="card-body text-center">
                         <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px; height: 150px" />
                         <h5 class="my-3">{{ username }}</h5>
-                        <p class="text-muted mb-1">
+                        <p class="text-muted mb-1" @click="seeFollowers">
                             {{ followerCount }} Followers {{ followingCount }} Following
                         </p>
                         <button class="page-button">
@@ -80,7 +80,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-8" v-if="!isFollowersClicked">
                 <div class="image-container">
                     <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token"
                         @close="closeUploadImageForm">
@@ -104,69 +104,38 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
-                <div class="image-container">
-                    <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token"
-                        @close="closeUploadImageForm">
-                    </UploadImagePopup>
-                    <div class="images">
-                        <div class="image-card" v-for="follower in followersList" :key="follower.id"
-                            :data-name="follower.nombre">
-                            <router-link :to="{
-                                name: 'userProfile',
-                                params: { id: follower.id },
-                                query: {
-                                    token: this.token,
-                                    loggedUserID: this.id,
-                                },
-                            }">
-                                <img :src="getFollowerInfo(follower.id,follower.imagen_perfil_url)" />
-                            </router-link>
-                            <h6 class="image-title">{{ follower.nombre }}</h6>
-                            <h6 class="image-username">{{ follower.email }}</h6>
-                        </div>
+            <div class="col-lg-8" v-if="isFollowersClicked">
+              <div
+                class="follower"
+                v-for="follower in followersList"
+                :key="follower.id"
+                :data-name="follower.nombre"
+              >
+                <router-link
+                  style="text-decoration: none; color: inherit"
+                  :to="{
+                    name: 'userProfile',
+                    params: { id: follower.id },
+                    query: {
+                      token: this.token,
+                      loggedUserID: this.loggedInUserID,
+                    },
+                  }"
+                >
+                  <div class="user-card">
+                    <div class="image-content">
+                      <span class="overlay"></span>
+                      <div class="card-image">
+                        <img :src="getFollowerInfo(follower.id,follower.imagen_perfil_url)" alt="" class="card-img" />
+                      </div>
                     </div>
-                </div>
-            </div>
-            <div class="card p-3" style="border-color: black; border:black;" v-for="follower in followersList" :key="follower.id"
-                            :data-name="follower.nombre" >
-                            <router-link :to="{
-                                name: 'userProfile',
-                                params: { id: follower.id },
-                                query: {
-                                    token: this.token,
-                                    loggedUserID: this.id,
-                                },
-                            }">
-                            </router-link>
-
-                <div class="d-flex align-items-center">
-                    <div class="image">
-                        <img :src="getFollowerInfo(follower.id,follower.imagen_perfil_url)"
-                            class="rounded" width="155">
+                    <div class="card-content">
+                      <h2 class="name">{{ follower.nombre }}</h2>
+                      <p class="description">{{ follower.descripcion }}</p>
                     </div>
-
-                    <div class="ml-3 w-100">
-                        <h4 class="mb-0 mt-0">{{ follower.nombre }}</h4>
-                        <span>{{ follower.email }}</span>
-                        <div>
-                            <span>{{ follower.descripcion }}</span>
-                        </div>
-                        <div class="p-2 mt-2 bg-primary d-flex justify-content-between align-items-center rounded text-white stats">
-
-                            <div class="d-flex flex-column">
-                                <span class="followers">Followers</span>
-                                <span class="number2">{{follower.followerCount}}</span>
-                            </div>
-
-                            <div class="d-flex flex-column">
-                                <span class="rating">Following</span>
-                                <span class="number3">{{follower.followingCount}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                  </div>
+                </router-link>
+              </div>
             </div>
         </div>
     </div>
@@ -202,6 +171,7 @@ export default {
             currentUserImages: [],
             showMyImages: false,
             isLoggedInUserProfile: false,
+            isFollowersClicked: false,
             isLoggedInUserFollowingUser: false,
             followerCount: 0,
             followingCount: 0,
@@ -226,6 +196,12 @@ export default {
     methods: {
         redirectToMainPage() {
             history.back();
+        },
+        seeFollowers(){
+            this.isFollowersClicked = true;
+        },
+        closeFollowers(){
+            this.isFollowersClicked = false;
         },
         getUserInfo() {
             this.userID = this.$route.params.id;
@@ -416,14 +392,138 @@ body{
 
 }
 
+.user-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  position: relative;
+  max-height: 10px;
+  overflow-y: auto;
+  min-height: 80vh;
+  max-width: 100%;
+  width: 100%;
+  margin: 10px;
+  padding: 40px 20px;
+  background-color: #efefef;
+}
 
-.card{
-  width: 400px;
-  border: black;
-  border-radius: 10px;
+.search-box {
+  margin: 10px;
+  position: relative;
+  height: 42px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
 
-   
-  background-color: #fff;
+.search-box input {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  background-color: #323334;
+  padding: 0 15px 0 45px;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 20px;
+}
+
+.search-box i {
+  position: absolute;
+  z-index: 2;
+  color: #999;
+  top: 50%;
+  left: 15px;
+  font-size: 20px;
+  transform: translateY(-50%);
+}
+
+.user {
+  margin-bottom: 10px;
+}
+
+.user-card {
+  background-color: white;
+  border-radius: 25px;
+  width: 320px;
+}
+
+.image-content,
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+}
+
+.image-content {
+  position: relative;
+  row-gap: 5px;
+}
+.card-image {
+  position: relative;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+}
+
+.card-image .card-img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid rgba(20, 117, 236, 0.9);
+}
+
+.name {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.description {
+  font-size: 18px;
+  color: #707070;
+  text-align: center;
+}
+
+.overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(20, 117, 236, 0.9);
+  border-radius: 25px 25px 0 0;
+}
+.popup-button {
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  height: 45px;
+  width: 8rem;
+  margin: 10px;
+  border-radius: 6px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.drop-in-enter-active,
+.drop-in-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.drop-in-enter-from,
+.drop-in-leave-to {
+  opacity: 0;
+  transform: translateY(-50px);
 }
 
 
