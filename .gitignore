@@ -23,3 +23,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+/frontend/cypress/screenshots/
+npm_pid.txt
+uvicorn_pid.txt
+backend/test.db
