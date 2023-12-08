@@ -182,6 +182,15 @@ def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Comentarios no encontrados")
     return comentarios
 
+@app.delete("/comentarios/{comment_id}", response_model=schemas.Comentario)
+def delete_comment(comment_id: int, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    db_comment = repository.delete_comentario(db=db, comment_id=comment_id)
+
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    return db_comment
+
 #likes
 @app.post("/likes/", response_model = schemas.Like)
 async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
