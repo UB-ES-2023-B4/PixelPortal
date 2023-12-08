@@ -74,3 +74,15 @@ class Seguidor(Base):
     
 Usuario.siguiendo = relationship("Seguidor", foreign_keys=[Seguidor.seguidor_id], back_populates="seguidor")
 Usuario.seguidores = relationship("Seguidor", foreign_keys=[Seguidor.seguido_id], back_populates="seguido")
+
+class Bookmark(Base):
+    __tablename__ = 'Bookmarks'
+    usuario_id = Column(BigInteger, ForeignKey('Usuarios.id'), primary_key=True)
+    publicacion_id = Column(BigInteger, ForeignKey('Publicaciones.id'), primary_key=True)
+    fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
+
+    usuario = relationship("Usuario", back_populates="bookmark")
+    publicacion = relationship("Publicacion", back_populates="bookmarked")
+
+Usuario.bookmark = relationship("Bookmark", order_by=Bookmark.fecha_creacion, back_populates="usuario")
+Publicacion.bookmarked = relationship("Bookmark", order_by=Bookmark.fecha_creacion, back_populates="publicacion")

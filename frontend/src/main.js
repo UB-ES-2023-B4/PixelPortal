@@ -10,6 +10,7 @@ const app = createApp(App);
 app.config.globalProperties.backendPath = "http://localhost:8000";
 
 //Production backend path
-//app.config.globalProperties.backendPath = "https://pixelportal-backend-api.onrender.com";
+//app.config.globalProperties.backendPath =
+//"https://pixelportal-backend-api.onrender.com";
 
 app.use(router).mount("#app");

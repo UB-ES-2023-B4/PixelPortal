@@ -87,6 +87,30 @@
                 />
                 <p class="mb-0">New Post</p>
               </li>
+              <router-link
+                :hidden="!isLoggedInUserProfile"
+                :to="{
+                  name: 'changePassword',
+                  params: { id: this.userID },
+                  query: {
+                    token: this.token,
+                    loggedUsername: this.username,
+                  },
+                }"
+              >
+                <li
+                  class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
+                >
+                  <img
+                    src="../assets/fingerprint.png"
+                    alt="Icono personalizado"
+                    class="custom-icon"
+                  />
+                  <p class="mb-0" style="text-align: center; color: black">
+                    Change Password
+                  </p>
+                </li>
+              </router-link>
               <li
                 class="custom-list-group-item d-flex justify-content-between align-items-center p-3"
                 data-cy="home-button"
