@@ -87,6 +87,13 @@
                     </router-link>
                     {{ comment.content }}
                   </div>
+                  <button
+                    v-if="comment.user_id === loggedInUserId"
+                    class="delete-comment-button"
+                    @click="deleteComment(comment.id)"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -322,6 +329,20 @@ export default {
         .catch((error) => {
           alert("Error: " + error.message);
         });
+    },
+    deleteComment(commentId) {
+      if (confirm("Are you sure you want to delete this comment?")) {
+        const commentPath = this.backendPath + "/comentarios/" + commentId;
+        const headers = { Authorization: "Bearer " + this.token };
+        axios
+          .delete(commentPath, { headers })
+          .then(() => {
+            this.getComments();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     getUserData(idx) {
       const path = this.backendPath + "/usuario/" + this.comments[idx].user_id;
@@ -803,5 +824,20 @@ body {
 
 .bookmark:hover {
   filter: brightness(150%);
+}
+.box-comment {
+  position: relative;
+}
+.delete-comment-button {
+  display: none;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  border-radius: 6px;
+}
+.box-comment:hover .delete-comment-button {
+  display: block;
 }
 </style>

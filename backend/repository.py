@@ -109,6 +109,16 @@ def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_
     db.commit()
     db.refresh(db_comentario)
     return db_comentario
+
+def delete_comentario(db: Session, comment_id):
+    db_comment = db.query(models.Comentario).filter(models.Comentario.id == comment_id).first()
+    if not db_comment:
+        return None
+    
+    db.delete(db_comment)
+    db.commit()
+
+    return db_comment
 ###### METODOS RELACIONADOS CON LIKES ################
 def crear_like(db: Session, like: schemas.LikeCreate, usuario_actual: models.Usuario):
 
