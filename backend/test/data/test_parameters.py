@@ -21,6 +21,12 @@ class Parameters():
 			{"titulo": "string4","descripcion": "string", \
 				"usuario_nombre": "Jonadan","tags": "[]","imagen_url": "string4"}
 		]
+		self._bookmark_data_list = [
+			{"usuario_id": 1, "publicacion_id": 1},
+			{"usuario_id": 1, "publicacion_id": 2},
+			{"usuario_id": 1, "publicacion_id": 3},
+			{"usuario_id": 1, "publicacion_id": 4}
+		]
 
 	def get_test_user(self) -> dict:
 		return (self._test_user)
@@ -30,6 +36,9 @@ class Parameters():
 	
 	def get_image_data_list(self) -> list:
 		return (self._image_data_list)
+	
+	def get_bookmark_data_list(self) -> list:
+		return (self._bookmark_data_list)
 	
 	def registerUser(self, test_client, user_data) -> dict:
 		response = test_client.post("/usuario/", json=user_data)
@@ -63,4 +72,9 @@ class Parameters():
 			"contenido": comment
 		}
 		response = test_client.post("/comentarios", json=json_data, headers=headers)
+		return (response)
+	
+	def post_bookmarks(self, test_client, access_token, bookmark_data):
+		headers= {"Authorization": f"Bearer {access_token}"}
+		response = test_client.post("/bookmarks", json=bookmark_data, headers=headers)
 		return (response)
