@@ -204,7 +204,7 @@ def crear_bookmark(db: Session, bookmark: schemas.BookMarkCreate, usuario_actual
     bookmark_exist = db.query(models.Bookmark).filter(and_(models.Bookmark.publicacion_id == bookmark.publicacion_id, models.Bookmark.usuario_id == bookmark.usuario_id)).all()
     if bookmark_exist: #ese bookmark ya existe
         return None
-    db_bookmark = models.Bookmark(usuario_id=usuario_actual.id, publicacion_id=bookmark.publicacion_id)
+    db_bookmark = models.Bookmark(usuario_id=bookmark.usuario_id, publicacion_id=bookmark.publicacion_id)
     db.add(db_bookmark)
     db.commit()
     db.refresh(db_bookmark)
