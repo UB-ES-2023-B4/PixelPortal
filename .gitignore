@@ -29,3 +29,4 @@ npm_pid.txt
 uvicorn_pid.txt
 backend/test.db
 backend/test/.coverage
+/backend/test/todo/
