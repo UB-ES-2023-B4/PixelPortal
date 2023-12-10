@@ -6,12 +6,9 @@
                     <div class="card-body text-center">
                         <img :src="profilePicture" class="rounded-circle img-fluid" style="width: 150px; height: 150px" />
                         <h5 class="my-3">{{ username }}</h5>
-                        <p class="text-muted mb-1" @click="seeFollowers">
+                        <p class="text-muted mb-1 change-color-on-hover" @click="seeFollowers" style="font-weight:bold;">
                             {{ followerCount }} Followers {{ followingCount }} Following
                         </p>
-                        <button class="page-button">
-                            show followers
-                        </button>
                         <p class="text-muted mb-1">{{ description }}</p>
                         <div>
                             <p class="text-muted mb-1"></p>
@@ -105,37 +102,70 @@
                 </div>
             </div>
             <div class="col-lg-8" v-if="isFollowersClicked">
-              <div
-                class="follower"
-                v-for="follower in followersList"
-                :key="follower.id"
-                :data-name="follower.nombre"
-              >
-                <router-link
-                  style="text-decoration: none; color: inherit"
-                  :to="{
-                    name: 'userProfile',
-                    params: { id: follower.id },
-                    query: {
-                      token: this.token,
-                      loggedUserID: this.loggedInUserID,
-                    },
-                  }"
-                >
-                  <div class="user-card">
-                    <div class="image-content">
-                      <span class="overlay"></span>
-                      <div class="card-image">
-                        <img :src="getFollowerInfo(follower.id,follower.imagen_perfil_url)" alt="" class="card-img" />
-                      </div>
+
+                <div class="text-center" style="align-items: center; align-content: center; display: flex;">
+                    <div class='e-btn-group'>
+                        <input type="radio" id="radioleft" name="align" value="left" checked v-model="selectedOption" />
+                        <label class="e-btn" for="radioleft">Followers</label>
+                        <input type="radio" id="radiomiddle" name="align" value="right" v-model="selectedOption" />
+                        <label class="e-btn" for="radiomiddle">Following</label>
                     </div>
-                    <div class="card-content">
-                      <h2 class="name">{{ follower.nombre }}</h2>
-                      <p class="description">{{ follower.descripcion }}</p>
+                    <div class="circle-container">
+                        <button type="button" class="btn-close" aria-label="Close" @click="closeFollowers()"></button>
                     </div>
-                  </div>
-                </router-link>
-              </div>
+                </div>
+                <div v-if="selectedOption === 'left'" class="follower-container">
+                    <div class="follower" v-for="follower in followersList" :key="follower.id" :data-name="follower.nombre">
+                        <router-link style="text-decoration: none; color: inherit" :to="{
+                            name: 'userProfile',
+                            params: { id: follower.id },
+                            query: {
+                                token: this.token,
+                                loggedUserID: this.loggedInUserID,
+                            },
+                        }">
+                            <div class="user-card">
+                                <div class="image-content">
+                                    <span class="overlay"></span>
+                                    <div class="card-image">
+                                        <img :src="getFollowerInfo(follower.id, follower.imagen_perfil_url)" alt=""
+                                            class="card-img" />
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <h2 class="name">{{ follower.nombre }}</h2>
+                                    <p class="description">{{ follower.descripcion }}</p>
+                                </div>
+                            </div>
+                        </router-link>
+                    </div>
+                </div>
+                <div v-if="selectedOption === 'right'" class="follower-container">
+                    <div class="follower" v-for="follower in followingList" :key="follower.id" :data-name="follower.nombre">
+                        <router-link style="text-decoration: none; color: inherit" :to="{
+                            name: 'userProfile',
+                            params: { id: follower.id },
+                            query: {
+                                token: this.token,
+                                loggedUserID: this.loggedInUserID,
+                            },
+                        }">
+                            <div class="user-card">
+                                <div class="image-content">
+                                    <span class="overlay"></span>
+                                    <div class="card-image">
+                                        <img :src="getFollowerInfo(follower.id, follower.imagen_perfil_url)" alt=""
+                                            class="card-img" />
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <h2 class="name">{{ follower.nombre }}</h2>
+                                    <p class="description">{{ follower.descripcion }}</p>
+                                </div>
+                            </div>
+                        </router-link>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -147,6 +177,7 @@ import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
 import axios from "axios";
+
 
 export default {
     name: "PostZoom",
@@ -172,7 +203,9 @@ export default {
             showMyImages: false,
             isLoggedInUserProfile: false,
             isFollowersClicked: false,
+            isFollowingClicked: false,
             isLoggedInUserFollowingUser: false,
+            selectedOption: 'left',
             followerCount: 0,
             followingCount: 0,
             followersList: [],
@@ -197,11 +230,17 @@ export default {
         redirectToMainPage() {
             history.back();
         },
-        seeFollowers(){
+        seeFollowers() {
             this.isFollowersClicked = true;
         },
-        closeFollowers(){
+        seeFollowing() {
+            this.isFollowingClicked = true;
+        },
+        closeFollowers() {
             this.isFollowersClicked = false;
+        },
+        closeFollowing() {
+            this.isFollowingClicked = false;
         },
         getUserInfo() {
             this.userID = this.$route.params.id;
@@ -239,7 +278,7 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-                return this.followerPicture;
+            return this.followerPicture;
         },
         closeUploadImageForm(data) {
             this.showUploadImageForm = false;
@@ -325,6 +364,8 @@ export default {
             const followingPath =
                 this.backendPath + "/usuario/" + this.id + "/following";
             axios.get(followingPath).then((response) => {
+                this.followingList = response.data;
+                console.log(this.followingList);
                 this.followingCount = response.data.length;
             });
         },
@@ -385,177 +426,260 @@ export default {
 </script>
 
 <style scoped>
-body{
-    
-    background-color:#B3E5FC;
+@import '../../node_modules/@syncfusion/ej2-base/styles/material.css';
+@import '../../node_modules/@syncfusion/ej2-buttons/styles/material.css';
+@import '../../node_modules/@syncfusion/ej2-popups/styles/material.css';
+@import '../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
+
+body {
+
+    background-color: #B3E5FC;
     border-radius: 10px;
 
 }
 
+/* Estilo predeterminado para las etiquetas de botón */
+.e-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.follower-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Espacio entre las tarjetas */
+}
+.circle-container {
+    width: 40px;
+    /* Ancho del círculo */
+    height: 40px;
+    /* Altura del círculo */
+    border-radius: 50%;
+    /* Borde redondeado para hacer un círculo */
+    background-color: #cccccc95;
+    /* Color de fondo del círculo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s;
+    /* Transición suave del color de fondo */
+}
+
+.circle-container:hover {
+    color: rgba(20, 117, 236, 0.9);
+    background-color: rgba(20, 117, 236, 0.9);
+}
+
+.btn-close {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.change-color-on-hover:hover {
+    color: rgba(20, 117, 236, 0.9);
+}
+
+.e-btn:hover {
+    background-color: rgba(211, 231, 255, 0.9);
+    /* Cambia a un color claro al pasar el cursor */
+}
+
+/* Estilo cuando el radio está seleccionado */
+input[type="radio"]:checked+.e-btn {
+    background-color: rgba(20, 117, 236, 0.9);
+    color: white;
+}
+
+.e-btn-group {
+    margin: 25px 5px 20px 20px;
+    align-content: center;
+    align-items: center;
+    align-self: center;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .user-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  position: relative;
-  max-height: 10px;
-  overflow-y: auto;
-  min-height: 80vh;
-  max-width: 100%;
-  width: 100%;
-  margin: 10px;
-  padding: 40px 20px;
-  background-color: #efefef;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    position: relative;
+    max-height: 10px;
+    overflow-y: auto;
+    min-height: 80vh;
+    max-width: 100%;
+    width: 100%;
+    margin: 10px;
+    padding: 40px 20px;
+    background-color: #efefef;
 }
 
 .search-box {
-  margin: 10px;
-  position: relative;
-  height: 42px;
-  max-width: 400px;
-  margin: 0 auto;
-  margin-bottom: 40px;
+    margin: 10px;
+    position: relative;
+    height: 42px;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 40px;
 }
 
 .search-box input {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  outline: none;
-  border: none;
-  background-color: #323334;
-  padding: 0 15px 0 45px;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 20px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: #323334;
+    padding: 0 15px 0 45px;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 20px;
 }
 
 .search-box i {
-  position: absolute;
-  z-index: 2;
-  color: #999;
-  top: 50%;
-  left: 15px;
-  font-size: 20px;
-  transform: translateY(-50%);
+    position: absolute;
+    z-index: 2;
+    color: #999;
+    top: 50%;
+    left: 15px;
+    font-size: 20px;
+    transform: translateY(-50%);
 }
 
 .user {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .user-card {
-  background-color: white;
-  border-radius: 25px;
-  width: 320px;
+    background-color: white;
+    border-radius: 25px;
+    width: 280px;
+    height: 280px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+    margin-bottom: 10px;
 }
 
 .image-content,
 .card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 14px;
 }
 
 .image-content {
-  position: relative;
-  row-gap: 5px;
+    position: relative;
+    row-gap: 5px;
 }
+
 .card-image {
-  position: relative;
-  height: 150px;
-  width: 150px;
-  border-radius: 50%;
+    position: relative;
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
 }
 
 .card-image .card-img {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 4px solid rgba(20, 117, 236, 0.9);
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid rgba(20, 117, 236, 0.9);
 }
 
 .name {
-  font-size: 24px;
-  font-weight: 700;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .description {
-  font-size: 18px;
-  color: #707070;
-  text-align: center;
+    font-size: 18px;
+    color: #707070;
+    text-align: center;
 }
 
 .overlay {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(20, 117, 236, 0.9);
-  border-radius: 25px 25px 0 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(20, 117, 236, 0.9);
+    border-radius: 25px 25px 0 0;
 }
+
 .popup-button {
-  background-color: rgba(20, 117, 236, 0.9);
-  color: white;
-  height: 45px;
-  width: 8rem;
-  margin: 10px;
-  border-radius: 6px;
+    background-color: rgba(20, 117, 236, 0.9);
+    color: white;
+    height: 45px;
+    width: 8rem;
+    margin: 10px;
+    border-radius: 6px;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s;
+    transition: opacity 0.3s;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 
 .drop-in-enter-active,
 .drop-in-leave-active {
-  transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
 }
 
 .drop-in-enter-from,
 .drop-in-leave-to {
-  opacity: 0;
-  transform: translateY(-50px);
+    opacity: 0;
+    transform: translateY(-50px);
 }
 
 
 
-.stats{
+.stats {
 
-      background: #f2f5f8 !important;
+    background: #f2f5f8 !important;
 
     color: #000 !important;
 }
-.articles{
-  font-size:10px;
-  color: #a1aab9;
+
+.articles {
+    font-size: 10px;
+    color: #a1aab9;
 }
-.number1{
-  font-weight:500;
+
+.number1 {
+    font-weight: 500;
 }
-.followers{
-    font-size:10px;
-  color: #a1aab9;
+
+.followers {
+    font-size: 10px;
+    color: #a1aab9;
 
 }
-.number2{
-  font-weight:500;
+
+.number2 {
+    font-weight: 500;
 }
-.rating{
-    font-size:10px;
-  color: #a1aab9;
+
+.rating {
+    font-size: 10px;
+    color: #a1aab9;
 }
-.number3{
-  font-weight:500;
+
+.number3 {
+    font-weight: 500;
 }
+
 .custom-list-group-item:hover {
     background-color: #178fff;
     /* Color de fondo oscuro */
