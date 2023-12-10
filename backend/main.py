@@ -303,3 +303,12 @@ def delete_bookmark(bookmark: schemas.BookMark, db: Session = Depends(get_db), c
         raise HTTPException(status_code=404, detail="Bookmark not found")
     return deleted_bookmark
 
+@app.delete("/usuario/{user_id}", status_code=status.HTTP_200_OK)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    try:
+        deleted_user = repository.delete_account(db, user_id)
+        if deleted_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": "User successfully deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
