@@ -258,30 +258,6 @@ def delete_bookmark(db: Session, bookmark: schemas.BookMark):
     return db_bookmark
 
 
-def delete_user(db: Session, user_id: int):
-    try:
-        user = db.query(models.Usuario).filter(models.Usuario.id == user_id).first()
-        if not user:
-            return None
-
-        db.query(models.Comentario).filter(models.Comentario.usuario_id == user_id).delete()
-        db.query(models.Like).filter(models.Like.usuario_id == user_id).delete()
-        db.query(models.Seguidor).filter((models.Seguidor.seguidor_id == user_id) | (models.Seguidor.seguido_id == user_id)).delete()
-
-        user_posts = db.query(models.Publicacion).filter(models.Publicacion.usuario_id == user_id).all()
-        for post in user_posts:
-            db.query(models.Comentario).filter(models.Comentario.publicacion_id == post.id).delete()
-            db.query(models.Like).filter(models.Like.publicacion_id == post.id).delete()
-            db.delete(post)
-
-        db.delete(user)
-        db.commit()
-        return user
-    except Exception as e:
-        db.rollback()
-        raise e
-
-
 def delete_account(db: Session, user_id: int):
     try:
        
