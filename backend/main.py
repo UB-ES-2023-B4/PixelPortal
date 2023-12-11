@@ -189,6 +189,15 @@ def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Comentarios no encontrados")
     return comentarios
 
+@app.delete("/comentarios/{comment_id}", response_model=schemas.Comentario)
+def delete_comment(comment_id: int, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    db_comment = repository.delete_comentario(db=db, comment_id=comment_id)
+
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    return db_comment
+
 #likes
 @app.post("/likes/", response_model = schemas.Like)
 async def create_like(like: schemas.LikeCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
@@ -304,3 +313,12 @@ def delete_bookmark(bookmark: schemas.BookMark, db: Session = Depends(get_db), c
         raise HTTPException(status_code=404, detail="Bookmark not found")
     return deleted_bookmark
 
+@app.delete("/usuario/{user_id}", status_code=status.HTTP_200_OK)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    try:
+        deleted_user = repository.delete_account(db, user_id)
+        if deleted_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": "User successfully deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

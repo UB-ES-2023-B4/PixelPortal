@@ -109,6 +109,16 @@ def crear_comentario(db: Session, comentario: schemas.ComentarioCreate, usuario_
     db.commit()
     db.refresh(db_comentario)
     return db_comentario
+
+def delete_comentario(db: Session, comment_id):
+    db_comment = db.query(models.Comentario).filter(models.Comentario.id == comment_id).first()
+    if not db_comment:
+        return None
+    
+    db.delete(db_comment)
+    db.commit()
+
+    return db_comment
 ###### METODOS RELACIONADOS CON LIKES ################
 def crear_like(db: Session, like: schemas.LikeCreate, usuario_actual: models.Usuario):
 
@@ -247,3 +257,34 @@ def delete_bookmark(db: Session, bookmark: schemas.BookMark):
     db.commit()
 
     return db_bookmark
+
+
+def delete_account(db: Session, user_id: int):
+    try:
+       
+        user = db.query(models.Usuario).filter(models.Usuario.id == user_id).first()
+        if not user:
+            return None
+
+        db.query(models.Comentario).filter(models.Comentario.usuario_id == user_id).delete()
+
+        db.query(models.Bookmark).filter(models.Bookmark.usuario_id == user_id).delete()
+
+        db.query(models.Like).filter(models.Like.usuario_id == user_id).delete()
+
+        db.query(models.Seguidor).filter((models.Seguidor.seguidor_id == user_id) | (models.Seguidor.seguido_id == user_id)).delete()
+
+        user_posts = db.query(models.Publicacion).filter(models.Publicacion.usuario_id == user_id).all()
+        for post in user_posts:
+            db.query(models.Comentario).filter(models.Comentario.publicacion_id == post.id).delete()
+            db.query(models.Bookmark).filter(models.Bookmark.publicacion_id == post.id).delete()
+            db.query(models.Like).filter(models.Like.publicacion_id == post.id).delete()
+
+        db.query(models.Publicacion).filter(models.Publicacion.usuario_id == user_id).delete()
+
+        db.delete(user)
+        db.commit()
+        return user
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise e
