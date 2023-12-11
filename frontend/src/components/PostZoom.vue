@@ -134,6 +134,7 @@
               @click="bookmarkPost"
             >
               <img
+                data-cy="bookmark-img"
                 :src="
                   loggedInUserHasBookmarkedPost
                     ? require('../assets/bookmark-fill.svg')

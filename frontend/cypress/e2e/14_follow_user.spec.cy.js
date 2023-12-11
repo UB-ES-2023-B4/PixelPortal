@@ -1,4 +1,4 @@
-describe('Test like', () => {
+describe('Test follow user', () => {
 	beforeEach(() => {
 		cy.visit('http://localhost:8080');
 		cy.get('.login-show input[placeholder="Username"]').type('test@gmail.com');
