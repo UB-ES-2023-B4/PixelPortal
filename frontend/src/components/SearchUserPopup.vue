@@ -11,7 +11,7 @@
             <h1 class="title">Search User</h1>
             <div class="search-box">
               <i class="bx bx-search"></i>
-              <input type="text" v-model="search" placeholder="Search" />
+              <input type="text" data-cy="user-search-bar" v-model="search" placeholder="Search" />
             </div>
             <div class="user-container">
               <div
@@ -46,7 +46,7 @@
                 </router-link>
               </div>
             </div>
-            <button type="button" class="popup-button" @click="closeComponent">
+            <button type="button" class="popup-button" data-cy="close-button" @click="closeComponent">
               Close
             </button>
           </div>
