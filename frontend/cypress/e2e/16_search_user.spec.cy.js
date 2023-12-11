@@ -23,4 +23,11 @@ describe('Test bookmark', () => {
 		cy.get('.user-container .user').should('have.length', 1);
 		cy.get('[data-cy=close-button]').click();
 	})
+
+	it('test user select', () => {
+		cy.contains('button.post-button', 'Search User').click();
+		cy.wait(1500);
+		cy.get('.user-container .user').first().click();
+		cy.url().should('include', '/user');
+	})
 });
