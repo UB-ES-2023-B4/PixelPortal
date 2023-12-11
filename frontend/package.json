@@ -8,13 +8,18 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@syncfusion/ej2-base": "^23.2.6",
+    "@syncfusion/ej2-buttons": "^23.2.7",
+    "@syncfusion/ej2-popups": "^23.2.4",
+    "@syncfusion/ej2-splitbuttons": "^23.2.4",
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
     "core-js": "^3.8.3",
     "firebase": "^10.5.0",
     "jquery": "^3.7.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vuejs-toggle-switch": "^3.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
