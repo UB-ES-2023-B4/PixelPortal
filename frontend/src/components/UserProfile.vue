@@ -18,7 +18,7 @@
             >
               {{ followerCount }} Followers {{ followingCount }} Following
             </p>
-            <p class="text-muted mb-1"> data-cy="user-description"> {{ description }}</p>
+            <p class="text-muted mb-1" data-cy="user-description"> {{ description }}</p>
             <div>
               <p class="text-muted mb-1"></p>
             </div>
