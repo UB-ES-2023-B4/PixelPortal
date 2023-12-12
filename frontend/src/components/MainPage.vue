@@ -91,7 +91,6 @@
                 <a @click="sortImagesByUploadDate(false)"
                   >Sort by upload Date (descending)</a
                 >
-                <a>Sort by likes</a>
               </div>
             </div>
           </div>
