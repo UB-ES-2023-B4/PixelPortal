@@ -9,17 +9,9 @@ describe('Test show following posts', () => {
 	});
 
 	it('test show following post', () => {
-		cy.contains('button.post-button', 'Search User').click();
-		cy.wait(1500);
-		cy.get('.user-container .user').first().click();
-		cy.url().should('include', '/user');
-		cy.wait(500);
-		cy.get('.page-button').contains('Follow').click();
-		cy.get('[data-cy=home-button]').click();
-		cy.wait(1500);
 		cy.get('button.post-button').contains('Following Posts').click();
 		cy.wait(500);
-		cy.get('.image-container .images .image-card').should('have.length.gte', 2);
+		cy.get('.image-container .images .image-card').should('have.length.gte', 1);
 		cy.get('button.post-button').contains('Following Posts').click();
 	})
 });

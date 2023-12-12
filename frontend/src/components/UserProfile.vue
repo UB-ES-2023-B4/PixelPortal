@@ -193,6 +193,7 @@
             type="button"
             class="btn-close"
             aria-label="Close"
+            data-cy="bookmark-list-close"
             @click="closeBookmarks()"
           ></button>
         </div>
