@@ -11,14 +11,14 @@ describe('Test bookmark', () => {
 	it('test search user', () => {
 		cy.contains('button.post-button', 'Search User').click();
 		cy.wait(1500);
-		cy.get('.user-container .user').should('have.length', 5);
+		cy.get('.user-container .user').should('have.length', 4);
 		cy.get('[data-cy=close-button]').click();
 	})
 
 	it('test user search bar', () => {
 		cy.contains('button.post-button', 'Search User').click();
 		cy.wait(500);
-		cy.get('[data-cy=user-search-bar').type('new');
+		cy.get('[data-cy=user-search-bar').type('3');
 		cy.wait(1000);
 		cy.get('.user-container .user').should('have.length', 1);
 		cy.get('[data-cy=close-button]').click();
