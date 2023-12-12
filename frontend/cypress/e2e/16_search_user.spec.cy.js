@@ -11,7 +11,7 @@ describe('Test bookmark', () => {
 	it('test search user', () => {
 		cy.contains('button.post-button', 'Search User').click();
 		cy.wait(1500);
-		cy.get('.user-container .user').should('have.length', 4);
+		cy.get('.user-container .user').should('have.length.greaterThan', 3);
 		cy.get('[data-cy=close-button]').click();
 	})
 

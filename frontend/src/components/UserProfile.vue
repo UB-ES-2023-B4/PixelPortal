@@ -181,7 +181,7 @@
         </div>
         <div class="col-lg-8" v-if="isBookmarksClicked">
             <div class="circle-container">
-                <button type="button" class="btn-close" aria-label="Close" @click="closeBookmarks()"></button>
+                <button type="button" class="btn-close" aria-label="Close" data-cy="bookmark-list-close" @click="closeBookmarks()"></button>
             </div>
             <div class="image-container">
                 <div class="images">
