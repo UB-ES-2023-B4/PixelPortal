@@ -14,7 +14,7 @@ describe('Test upload image', () => {
 	};
 
 	const upload_image = (_fileContent, _filename, _mimeType, title, description, tags) => {
-		cy.get('.user-info-wrapper .post-button:contains("Post")').click();
+		cy.get('[data-cy=post]').click();
 		if (_fileContent && _mimeType){
 			cy.fixture(_fileContent).then((fileContent) => {
 				cy.get('.popup-inner .image-upload-input').attachFile({
