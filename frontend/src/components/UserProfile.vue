@@ -237,26 +237,15 @@
               class="follower"
               v-for="follower in followersList"
               :key="follower.id"
-              :data-name="follower.nombre"
+              :data-name="follower.name"
             >
-              <router-link
-                style="text-decoration: none; color: inherit"
-                :to="{
-                  name: 'userProfile',
-                  params: { id: follower.id },
-                  query: {
-                    token: this.token,
-                    loggedUserID: this.loggedInUserID,
-                  },
-                }"
-              >
                 <div class="user-card">
                   <div class="image-content">
                     <span class="overlay"></span>
                     <div class="card-image">
                       <img
                         :src="
-                          getFollowerInfo(follower.id, follower.imagen_perfil_url)
+                          follower.image
                         "
                         alt=""
                         class="card-img"
@@ -264,38 +253,26 @@
                     </div>
                   </div>
                   <div class="card-content">
-                    <h2 class="name">{{ follower.nombre }}</h2>
-                    <p class="description">{{ follower.descripcion }}</p>
+                    <h2 class="name">{{ follower.name }}</h2>
+                    <p class="description">{{ follower.description }}</p>
                   </div>
                 </div>
-              </router-link>
             </div>
           </div>
           <div v-if="selectedOption === 'right'" class="follower-container">
             <div
-              class="follower"
-              v-for="follower in followingList"
-              :key="follower.id"
-              :data-name="follower.nombre"
+              class="follow"
+              v-for="follow in followingList"
+              :key="follow.id"
+              :data-name="follow.name"
             >
-              <router-link
-                style="text-decoration: none; color: inherit"
-                :to="{
-                  name: 'userProfile',
-                  params: { id: follower.id },
-                  query: {
-                    token: this.token,
-                    loggedUserID: this.loggedInUserID,
-                  },
-                }"
-              >
                 <div class="user-card">
                   <div class="image-content">
                     <span class="overlay"></span>
                     <div class="card-image">
                       <img
                         :src="
-                          getFollowerInfo(follower.id, follower.imagen_perfil_url)
+                          follow.image
                         "
                         alt=""
                         class="card-img"
@@ -303,11 +280,10 @@
                     </div>
                   </div>
                   <div class="card-content">
-                    <h2 class="name">{{ follower.nombre }}</h2>
-                    <p class="description">{{ follower.descripcion }}</p>
+                    <h2 class="name">{{ follow.name }}</h2>
+                    <p class="description">{{ follow.description }}</p>
                   </div>
                 </div>
-              </router-link>
             </div>
           </div>
         </div>
@@ -356,6 +332,7 @@
         followersList: [],
         followingList: [],
         followerPicture: "",
+        renderComponent: true,
       };
     },
     computed: {
@@ -393,8 +370,8 @@
       closeFollowing() {
         this.isFollowingClicked = false;
       },
-      getUserInfo() {
-        this.userID = this.$route.params.id;
+      getUserInfo(userID) {
+        this.userID = userID;
         const pathUser = this.backendPath + "/usuario/" + this.userID;
         axios
           .get(pathUser)
@@ -412,21 +389,6 @@
           .catch((error) => {
             console.error(error);
           });
-      },
-      getFollowerInfo(id, imagen) {
-        const pathUser = this.backendPath + "/usuario/" + id;
-        axios
-          .get(pathUser)
-          .then(() => {
-            const followerPictureRef = firebaseRef(storage, imagen);
-            getDownloadURL(followerPictureRef).then((url) => {
-              this.followerPicture = url;
-            });
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        return this.followerPicture;
       },
       closeUploadImageForm(data) {
         this.showUploadImageForm = false;
@@ -497,11 +459,11 @@
             console.error(error);
           });
       },
-      getBookmarks() {
+      getBookmarks(userID) {
             this.imageList = [];
             this.currentUserImages = []; // Agregar esta línea
 
-            const pathPublications = this.backendPath + "/bookmarks/user/" + this.id;
+            const pathPublications = this.backendPath + "/bookmarks/user/" + userID;
 
             axios
                 .get(pathPublications)
@@ -533,24 +495,66 @@
                     console.error(error);
                 });
         },
-      getFollowers() {
-        const followersPath =
-          this.backendPath + "/usuario/" + this.id + "/followers";
-        axios.get(followersPath).then((response) => {
-          this.isLoggedInUserFollowingUser = response.data.some(
-            (item) => item.id === this.loggedInUserID
-          );
-          this.followersList = response.data;
-          this.followerCount = response.data.length;
-        });
-  
-        const followingPath =
-          this.backendPath + "/usuario/" + this.id + "/following";
-        axios.get(followingPath).then((response) => {
-          this.followingList = response.data;
-          this.followingCount = response.data.length;
-        });
-      },
+        getFollowers(userID) {
+            this.followersList = [];
+
+            const pathUsers = this.backendPath + "/usuario/" + userID + "/followers";
+
+            axios.get(pathUsers).then((res) => {
+                this.followerCount = res.data.length;
+                var followers = res.data.filter((follower) => {
+                return follower.id != null;
+                });
+                for (let i = 0; i < followers.length; i++) {
+                    const profilePicRef = firebaseRef(storage, followers[i].imagen_perfil_url);
+
+                    getDownloadURL(profilePicRef).then((url) => {
+                        let follower = {
+                        id: followers[i].id,
+                        name: followers[i].nombre,
+                        description: followers[i].descripcion,
+                        image: url,
+                        };
+
+                        if (follower.description === "") {
+                        follower.description = "User has no description";
+                        }
+
+                        this.followersList.push(follower);
+                    });
+                }
+            });
+            },
+        getFollowing(userID) {
+            this.followingList = [];
+
+            const pathUsers = this.backendPath + "/usuario/" + userID + "/following";
+
+            axios.get(pathUsers).then((res) => {
+                this.followingCount = res.data.length;
+                var following = res.data.filter((follow) => {
+                return follow.id != null;
+                });
+                for (let i = 0; i < following.length; i++) {
+                    const profilePicRef = firebaseRef(storage, following[i].imagen_perfil_url);
+
+                    getDownloadURL(profilePicRef).then((url) => {
+                        let follow = {
+                        id: following[i].id,
+                        name: following[i].nombre,
+                        description: following[i].descripcion,
+                        image: url,
+                        };
+
+                        if (follow.description === "") {
+                        follow.description = "User has no description";
+                        }
+
+                        this.followingList.push(follow);
+                    });
+                }
+            });
+        },
       followUser() {
         const followUserPath =
           this.backendPath +
@@ -601,8 +605,7 @@
     mounted() {
       window.addEventListener("click", this.closeDropdown);
       this.getPublication();
-      this.getFollowers();
-      this.getBookmarks();
+      this.getBookmarks(this.$route.params.id);
     },
     beforeUnmount() {
       window.removeEventListener("click", this.closeDropdown);
@@ -615,9 +618,10 @@
       if (typeof this.token === "undefined") {
         this.$router.push({ path: "/" });
       } else {
-        this.getUserInfo();
+        this.getUserInfo(this.$route.params.id);
+        this.getFollowers(this.$route.params.id);
+        this.getFollowing(this.$route.params.id);
       }
-      this.getFollowers();
     },
   };
   </script>
