@@ -56,10 +56,18 @@
             <button
               class="post-button"
               :class="{ 'post-button-my-images-selected': showMyImages }"
-              @click="showMyImages = !showMyImages"
+              @click="toggleMyImages"
             >
               <img class="sidebar-icon" src="../assets/images.svg" alt="" />
               My Images
+            </button>
+            <button
+              class="post-button"
+              :class="{ 'post-button-my-images-selected': showFollowingImages }"
+              @click="toggleFollowingImages"
+            >
+              <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+              Following Posts
             </button>
             <button class="post-button" @click="showSearchUserForm = true">
               <i class="bx bx-search"></i> Search User
@@ -68,7 +76,7 @@
         </div>
         <div class="image-container" v-if="!isLoading">
           <div class="search-container">
-            <div class="search-box" :hidden="showMyImages">
+            <div class="search-box">
               <i class="bx bx-search"></i>
               <input type="text" v-model="search" placeholder="Search" />
             </div>
@@ -83,7 +91,6 @@
                 <a @click="sortImagesByUploadDate(false)"
                   >Sort by upload Date (descending)</a
                 >
-                <a>Sort by likes</a>
               </div>
             </div>
           </div>
@@ -104,7 +111,7 @@
           <div class="images">
             <div
               class="image-card"
-              v-for="img in showMyImages ? myImagesList : filteredList"
+              v-for="img in filteredList"
               :key="img.id"
               :data-name="img.username"
             >
@@ -153,7 +160,9 @@ export default {
       search: "",
       profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
+      loggedInUserFollowingList: [],
       showMyImages: false,
+      showFollowingImages: false,
       showUserDropdown: false,
       showSortDropdown: false,
       username: "notLoggedIn",
@@ -165,29 +174,42 @@ export default {
   computed: {
     filteredList() {
       // Check if the first character of the search string is "@"
+      let returnList = [];
       if (this.search.length > 0 && this.search.charAt(0) === "@") {
         // Remove the "@" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
         // Filter and return images based on the modified search term
-        return this.imageList.filter((img) => {
+        returnList = this.imageList.filter((img) => {
           return img.username.toLowerCase().includes(searchTerm);
         });
       } else if (this.search.length > 0 && this.search.charAt(0) === "#") {
         // Remove the "#" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
-        return this.imageList.filter((img) => {
+        returnList = this.imageList.filter((img) => {
           return img.postTags.some((tag) =>
             tag.toLowerCase().includes(searchTerm)
           );
         });
       } else {
-        return this.imageList;
+        const searchTerm = this.search.toLowerCase();
+
+        returnList = this.imageList.filter((img) => {
+          return (
+            img.title.toLowerCase().includes(searchTerm) ||
+            img.username.toLowerCase().includes(searchTerm)
+          );
+        });
       }
-    },
-    myImagesList() {
-      return this.imageList.filter((img) => img.username === this.username);
+      if (this.showFollowingImages) {
+        returnList = returnList.filter((img) =>
+          this.loggedInUserFollowingList.includes(img.username)
+        );
+      } else if (this.showMyImages) {
+        returnList = returnList.filter((img) => img.username === this.username);
+      }
+      return returnList;
     },
   },
   methods: {
@@ -199,6 +221,14 @@ export default {
         event.stopPropagation();
       }
       this.showUserDropdown = !this.showUserDropdown;
+    },
+    toggleFollowingImages() {
+      this.showFollowingImages = !this.showFollowingImages;
+      this.showMyImages = false;
+    },
+    toggleMyImages() {
+      this.showMyImages = !this.showMyImages;
+      this.showFollowingImages = false;
     },
     closeUserDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
@@ -312,6 +342,15 @@ export default {
           console.error(error);
         });
     },
+    getUserFollowing() {
+      const pathUserFollowing =
+        this.backendPath + "/usuario/" + this.userID + "/following";
+      axios.get(pathUserFollowing).then((response) => {
+        this.loggedInUserFollowingList = response.data.map(
+          (item) => item.nombre
+        );
+      });
+    },
   },
   mounted() {
     window.addEventListener("click", this.closeUserDropdown);
@@ -330,6 +369,7 @@ export default {
       this.$router.push({ path: "/" });
     } else {
       this.getUserInfo();
+      this.getUserFollowing();
     }
   },
 };
