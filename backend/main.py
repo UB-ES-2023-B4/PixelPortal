@@ -17,7 +17,7 @@ email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "https://jolly-river-0df294303.4.azurestaticapps.net"],
+    allow_origins=["http://localhost:8080", "http://localhost:8081", "https://jolly-river-0df294303.4.azurestaticapps.net"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -124,8 +124,8 @@ def change_password(user: schemas.UsuarioChangePassword,db: Session = Depends(ge
 
 #Obtener usuario por ID
 @app.get("/usuarios/", response_model=List[schemas.Usuario])
-def read_user( db: Session = Depends(get_db)):
-    db_user = repository.get_all_user(db)
+def read_user(skip: int = 0, limit: int = 1000, db: Session = Depends(get_db)):
+    db_user = repository.get_all_user(db, skip=skip, limit=limit)
     return db_user
 
 
@@ -181,6 +181,15 @@ def read_comentarios(publicacion_id: int, db: Session = Depends(get_db)):
     if comentarios is None:
         raise HTTPException(status_code=404, detail="Comentarios no encontrados")
     return comentarios
+
+@app.delete("/comentarios/{comment_id}", response_model=schemas.Comentario)
+def delete_comment(comment_id: int, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    db_comment = repository.delete_comentario(db=db, comment_id=comment_id)
+
+    if db_comment is None:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    return db_comment
 
 #likes
 @app.post("/likes/", response_model = schemas.Like)
@@ -251,3 +260,55 @@ async def get_following(user_id: int, db: Session = Depends(get_db)):
     following = repository.get_following(db, user_id)
     return following
 
+#bookmarks
+@app.post("/bookmarks/", response_model = schemas.BookMark)
+async def create_bookmark(bookmark: schemas.BookMarkCreate, db:Session = Depends(get_db), usuario_actual: models.Usuario = Depends(get_current_user)):
+    db_post = repository.get_post(db, bookmark.publicacion_id)
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    bookmark = repository.crear_bookmark(db=db, bookmark=bookmark, usuario_actual=usuario_actual)
+    if bookmark is None:
+        raise HTTPException(status_code=404, detail="Bookmark already exist")
+    return bookmark
+
+@app.get("/bookmarks/", response_model = List[schemas.BookMark])
+async def get_all_bookmarks(skip: int = 0, limit: int = 100,db:Session = Depends(get_db)):
+    bookmarks = repository.get_all_bookmarks(db, skip, limit)
+    return bookmarks
+@app.get("/bookmarks/{publication_id}", response_model = List[schemas.Usuario])
+async def get_bookmarks_publication(publication_id: int, db:Session = Depends(get_db)):
+    db_publication = repository.get_post(db, publication_id)
+    if db_publication is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    db_users = repository.get_users_bookmarked_a_post(db,publication_id)
+    if db_users is None:
+        raise HTTPException(status_code=404, detail="Users not found")
+    return db_users
+
+@app.get("/bookmarks/user/{user_id}", response_model=List[schemas.Publicacion])
+async def get_bookmarks_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = repository.get_user(db, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    publications =repository.get_posts_bookmarked_by_user(db,user_id)
+
+    if publications is None:
+        raise HTTPException(status_code=404, detail="Bookmarks not found")
+    return publications
+@app.delete("/bookmarks/", response_model=schemas.BookMark)
+def delete_bookmark(bookmark: schemas.BookMark, db: Session = Depends(get_db), current_user: models.Usuario = Depends(get_current_user)):
+    deleted_bookmark = repository.delete_bookmark(db, bookmark)
+    if deleted_bookmark is None:
+        raise HTTPException(status_code=404, detail="Bookmark not found")
+    return deleted_bookmark
+
+@app.delete("/usuario/{user_id}", status_code=status.HTTP_200_OK)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    try:
+        deleted_user = repository.delete_account(db, user_id)
+        if deleted_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return {"message": "User successfully deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

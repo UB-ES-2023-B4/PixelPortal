@@ -1,90 +1,136 @@
 <template>
-  <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css" rel="stylesheet" />
-
   <div>
+    <link
+      href="https://unpkg.com/boxicons@2.1.1/css/boxicons.css"
+      rel="stylesheet"
+    />
     <LoadingComponent v-if="isLoading"></LoadingComponent>
     <div v-else>
       <div class="container">
         <div class="side-bar" v-if="!isLoading">
           <div class="user-info-wrapper">
-          <div class="user-info">
-            <img
-              src="../assets/sidebar-logo.png"
-              class="img-fluid"
-              style="margin-bottom: 25px;"
-              @click="reloadPage"
-            />
-          </div>
-          <div class="user-info">
-            <div class="username-and-picture">
-              <img :src="profilePicture" alt="Profile Picture" class="profile-picture" />
-              <router-link :to="{
-                name: 'userProfile',
-                params: { id: this.userID },
-                query: {
-                  token: this.token,
-                  loggedUserID: this.userID,
-                },
-              }">
-                <h6 class="username">{{ username }}</h6>
-              </router-link>
+            <div class="user-info">
+              <img
+                src="../assets/sidebar-logo.png"
+                class="img-fluid"
+                style="margin-bottom: 25px"
+                @click="reloadPage"
+              />
             </div>
-            <div class="dropdown" style="align-items: flex-end">
-              <button class="options-button" @click="toggleUserDropdown">
-                <i class="bx bx-dots-vertical-rounded"></i>
-              </button>
-              <div id="dropdown-content" class="dropdown-content" v-if="showUserDropdown">
-                <a href="/">Log out</a>
+            <div class="user-info">
+              <div class="username-and-picture">
+                <img
+                  :src="profilePicture"
+                  alt="Profile Picture"
+                  class="profile-picture"
+                />
+                <router-link
+                  :to="{
+                    name: 'userProfile',
+                    params: { id: this.userID },
+                    query: {
+                      token: this.token,
+                      loggedUserID: this.userID,
+                    },
+                  }"
+                >
+                  <h6 class="username">{{ username }}</h6>
+                </router-link>
+              </div>
+              <div class="dropdown" style="align-items: flex-end">
+                <button class="options-button" @click="toggleUserDropdown">
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div
+                  id="dropdown-content"
+                  class="dropdown-content"
+                  v-if="showUserDropdown"
+                >
+                  <a href="/">Log out</a>
+                </div>
               </div>
             </div>
+            <button class="post-button" @click="showUploadImageForm = true">
+              <i class="bx bx-plus"></i> Post
+            </button>
+            <button
+              class="post-button"
+              :class="{ 'post-button-my-images-selected': showMyImages }"
+              @click="toggleMyImages"
+            >
+              <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+              My Images
+            </button>
+            <button
+              class="post-button"
+              :class="{ 'post-button-my-images-selected': showFollowingImages }"
+              @click="toggleFollowingImages"
+            >
+              <img class="sidebar-icon" src="../assets/images.svg" alt="" />
+              Following Posts
+            </button>
+            <button class="post-button" @click="showSearchUserForm = true">
+              <i class="bx bx-search"></i> Search User
+            </button>
           </div>
-          <button class="post-button" @click="showUploadImageForm = true">
-            <i class="bx bx-plus"></i> Post
-          </button>
-          <button class="post-button" :class="{ 'post-button-my-images-selected': showMyImages }"
-            @click="showMyImages = !showMyImages">
-            <img class="sidebar-icon" src="../assets/images.svg" alt="" />
-            My Images
-          </button>
-        </div>
         </div>
         <div class="image-container" v-if="!isLoading">
           <div class="search-container">
-          <div class="search-box" :hidden="showMyImages">
-            <i class="bx bx-search"></i>
-            <input type="text" v-model="search" placeholder="Search" />
-          </div>
-          <div class="dropdown">
-            <button class="sort-button" @click="toggleSortDropdown">
-              <img class="sort-icon" src="../assets/filter.svg" alt="" />
-            </button>
-            <div class="dropdown-content" v-if="showSortDropdown">
-              <a @click="sortImagesByUploadDate(true)">Sort by upload Date (ascending)</a>
-              <a @click="sortImagesByUploadDate(false)">Sort by upload Date (descending)</a>
-              <a>Sort by likes</a>
+            <div class="search-box">
+              <i class="bx bx-search"></i>
+              <input type="text" v-model="search" placeholder="Search" />
+            </div>
+            <div class="dropdown">
+              <button class="sort-button" @click="toggleSortDropdown">
+                <img class="sort-icon" src="../assets/filter.svg" alt="" />
+              </button>
+              <div class="dropdown-content" v-if="showSortDropdown">
+                <a @click="sortImagesByUploadDate(true)"
+                  >Sort by upload Date (ascending)</a
+                >
+                <a @click="sortImagesByUploadDate(false)"
+                  >Sort by upload Date (descending)</a
+                >
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Popup to upload images component -->
-        <UploadImagePopup :open="showUploadImageForm" :username="username" :token="token" @close="closeUploadImageForm">
-        </UploadImagePopup>
-        <div class="images">
-          <div class="image-card" v-for="img in showMyImages ? myImagesList : filteredList" :key="img.id"
-            :data-name="img.username">
-            <router-link :to="{
-              name: 'postZoom',
-              params: { id: img.id },
-              query: {
-                token: this.token,
-                loggedUserID: this.userID,
-              },
-            }">
-              <img :src="img.image" />
-            </router-link>
-            <h6 class="image-title">{{ img.title }}</h6>
-            <h6 class="image-username">{{ img.username }}</h6>
+          <!-- Popup to upload images component -->
+          <UploadImagePopup
+            :open="showUploadImageForm"
+            :username="username"
+            :token="token"
+            @close="closeUploadImageForm"
+          >
+          </UploadImagePopup>
+          <SearchUserPopup
+            :open="showSearchUserForm"
+            :loggedInUserID="userID"
+            :token="token"
+            @close="closeSearchUserForm"
+          ></SearchUserPopup>
+          <div class="images">
+            <div
+              class="image-card"
+              v-for="img in filteredList"
+              :key="img.id"
+              :data-name="img.username"
+            >
+              <router-link
+                :to="{
+                  name: 'postZoom',
+                  params: { id: img.id },
+                  query: {
+                    token: this.token,
+                    loggedUserID: this.userID,
+                  },
+                }"
+              >
+                <img :src="img.image" />
+              </router-link>
+              <h6 class="image-title">{{ img.title }}</h6>
+              <h6 class="image-username">{{ img.username }}</h6>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -96,15 +142,17 @@ import { ref } from "vue";
 import { storage } from "@/firebase";
 import { ref as firebaseRef, getDownloadURL } from "firebase/storage";
 import UploadImagePopup from "./UploadImagePopup.vue";
+import SearchUserPopup from "./SearchUserPopup.vue";
 import axios from "axios";
 import LoadingComponent from "../components/LoadingComponent";
 
 export default {
   name: "MainPage",
-  components: { UploadImagePopup, LoadingComponent },
+  components: { UploadImagePopup, LoadingComponent, SearchUserPopup },
   setup() {
     const showUploadImageForm = ref(false);
-    return { showUploadImageForm };
+    const showSearchUserForm = ref(false);
+    return { showUploadImageForm, showSearchUserForm };
   },
   data() {
     return {
@@ -112,7 +160,9 @@ export default {
       search: "",
       profilePicture: require("@/assets/default_PFP.png"),
       imageList: [],
+      loggedInUserFollowingList: [],
       showMyImages: false,
+      showFollowingImages: false,
       showUserDropdown: false,
       showSortDropdown: false,
       username: "notLoggedIn",
@@ -124,29 +174,42 @@ export default {
   computed: {
     filteredList() {
       // Check if the first character of the search string is "@"
+      let returnList = [];
       if (this.search.length > 0 && this.search.charAt(0) === "@") {
         // Remove the "@" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
         // Filter and return images based on the modified search term
-        return this.imageList.filter((img) => {
+        returnList = this.imageList.filter((img) => {
           return img.username.toLowerCase().includes(searchTerm);
         });
       } else if (this.search.length > 0 && this.search.charAt(0) === "#") {
         // Remove the "#" symbol from the search string
         const searchTerm = this.search.substring(1).toLowerCase();
 
-        return this.imageList.filter((img) => {
+        returnList = this.imageList.filter((img) => {
           return img.postTags.some((tag) =>
             tag.toLowerCase().includes(searchTerm)
           );
         });
       } else {
-        return this.imageList;
+        const searchTerm = this.search.toLowerCase();
+
+        returnList = this.imageList.filter((img) => {
+          return (
+            img.title.toLowerCase().includes(searchTerm) ||
+            img.username.toLowerCase().includes(searchTerm)
+          );
+        });
       }
-    },
-    myImagesList() {
-      return this.imageList.filter((img) => img.username === this.username);
+      if (this.showFollowingImages) {
+        returnList = returnList.filter((img) =>
+          this.loggedInUserFollowingList.includes(img.username)
+        );
+      } else if (this.showMyImages) {
+        returnList = returnList.filter((img) => img.username === this.username);
+      }
+      return returnList;
     },
   },
   methods: {
@@ -158,6 +221,14 @@ export default {
         event.stopPropagation();
       }
       this.showUserDropdown = !this.showUserDropdown;
+    },
+    toggleFollowingImages() {
+      this.showFollowingImages = !this.showFollowingImages;
+      this.showMyImages = false;
+    },
+    toggleMyImages() {
+      this.showMyImages = !this.showMyImages;
+      this.showFollowingImages = false;
     },
     closeUserDropdown(event) {
       if (!event.target.classList.contains("options-button")) {
@@ -215,6 +286,9 @@ export default {
           });
       }
     },
+    closeSearchUserForm() {
+      this.showSearchUserForm = false;
+    },
     getPublication() {
       this.imageList = [];
       const pathPublications = this.backendPath + "/publicaciones";
@@ -250,7 +324,7 @@ export default {
         });
     },
     getUserInfo() {
-      this.userID = this.$route.query.user_id;
+      this.userID = parseInt(this.$route.query.user_id);
       const pathUser = this.backendPath + "/usuario/" + this.userID;
       axios
         .get(pathUser)
@@ -267,6 +341,15 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    getUserFollowing() {
+      const pathUserFollowing =
+        this.backendPath + "/usuario/" + this.userID + "/following";
+      axios.get(pathUserFollowing).then((response) => {
+        this.loggedInUserFollowingList = response.data.map(
+          (item) => item.nombre
+        );
+      });
     },
   },
   mounted() {
@@ -286,6 +369,7 @@ export default {
       this.$router.push({ path: "/" });
     } else {
       this.getUserInfo();
+      this.getUserFollowing();
     }
   },
 };

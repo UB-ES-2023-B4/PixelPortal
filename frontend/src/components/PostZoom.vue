@@ -87,6 +87,13 @@
                     </router-link>
                     {{ comment.content }}
                   </div>
+                  <button
+                    v-if="comment.user_id === loggedInUserId"
+                    class="delete-comment-button"
+                    @click="deleteComment(comment.id)"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -119,10 +126,18 @@
                 >ios_share</span
               >
             </button>
-            <button type="button" class="btn btn-default btn-xs bookmark">
-              <span class="material-icons pixel-color full-width"
-                >bookmark</span
-              >
+            <button
+              type="button"
+              class="btn btn-default btn-xs bookmark"
+              @click="bookmarkPost"
+            >
+              <img
+                :src="
+                  loggedInUserHasBookmarkedPost
+                    ? require('../assets/bookmark-fill.svg')
+                    : require('../assets/bookmark.svg')
+                "
+              />
             </button>
             <div class="box-footer">
               <img
@@ -176,6 +191,7 @@ export default {
       loggedInUserId: parseInt(this.$route.query.loggedUserID),
       loggedInUserPFP: "",
       loggedInUserHasLikedPost: false,
+      loggedInUserHasBookmarkedPost: false,
       postAuthorProfilePic: "",
       image: "",
       title: "",
@@ -189,6 +205,7 @@ export default {
       token: this.$route.query.token,
       comments: [],
       isLikePostInProgress: false,
+      isBookmarkPostInProgress: false,
     };
   },
   computed: {
@@ -313,6 +330,20 @@ export default {
           alert("Error: " + error.message);
         });
     },
+    deleteComment(commentId) {
+      if (confirm("Are you sure you want to delete this comment?")) {
+        const commentPath = this.backendPath + "/comentarios/" + commentId;
+        const headers = { Authorization: "Bearer " + this.token };
+        axios
+          .delete(commentPath, { headers })
+          .then(() => {
+            this.getComments();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
     getUserData(idx) {
       const path = this.backendPath + "/usuario/" + this.comments[idx].user_id;
       axios
@@ -421,6 +452,71 @@ export default {
           });
       }
     },
+    getBookmarks() {
+      const pathBookmarks = this.backendPath + "/bookmarks/" + this.id;
+
+      axios.get(pathBookmarks).then((response) => {
+        this.loggedInUserHasBookmarkedPost = response.data.some(
+          (item) => item.id === this.loggedInUserId
+        );
+      });
+    },
+    bookmarkPost() {
+      if (this.isBookmarkPostInProgress) {
+        console.log("Request alredy in progress, wait a bit");
+        return;
+      }
+
+      this.isBookmarkPostInProgress = true;
+
+      if (this.loggedInUserHasBookmarkedPost) {
+        let bookmarkPath =
+          this.backendPath + "/bookmarks/user/" + this.loggedInUserId;
+        axios.get(bookmarkPath).then((response) => {
+          let postBookmarkInfo = response.data.find(
+            (item) => item.id === this.id
+          );
+          bookmarkPath = this.backendPath + "/bookmarks/";
+          const headers = { Authorization: "Bearer " + this.token };
+          const data = {
+            usuario_id: this.loggedInUserId,
+            publicacion_id: postBookmarkInfo.id,
+            fecha_creacion: postBookmarkInfo.fecha_creacion,
+          };
+
+          axios
+            .delete(bookmarkPath, { data: data, headers: headers })
+            .then(() => {
+              this.getBookmarks();
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.isBookmarkPostInProgress = false;
+            });
+        });
+      } else {
+        const pathBookmark = this.backendPath + "/bookmarks/";
+        const headers = { Authorization: "Bearer " + this.token };
+        const data = {
+          usuario_id: this.loggedInUserId,
+          publicacion_id: this.id,
+        };
+
+        axios
+          .post(pathBookmark, data, { headers })
+          .then(() => {
+            this.getBookmarks();
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            this.isBookmarkPostInProgress = false;
+          });
+      }
+    },
   },
   created() {
     const pathPost = this.backendPath + "/publicaciones/" + this.id;
@@ -454,6 +550,7 @@ export default {
     this.getComments();
     this.getUserProfilePic();
     this.getLikes();
+    this.getBookmarks();
   },
 };
 </script>
@@ -721,6 +818,26 @@ body {
 }
 
 .bookmark {
+  margin-top: 5px;
   float: right;
+}
+
+.bookmark:hover {
+  filter: brightness(150%);
+}
+.box-comment {
+  position: relative;
+}
+.delete-comment-button {
+  display: none;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(20, 117, 236, 0.9);
+  color: white;
+  border-radius: 6px;
+}
+.box-comment:hover .delete-comment-button {
+  display: block;
 }
 </style>
