@@ -1,11 +1,17 @@
 <template>
-  <div id="loading">
-    <img
+  <div id="loading" style="align-items: center; text-align: center; justify-content: center; display: flex;">
+    <div class="col-md-12" style="align-items: center; text-align: center; justify-content: center; display: flex;">
+    
+    <div class="row" style="; align-items: center; height: 280px; width: 280px; justify-content: center; display: flex">
+      <img
       class="img"
       src="../assets/polaroid.gif"
       alt="loading..."
       width="200"
-    />
+      />
+    </div>
+
+    </div>
   </div>
 </template>
 
